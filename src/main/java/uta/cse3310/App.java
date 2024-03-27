@@ -72,8 +72,7 @@ public class App extends WebSocketServer {
 
   private Instant startTime;
 
-  private Statistics stats;
-
+  /* 
   public App(int port) {
     super(new InetSocketAddress(port));
   }
@@ -85,10 +84,11 @@ public class App extends WebSocketServer {
   public App(int port, Draft_6455 draft) {
     super(new InetSocketAddress(port), Collections.<Draft>singletonList(draft));
   }
+  */
 
   @Override
   public void onOpen(WebSocket conn, ClientHandshake handshake) {
-
+    /* 
     connectionId++;
 
     System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
@@ -96,6 +96,7 @@ public class App extends WebSocketServer {
     ServerEvent E = new ServerEvent();
 
     // search for a game needing a player
+    /* 
     Game G = null;
     for (Game i : ActiveGames) {
       if (i.Players == uta.cse3310.PlayerType.XPLAYER) {
@@ -146,19 +147,22 @@ public class App extends WebSocketServer {
     System.out
         .println("< " + Duration.between(startTime, Instant.now()).toMillis() + " " + "*" + " " + escape(jsonString));
     broadcast(jsonString);
-
-  }
+    */
+  } 
 
   @Override
   public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+    /* 
     System.out.println(conn + " has closed");
     // Retrieve the game tied to the websocket connection
     Game G = conn.getAttachment();
     G = null;
+    */
   }
 
   @Override
   public void onMessage(WebSocket conn, String message) {
+  /*   
     System.out
         .println("< " + Duration.between(startTime, Instant.now()).toMillis() + " " + "-" + " " + escape(message));
 
@@ -183,30 +187,34 @@ public class App extends WebSocketServer {
     System.out
         .println("> " + Duration.between(startTime, Instant.now()).toMillis() + " " + "*" + " " + escape(jsonString));
     broadcast(jsonString);
+    */
   }
+  
 
   @Override
   public void onMessage(WebSocket conn, ByteBuffer message) {
-    System.out.println(conn + ": " + message);
+   // System.out.println(conn + ": " + message);
   }
+  
 
   @Override
   public void onError(WebSocket conn, Exception ex) {
-    ex.printStackTrace();
-    if (conn != null) {
+    //ex.printStackTrace();
+    //if (conn != null) {
       // some errors like port binding failed may not be assignable to a specific
       // websocket
-    }
+    //}
   }
 
   @Override
   public void onStart() {
-    setConnectionLostTimeout(0);
-    stats = new Statistics();
-    startTime = Instant.now();
+    //setConnectionLostTimeout(0);
+    //stats = new Statistics();
+    //startTime = Instant.now();
   }
 
-  private String escape(String S) {
+  //private String escape(String S) {
+    /* 
     // turns " into \"
     String retval = new String();
     // this routine is very slow.
@@ -219,10 +227,11 @@ public class App extends WebSocketServer {
       retval = retval + ch;
     }
     return retval;
-  }
+    */
+  //}
 
   public static void main(String[] args) {
-
+    /* 
     // Set up the http server
     int port = 9080;
     HttpServer H = new HttpServer(port, "./html");
@@ -236,6 +245,9 @@ public class App extends WebSocketServer {
     A.setReuseAddr(true);
     A.start();
     System.out.println("websocket Server started on port: " + port);
-
+    */
   }
+
+  
+  
 }
