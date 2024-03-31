@@ -20,32 +20,32 @@ public class App extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        // No functionality needed here
+        
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        // No functionality needed here
+        
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        // No functionality needed here
+        
     }
 
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
-        // No functionality needed here
+        
     }
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        // No functionality needed here
+        
     }
 
     @Override
     public void onStart() {
-        // No functionality needed here
+        
     }
 
     public static void main(String[] args) {
