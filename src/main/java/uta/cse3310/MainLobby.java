@@ -56,5 +56,9 @@ public class MainLobby
     public boolean isLobbyFullandReady(SubLobby lobby){
         return true;
     }
+
+    void startGame(SubLobby lobby){
+        
+    }
 }
 

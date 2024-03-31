@@ -7,4 +7,16 @@ public class Server_Status {
     public void update_Status(MainLobby lobby){
         
     }
+
+    boolean isMaxGames(){
+        return true;
+    }
+
+    boolean isMaxPlayers(){
+        return true;
+    }
+
+    void display_Status(){
+        
+    }
 }

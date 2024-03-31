@@ -110,5 +110,13 @@ public int getGameID() { return GameID;
 public String[][] getWordMatrix() { return word_matrix; 
     
 }
+
+void on_exit_game(){
+
+}
+
+boolean isGameOver(){
+    return true;
+}
 }
 
