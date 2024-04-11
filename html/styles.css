@@ -1,0 +1,54 @@
+body{
+    background-color:rgb(253, 253, 253); 
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  }
+
+  h1{
+    background-color: white;
+    text-align:center;
+  }
+  h2{
+    background-color: white;
+    text-align:center;
+  }
+
+table {
+    border-collapse: collapse;
+    width: 100%; /* Make table fill the entire width of the viewport */
+    max-width: 1000px; /* Limit maximum width to prevent it from becoming too wide */
+  }
+  
+  td {
+    width: 10px; /* Adjust the width of each cell */
+    height: 10px; /* Adjust the height of each cell */
+    border: 1px solid black;
+    cursor: pointer;
+  }
+
+  .login-container {
+    width: 300px;
+    margin: 50px auto;
+    text-align: center;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label, input {
+    margin-bottom: 10px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
