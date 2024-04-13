@@ -5,19 +5,30 @@
     <title>word search game</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
+<body>
+    <h1>The WordSearch Game</h1>
 
-<label id="grid">
+<div id="grid">
 
 <table id = "grid">
     <!-- Table rows and cells will be added dynamically with JavaScript -->
 </table>
-</label>
+</div>
 
-<label id="Chat">
+<div id="Chat">
     <div id="Chat">
-        <button type="submit">Submit</button>
-        </div>
-</label>
+        <textarea id="chatdisplay"></textarea><br>
+        <input type="text" id="chat" placeholder="Write your message here...."><br>
+        <button onclick="sendMessage()">Send</button>
+</div>
 
-<label id="statMsg"></label>
+<div id="Ping">
+    <button id="Ping" type="submit" >Ping</button>
+</div>
+
+<script src="main.js"></script>
+
+
+</body>
+</html>
 

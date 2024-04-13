@@ -1,22 +1,39 @@
 body{
+  
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
     background-color:rgb(253, 253, 253); 
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   }
+
+  .wrapper{
+    width: 420px;
+    background: #0ac768;
+    color: white;
+  }
+
+
 
   h1{
     background-color: white;
     text-align:center;
   }
+  
   h2{
     background-color: white;
     text-align:center;
   }
+
+  .
 
 table {
     border-collapse: collapse;
     width: 100%; /* Make table fill the entire width of the viewport */
     max-width: 1000px; /* Limit maximum width to prevent it from becoming too wide */
   }
+
+
   
   td {
     width: 10px; /* Adjust the width of each cell */
@@ -46,9 +63,12 @@ table {
     color: #fff;
     border: none;
     cursor: pointer;
+    align-items: center;
   }
   
   button:hover {
     background-color: #0056b3;
   }
+
+ 
   

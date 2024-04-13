@@ -14,8 +14,34 @@
 
     connection.onopen = function (evt) {
         console.log("open");
-        document.getElementById("textInput").style.display = "inline";
+        document.getElementById("grid").style.display = "inline";
+       
 
+        var table = document.getElementById("grid");
+ // Create rows and cells
+ for (let i = 0; i < 30; i++) {
+  const row = table.insertRow();
+  for (let j = 0; j < 30; j++) {
+    const cell = row.insertCell();
+    cell.addEventListener("click", function() {
+      // Change cell color on click
+      if (this.style.backgroundColor === "yellow") {
+        this.style.backgroundColor = "white";
+      } else {
+        this.style.backgroundColor = "yellow";
+      }
+    });
+  }
+}
+
+    // Populate random letters in empty cells
+    const cells = table.querySelectorAll("td");
+    cells.forEach(function(cell) {
+      if (!cell.innerHTML.trim()) {
+        const randomLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Generate a random uppercase letter
+        cell.innerHTML = randomLetter;
+      }
+    });
 
     }
 
@@ -23,10 +49,13 @@
         console.log("close");
         document.getElementById("topMessage").innerHTML = "Server Offline"
     }
+
+
     const ButtonStateToDisplay = new Map();
     ButtonStateToDisplay.set("XPLAYER", "X");
     ButtonStateToDisplay.set("OPLAYER", "O");
     ButtonStateToDisplay.set("NOPLAYER", " ");
+
     connection.onmessage = function (evt) {
         var msg;
         msg = evt.data;
@@ -34,6 +63,12 @@
         console.log("Message received: " + msg);
         const obj = JSON.parse(msg);
 
+        try {
+
+        }
+      catch (error) {
+
+      }
        
             }
         
@@ -52,32 +87,15 @@
     }
 
     function StartGame(){
-        const table = document.getElementById("grid");
-    
-    // Create rows and cells
-    for (let i = 0; i < 30; i++) {
-      const row = table.insertRow();
-      for (let j = 0; j < 30; j++) {
-        const cell = row.insertCell();
-        cell.addEventListener("click", function() {
-          // Change cell color on click
-          if (this.style.backgroundColor === "black") {
-            this.style.backgroundColor = "white";
-          } else {
-            this.style.backgroundColor = "black";
-          }
-        });
-      }
-    }
+        
+      console.log("Requesting the server to start the game.");
+      U = new UserMsg;
+      U.name = this.name;
+      U.code = 300;
+      connection.send(JSON.stringify(U));
+   
 
-    // Populate random letters in empty cells
-    const cells = table.querySelectorAll("td");
-    cells.forEach(function(cell) {
-      if (!cell.innerHTML.trim()) {
-        const randomLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Generate a random uppercase letter
-        cell.innerHTML = randomLetter;
-      }
-    });
+
 
     }
 
@@ -93,42 +111,12 @@
        
       }
 
+      function SubmitName(){
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const loginForm = document.getElementById("login-form");
-      
-        loginForm.addEventListener("submit", function(event) {
-          event.preventDefault(); // Prevent form submission
-      
-          const usernameInput = document.getElementById("username");
-          const username = usernameInput.value.trim();
-      
-          if (username !== "") {
-            // Save username to sessionStorage
-            sessionStorage.setItem("username", username);
-            
-            // Redirect to lobby page
-            window.location.href = "lobby.html";
-          } else {
-            alert("Please enter your name.");
-          }
-        });
-      });   
+      }
 
-      document.addEventListener("DOMContentLoaded", function() {
-        // Retrieve username from sessionStorage
-        const username = sessionStorage.getItem("username");
-      
-        // Display username in lobby page
-        const usernameSpan = document.getElementById("username");
-        usernameSpan.textContent = username;
-      });
-    
-      document.addEventListener("DOMContentLoaded", function() {
-        // Retrieve username from sessionStorage
-        const username = sessionStorage.getItem("username");
-      
-        // Display username in lobby page
-        const usernameSpan = document.getElementById("username");
-        usernameSpan.textContent = username;
-      });
+      function Ready(){
+
+      }
+
+  

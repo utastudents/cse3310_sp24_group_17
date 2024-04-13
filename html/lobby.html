@@ -8,23 +8,32 @@
 </head>
 <body>
   <h1>The WordSearch Game</h1>
-<center>
+
 <div class="lobby-container">
   <h2>Welcome to the Lobby</h2>
   <p>Hello, Everyone ! You are now in the lobby.</p>
 <p>list of players: </p>
-<table id="playerList">
-  <span id="username"></span>
+<div id="playerList">
+<table id="playerList" border="solid">
+  <tr>
+<td><span id="username">Player1</span></td>
+<td><label id="status" style="color:green">Ready</label>  </td>
+</tr>
+<tr>
+  <td><span id="username">Player2</span></td>
+  <td><label id="status" style="color:red">Not Ready</label>  </td>
+</tr>
 </table>
 </div>
 
-<div id="mainlobby" style="display:none">
+
+<div id="mainlobby" style="display:block">
   
-  <button type="submit">Ready</button>
+  <button id="ready" type="submit" >Ready</button>
     <button id ="2p" type="submit">2 Player</button>
     <button id ="3p" type="submit">3 Player</button>  
     <button id ="4p" type="submit">4 Player</button>
-    <button type="submit">Start Game</button>
+    <button id="Start" type="submit" onclick="StartGame()">Start Game</button>
 </div>
 
 <div id="2plobby" style="display:none">
@@ -33,7 +42,7 @@
     <button id ="2p" type="submit">2 Player</button>
     <button id ="3p" type="submit">3 Player</button>  
     <button id ="4p" type="submit">4 Player</button>
-    <button type="submit">Start Game</button>
+    <button id="Start" type="submit" onclick="StartGame()">Start Game</button>
 </div>
 
 <div id="3plobby" style="display:none">
@@ -41,7 +50,7 @@
     <button id ="2p" type="submit">2 Player</button>
     <button id ="3p" type="submit">3 Player</button>  
     <button id ="4p" type="submit">4 Player</button>
-    <button type="submit">Start Game</button>
+    <button id="Start" type="submit" onclick="StartGame()">Start Game</button>
 </div>
 
 <div id="4plobby" style="display:none">
@@ -49,10 +58,12 @@
     <button id ="2p" type="submit">2 Player</button>
     <button id ="3p" type="submit">3 Player</button>  
     <button id ="4p" type="submit">4 Player</button>
-    <button type="submit">Start Game</button>
+    <button id="Start" type="submit" onclick="StartGame()">Start Game</button>
 </div>
 
-</center>
+</div>
+
+
 <script src="main.js"></script>
 
 </body>
