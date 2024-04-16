@@ -1,7 +1,13 @@
 <head>
     <meta charset="utf-8">
+<<<<<<< Updated upstream
+=======
+    <title>Word Search Game</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+>>>>>>> Stashed changes
 </head>
 
+<<<<<<< Updated upstream
 <label id="topMessage"></label>
 
 <table>
@@ -118,3 +124,38 @@
         console.log(JSON.stringify(U))
     }
 </script>
+=======
+    <!-- Game grid -->
+    <div id="gameArea">
+        <table id="grid">
+            <!-- Grid will be populated with JavaScript -->
+        </table>
+    </div>
+
+    <!-- Player scores -->
+    <div id="scores">
+        <!-- Scores will be populated dynamically -->
+    </div>
+
+    <!-- Chat area -->
+    <div id="chatArea">
+        <h2>Chat</h2>
+        <div id="chatDisplay" style="height: 300px; overflow-y: scroll; background-color: #f0f0f0; padding: 10px; margin-bottom: 10px;"></div>
+        <input type="text" id="chatInput" placeholder="Write your message here..." style="width: calc(100% - 90px); margin-right: 10px;">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    
+    <div id="Ping">
+        <button id="Ping" type="submit" >Ping</button>
+    
+    </div>
+    
+    <!-- Word list -->
+    <div id="wordList">
+        <!-- Word list will be populated dynamically -->
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
+>>>>>>> Stashed changes
