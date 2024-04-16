@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainLobby {
-    int gameID, numberofPlayers;
+    /*int gameID, numberofPlayers;
     public void login() {
         boolean logging = false;                                                            // Becomes true once Name is created and passes NameCheckers
         while(logging != true) {
@@ -51,7 +51,7 @@ public class MainLobby {
             logging = true;
         }
         }
-    }
+    }*/
     
     public int selectLobby() {
       boolean selectedLobby = false;    // Becomes true once a valid sublobby is selected
@@ -61,7 +61,7 @@ public class MainLobby {
       Button four = new Button("FourPlayer");
       int SubLobby = 0; // Will either be 2, 3, or 4 (Number of players) based on button press
       while (selectedLobby != true) {
-        switch(sublobby) {
+        switch(SubLobby) {
             case 2:
                 System.out.println("Entering 2 Player sublobby...");
                 selectedLobby = true;

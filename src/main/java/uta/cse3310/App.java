@@ -20,27 +20,23 @@ public class App extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        
+        System.out.println("New connection: " + conn.getRemoteSocketAddress());
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        
+        System.out.println("Closed connection: " + conn.getRemoteSocketAddress());
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        
-    }
-
-    @Override
-    public void onMessage(WebSocket conn, ByteBuffer message) {
-        
+        System.out.println("Received message from " + conn.getRemoteSocketAddress() + ": " + message);
+        conn.send("Echo: " + message); // Echo back the received message
     }
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        
+        //System.err.println("Error on connection " + conn.getRemoteSocketAddress() + ": " + ex);
     }
 
     @Override
@@ -49,7 +45,14 @@ public class App extends WebSocketServer {
     }
 
     public static void main(String[] args) {
-        int port = 9880; // Set the port for the WebSocket server
+        
+        int port = 9880;
+        HttpServer Http = new HttpServer(port, "./html");
+        Http.start();
+        System.out.println("http Server started on port:" + port);
+ 
+        
+     // Set the port for the WebSocket server
         App app = new App(port);
         app.start();
         System.out.println("WebSocket Server started on port: " + port);

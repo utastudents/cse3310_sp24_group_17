@@ -8,7 +8,7 @@
     var connection = null;
 
     var serverUrl;
-    serverUrl = "ws://" + window.location.hostname + ":9880";
+    serverUrl = "ws://" + window.location.hostname +":9880";
     // Create the connection with the server
     connection = new WebSocket(serverUrl);
 
