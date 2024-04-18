@@ -3,6 +3,7 @@ package uta.cse3310;
 import java.util.Scanner;
 import java.awt.*;
 import java.awt.event.*;
+import org.java_websocket.WebSocket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class MainLobby {
             logging = true;
         }
         }
-    }*/
+    }
     
     public int selectLobby() {
       boolean selectedLobby = false;    // Becomes true once a valid sublobby is selected
@@ -102,6 +103,41 @@ public class MainLobby {
 
     void startGame(SubLobby lobby){
         
+    }*/
+
+
+
+
+    private static final int MAX_PLAYERS = 20;
+    private ArrayList<Player> players = new ArrayList<>();
+
+    public boolean addPlayerToMainLobby(WebSocket conn, String name){
+        if(players.size() < MAX_PLAYERS){
+            Player player = new Player(name, conn);
+            players.add(player);
+            return true;
+        }
+        else{
+            return false;
+        }
     }
+
+    public void removePlayerFromMainLobby(WebSocket conn){
+        Player remove = null;
+        for(Player player : players){
+            if(player.getConn().equals(conn)){
+                remove = player;
+                break;
+            }
+        }
+        if(remove != null){
+            players.remove(remove);
+        }
+    }
+
+    public ArrayList<Player> getPlayers(){
+        return players;
+    }
+    
 }
 

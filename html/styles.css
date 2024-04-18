@@ -24,14 +24,11 @@ body{
     background-color: white;
     text-align:center;
   }
-
-  .
-
-table {
+/*table {
     border-collapse: collapse;
-    width: 100%; /* Make table fill the entire width of the viewport */
-    max-width: 1000px; /* Limit maximum width to prevent it from becoming too wide */
-  }
+    width: 100%;  Make table fill the entire width of the viewport
+    max-width: 1000px;  Limit maximum width to prevent it from becoming too wide 
+  } */
 
 
   
@@ -69,6 +66,20 @@ table {
   button:hover {
     background-color: #0056b3;
   }
+
+  /*body > div {
+    display: none;
+  }
+
+  #loginPage {
+    display: block;
+    text-align: center;
+    margin-top: 50px;
+  }
+
+  #lobbyPage {
+    display: none;
+  }*/
 
  
   
