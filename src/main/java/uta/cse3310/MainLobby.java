@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainLobby {
-    /*int gameID, numberofPlayers;
+    int gameID, numberofPlayers;
     public void login() {
         boolean logging = false;                                                            // Becomes true once Name is created and passes NameCheckers
         while(logging != true) {
             Player user = new Player();
-            String Name = user.name();                                                      // User inputs name
+            System.out.println("Enter your name:");
+            Scanner inputname = new Scanner(System.in);
+            String Name = inputname.nextLine();                                             // User inputs Name
             boolean MTChecker = false;                                                      // Checks if Name is empty
             if (Name.isEmpty()) {                                                        
                 System.out.println("No characters detected");
@@ -46,8 +48,9 @@ public class MainLobby {
         if (MTChecker == true || LengthChecker == false || LanguageChecker == false) {      // If Name fails any checkers, user has to enter another name
             System.out.println("Username is invalid, Please try again");
         }
-        if (MTChecker == false && LengthChecker == true && LanguageChecker == true) {       // If Name passe
+        if (MTChecker == false && LengthChecker == true && LanguageChecker == true) {       // If Name passes, Name is given to the Player class for the user
             System.out.println("Username is valid");
+            user.name = Name;
             logging = true;
         }
         }
@@ -84,7 +87,15 @@ public class MainLobby {
     }
     
     public static void exitLobby(Event event, Player player, SubLobby lobby) {
-        // Some function to exit lobby
+        // function to let player exit lobby
+        Button exit = new Button("Exit");
+        boolean exitstatus = false;
+        while (exitstatus != false) {
+            if (exit) {
+                System.out.println("Exiting sublobby...");
+                exitstatus = true;
+            }
+        exitstatus = false;
     }
     
     public static void clearLobby(SubLobby lobby) {
@@ -94,6 +105,20 @@ public class MainLobby {
     
     public void readyUp(Event event, Player Player, SubLobby lobby) {
         // function to let players ready up
+        Button Ready = new Button("Ready");
+        boolean readystatus = false;
+        while (readystatus != false) {
+            if (Ready) {
+                System.out.println("Status: READY");
+                readystatus = true;
+            }
+        }
+        while (readystatus != true) {
+            if (Ready) {
+                System.out.println("STATUS: NOT READY");
+                readystatus = false;
+            }
+        }
     } 
 
     public boolean isLobbyFullandReady(SubLobby lobby){
