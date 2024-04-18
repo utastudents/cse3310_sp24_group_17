@@ -4,19 +4,15 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
-import com.google.gson.JsonObject;
-
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Vector;
-import java.util.ArrayList;
 
 public class App extends WebSocketServer {
 
     private Vector<Game> ActiveGames = new Vector<>();
     private int GameId = 1;
     private int connectionId = 0;
-    private MainLobby mainLobby = new MainLobby();
 
     public App(int port) {
         super(new InetSocketAddress(port));
@@ -24,67 +20,39 @@ public class App extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        if(mainLobby.addPlayerToMainLobby(conn, "random")){
-            conn.send("Welcome");
-        }
-        else{
-            conn.send("Game is full");
-            conn.close();
-        }
-            
-        
+        System.out.println("New connection: " + conn.getRemoteSocketAddress());
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        mainLobby.removePlayerFromMainLobby(conn);
-        broadcast("Player has left");
+        System.out.println("Closed connection: " + conn.getRemoteSocketAddress());
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println("Recieved message from " + conn.getRemoteSocketAddress());
-        
-        JsonObject json = new JsonObject();
-        
-        String type = json.get("type").getAsString();
-        String username = json.get("username").getAsString();
-
-        if(type == "login"){
-            Player player = new Player(username, conn);
-
-            mainLobby.addPlayerToMainLobby(conn, username);
-            System.out.println("players: " + mainLobby);
-        }
-
+        System.out.println("Received message from " + conn.getRemoteSocketAddress() + ": " + message);
+        conn.send("Echo: " + message); // Echo back the received message
     }
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        ex.printStackTrace();
+        //System.err.println("Error on connection " + conn.getRemoteSocketAddress() + ": " + ex);
     }
 
     @Override
     public void onStart() {
-        System.out.println("WebSocket server started");
-    }
-
-    public void broadcast(String message){
-        for(Player player : mainLobby.getPlayers()){
-            player.getConn().send(message);
-        }
+        
     }
 
     public static void main(String[] args) {
         
-        int port = 8080;
+        int port = 9880;
         HttpServer Http = new HttpServer(port, "./html");
         Http.start();
         System.out.println("http Server started on port:" + port);
  
         
      // Set the port for the WebSocket server
-        port = 9117;
         App app = new App(port);
         app.start();
         System.out.println("WebSocket Server started on port: " + port);

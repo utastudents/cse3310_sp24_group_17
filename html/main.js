@@ -1,32 +1,16 @@
-function UserEvent(type, username, eventData) {
-  this.type = type;
-  this.username = username;
-  this.eventData = eventData;
-}
+    var idx = -1;
+    var gameid = -1;
+    class UserEvent {
+        Button = -1;
+        PlayerIdx = 0;
+        GameId = 0;
+    }
+    var connection = null;
 
-var connection = null;
-
-var serverUrl = "ws://" + window.location.hostname +":9017";
+    var serverUrl;
+    serverUrl = "ws://" + window.location.hostname +":9880";
     // Create the connection with the server
     connection = new WebSocket(serverUrl);
-
-document.getElementById("login-form").addEventListener("submit", function(event){
-  event.preventDefault();
-
-  var username = document.getElementById("username").value;
-
-  var data = {
-    "type": "login",
-    "username": username
-  };
-
-  connection.send(JSON.stringify(data));
-
-  //document.body.style.display = "none";
-
-  //document.body.style.display = "block";
-});
-
 
     connection.onopen = function (evt) {
         console.log("open");
@@ -128,14 +112,7 @@ document.getElementById("login-form").addEventListener("submit", function(event)
       }
 
       function SubmitName(){
-        var username = document.getElementById("username").value;
 
-        var data = {
-          "type": "login",
-          "username": username
-        };
-
-        connection.send(JSON.stringify(data));
       }
 
       function Ready(){
