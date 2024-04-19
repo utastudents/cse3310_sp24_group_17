@@ -7,16 +7,6 @@ body {
   color: #333;
 }
 
-/* Typography enhancements */
-h1, h2 {
-  font-size: 2rem; /* Larger font size for headers */
-}
-
-p {
-  font-size: 1rem;
-  color: #666; /* Lighter text color for less emphasis */
-}
-
 /* Centering and general styling for all major sections */
 .wrapper, #loginPage, #lobbyPage, #gamePage {
   display: flex;
@@ -63,8 +53,7 @@ input[type="text"] {
 
 
 button:hover {
-  background-color: #6a7bf2;
-  transition: background-color 0.3s;
+  background-color: #4a54e1;
 }
 
 /* Button focus and active states */
@@ -95,9 +84,11 @@ button:disabled {
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-/* Grid cell hover effect */
-table#grid td:hover {
-  background-color: #dedeff;
+/* Styling for the game grid */
+table#grid {
+  border-collapse: collapse;
+  margin-top: 20px;
+
 }
 
 table#grid td {
@@ -141,9 +132,14 @@ table#grid td {
 
 
 /* Style for the send button */
-button:focus, input[type="text"]:focus {
-  border-color: #5c67f2;
-  box-shadow: 0 0 0 2px rgba(92, 103, 242, 0.75);
+button {
+  width: 80px; /* Fixed width for the button */
+  padding: 10px; /* Padding inside the button */
+  background-color: #5c67f2; /* Blue background color */
+  color: white; /* Text color */
+  border: none; /* No border */
+  cursor: pointer; /* Pointer cursor on hover */
+  flex-shrink: 0; /* Prevents the button from shrinking */
 }
 
 
@@ -164,7 +160,7 @@ button:focus, input[type="text"]:focus {
 
 
 /* Responsive design adjustments */
-@media (max-width: 600px) and (orientation: landscape) {
+@media (max-width: 600px) {
   .wrapper, #loginPage, #lobbyPage, #gamePage {
       padding: 10px;
   }
@@ -184,11 +180,10 @@ button:focus, input[type="text"]:focus {
   }
 
   #chatArea {
-      width: 50%; /* Half-width for better use of space */
-      height: 100vh; /* Full height */
-      bottom: auto; /* Align to side */
+      width: 100%; /* Full width on smaller screens */
+      height: 50vh; /* Take only half the screen height */
+      bottom: 0; /* Align to bottom */
   }
-
 
   .player-list > div {
       flex-direction: column;
