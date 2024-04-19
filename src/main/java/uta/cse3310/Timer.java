@@ -20,10 +20,10 @@ public class Timer {
         this.isRunning = true;
     }
 
-    public void start() {
-        this.startTime = System.currentTimeMillis();
-        this.isRunning = true;
-    }
+   // public void start() {
+    //    this.startTime = System.currentTimeMillis();
+    //    this.isRunning = true;
+ //   }
 
     public void setOnTimeoutCallback(Runnable callback) {
         this.onTimeoutCallback = callback;
