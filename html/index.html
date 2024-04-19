@@ -8,11 +8,11 @@
     <script src="main.js"></script>
 </head>
 <body>
-    <h1>The WordSearch Game</h1>
+    
 
     <!-- Login Section -->
     <div id="loginPage">
-        
+        <h1>The WordSearch Game</h1>
         <h2>Welcome Everyone</h2>
         <p>Rules...</p>
         <div class="wrapper">
@@ -30,6 +30,7 @@
 
 <!-- Lobby Section -->
 <div id="lobbyPage" style="display:none;">
+    <h1>The WordSearch Game</h1>
     <h2>Welcome to the Lobby</h2>
     <p>List of players:</p>
     <div id="playerList" class="player-list"></div>
@@ -38,7 +39,7 @@
     <div class="button-group">
         <button onclick="startGame()" >Start Game</button>
         <button onclick="ready()" >Ready</button>
-        <button onclick="back()" >BACK</button>
+        <button id="backButton" onclick="back()">BACK</button>
     </div>
 
     <!-- Player configuration buttons -->
@@ -50,14 +51,40 @@
 </div>
 
 
-    <!-- Game Section (Hidden Initially) -->
+<!-- Game Section (Hidden Initially) -->
     <div id="gamePage" style="display:none;">
+    <h1>The WordSearch Game</h1>
+
+    <div id="gameContainer">
+        <div id="sidebar">
+
+        <!-- Scoreboard Section -->
+        <div id="scoreBoardContainer">
+            <h2>Scoreboard</h2>
+            <ul id="scoreBoard">
+                <!-- Player scores will be populated with JavaScript -->
+            </ul>
+        </div>
+
+        <!-- Word List Section -->
+        <div id="wordListContainer">
+            <h2>Word List</h2>
+            <ul id="wordList">
+                <!-- Word list will be populated with JavaScript -->
+            </ul>
+        </div>
+        </div>
         
+        <!-- Grid Section -->
         <table id="grid">
             <!-- Grid will be populated with JavaScript -->
         </table>
-        <button onclick="back()" >BACK</button>
+
+        <button id="backButton" onclick="back()">BACK</button>
+
     </div>
+
+
 
     <!-- Chat Area (Hidden Initially) -->
     <div id="chatArea" style="display:none;">

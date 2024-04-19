@@ -168,7 +168,7 @@ function loadWordList() {
     wordListContainer.innerHTML = ''; // Clear existing content
     words.forEach(word => {
         if (word.trim().length > 0) { // Avoid empty lines
-            const wordElement = document.createElement('div');
+            const wordElement = document.createElement('li');
             wordElement.textContent = word;
             wordListContainer.appendChild(wordElement);
         }
@@ -231,6 +231,20 @@ function highlightPath(start, end) {
       }
   }
 }
+
+function updateScoreboard(players) {
+    const scoreboard = document.getElementById('scoreBoard');
+    scoreboard.innerHTML = ''; // Clear existing scoreboard
+  
+    players.forEach(player => {
+      const scoreItem = document.createElement('li');
+      scoreItem.classList.add('playerScore');
+      scoreItem.textContent = `${player.name}: ${player.score}`;
+      scoreItem.style.color = player.color; // Assign color dynamically
+      scoreboard.appendChild(scoreItem);
+    });
+  }
+  
 
 function ready() {
     isReady = !isReady;  // Toggle the player's ready status
