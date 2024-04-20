@@ -1,4 +1,3 @@
-
 var gridsize = 30;
 var isReady = false;  // Global variable to keep track of the player's ready status
 // Variables for player information and WebSocket connection
@@ -60,14 +59,13 @@ connection.onmessage = function (event) {
             startGame();
             break;
         case 'chat':
-            displayChatMessage(data.username, data.message);
-            break;    
+                displayChatMessage(data.username, data.message);
+                break; 
 
     // If the message type indicates an update to the player list
     //if (data.type === 'playerListUpdate') {
       //  updateLobbyWithPlayers(data.players); // data.players should be an array of player objects
-      //}
-    }
+    //}
 };
 
     connection.onerror = function (error) {
@@ -80,6 +78,7 @@ connection.onmessage = function (event) {
         // Update the UI to show the connection is not currently active
         // Avoid using alert here; instead, you might want to show a message in the UI
     };
+}
 }
 
 // Handle different types of messages from the server
@@ -107,7 +106,6 @@ function sendMessage() {
     }
 }
 
-
 function displayChatMessage(username, message) {
     const chatDisplay = document.getElementById('chatDisplay');
     const messageElem = document.createElement('p');
@@ -115,6 +113,8 @@ function displayChatMessage(username, message) {
     chatDisplay.appendChild(messageElem);
     chatDisplay.scrollTop = chatDisplay.scrollHeight; // Automatically scroll to the latest message
 }
+
+
 
 
 // Function to update the player list in the lobby
@@ -168,7 +168,7 @@ function loadWordList() {
     wordListContainer.innerHTML = ''; // Clear existing content
     words.forEach(word => {
         if (word.trim().length > 0) { // Avoid empty lines
-            const wordElement = document.createElement('div');
+            const wordElement = document.createElement('li');
             wordElement.textContent = word;
             wordListContainer.appendChild(wordElement);
         }
@@ -231,6 +231,20 @@ function highlightPath(start, end) {
       }
   }
 }
+
+function updateScoreboard(players) {
+    const scoreboard = document.getElementById('scoreBoard');
+    scoreboard.innerHTML = ''; // Clear existing scoreboard
+  
+    players.forEach(player => {
+      const scoreItem = document.createElement('li');
+      scoreItem.classList.add('playerScore');
+      scoreItem.textContent = `${player.name}: ${player.score}`;
+      scoreItem.style.color = player.color; // Assign color dynamically
+      scoreboard.appendChild(scoreItem);
+    });
+  }
+  
 
 function ready() {
     isReady = !isReady;  // Toggle the player's ready status

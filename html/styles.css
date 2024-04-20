@@ -1,23 +1,13 @@
-/* Basic body and global settings */
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f4f4;
-  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: rgb(252, 251, 251);
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  margin: 0; /* Added to reset the margin */
 }
 
-/* Typography enhancements */
-h1, h2 {
-  font-size: 2rem; /* Larger font size for headers */
-}
-
-p {
-  font-size: 1rem;
-  color: #666; /* Lighter text color for less emphasis */
-}
-
-/* Centering and general styling for all major sections */
 .wrapper, #loginPage, #lobbyPage, #gamePage {
   display: flex;
   flex-direction: column;
@@ -26,26 +16,36 @@ p {
   padding: 20px;
 }
 
-/* Specific styling for visibility and transitions */
-#loginPage, #lobbyPage, #gamePage {
-  width: 100%;
-  height: 100vh; /* Take full height of the viewport */
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: opacity 0.5s ease-in-out;
+h1, h2 {
+  background-color: white;
+  text-align: center;
+  margin: 5px; /* Fixed the syntax error */
 }
 
-/* Hidden sections */
-#lobbyPage, #gamePage {
-  opacity: 0;
-  pointer-events: none; /* Prevent interaction with hidden sections */
+table {
+  border-collapse: separate; /* Adjusted from collapse to separate */
+  border-spacing: 2px; /* Added space between cells */
+  margin: 0 auto; /* Center the table */
 }
 
-/* Visible sections */
-#loginPage.active, #lobbyPage.active, #gamePage.active {
-  opacity: 1;
-  pointer-events: all;
+td {
+  width: 24px; /* Width of each cell */
+  height: 24px; /* Height of each cell */
+  border: 1px solid rgb(253, 248, 248);
+  cursor: pointer;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 18px; /* Larger font size for visibility */
+  line-height: 24px; /* Align text in the middle vertically */
+  background-color: #000; /* Cell background color */
+  color: #fff; /* Cell text color */
+  padding: 5px; /* Added padding to create more space inside cells */
+}
+
+.login-container {
+  width: 300px;
+  margin: 50px auto;
+  text-align: center;
 }
 
 /* Form and inputs styling */
@@ -60,23 +60,8 @@ input[type="text"] {
   border-radius: 5px;
 }
 
-
-
-button:hover {
-  background-color: #6a7bf2;
-  transition: background-color 0.3s;
-}
-
-/* Button focus and active states */
-button:focus, button:active {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(92, 103, 242, 0.5);
-}
-
-/* Disabled button style */
-button:disabled {
-  background-color: #aaa;
-  cursor: not-allowed;
+label, input {
+  margin-bottom: 10px;
 }
 
 /* Additional styling for list of players and game content */
@@ -95,18 +80,32 @@ button:disabled {
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-/* Grid cell hover effect */
-table#grid td:hover {
-  background-color: #dedeff;
+/* Button focus and active states */
+button:focus, button:active {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(92, 103, 242, 0.5);
 }
 
-table#grid td {
-  width: 40px; /* Adjust the width of each cell */
-  height: 40px; /* Adjust the height of each cell */
-  border: 1px solid black;
-  text-align: center;
-  vertical-align: middle;
+/* Disabled button style */
+button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+/* Button styling */
+button {
+  padding: 10px 20px;
+  background-color: #f5f7f8;
+  color: #000; /* Changed text color to black */
+  border: none;
   cursor: pointer;
+  align-items: center;
+  margin: 10px 0; /* Add margin for spacing */
+}
+
+button:hover {
+  background-color: #0056b3;
+  color: #fff; /* Added white text color on hover */
 }
 
 /* Chat area as a sidebar */
@@ -136,61 +135,90 @@ table#grid td {
 
 #chatArea, button {
   flex-shrink: 0;
-  color: #4CAF50;
+  color: #04ff04;
 }
 
-
-/* Style for the send button */
-button:focus, input[type="text"]:focus {
-  border-color: #5c67f2;
-  box-shadow: 0 0 0 2px rgba(92, 103, 242, 0.75);
+/* BACK button placement */
+#backButton {
+  position: absolute;
+  left: 0; /* Align to the left side of the screen */
+  bottom: 20px; /* Spacing from the bottom */
+  padding: 10px 15px; /* Padding for the button */
+  font-size: 18px; /* Larger font for readability */
+  background-color: #333; /* Dark background for the button */
+  color: white; /* White text color */
+  border: none;
+  cursor: pointer;
 }
 
+#backButton:hover {
+  background-color: #555; /* Lighten the background on hover */
+}
 
-.button-group {
-  margin-top: 10px;
+#gameContainer {
   display: flex;
-  justify-content: center;
-  gap: 10px; /* Creates space between buttons */
+  justify-content: space-between;
+  align-items: start; /* Aligns items to the top */
+  margin: 20px;
 }
 
+#scoreBoardContainer {
+  position: absolute;
+  top: 50px; /* Adjust as needed */
+  left: 10px; /* Adjust as needed */
+  background-color: #f5f7f8;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  margin-right: 20px; /* Adds some space between the sections */
+}
 
+#scoreBoard {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
 
+.playerScore {
+  margin: 5px 0;
+  padding: 3px;
+  font-size: 16px;
+}
 
+#playerScores li {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  margin-bottom: 5px; /* Space between scoreboard entries */
+  border-radius: 5px;
+}
 
+#sidebar {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px; /* Spacing between the sidebar and the grid */
+}
 
+#scoreBoardContainer, #wordListContainer {
+  background-color: #f5f7f8;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  margin-bottom: 20px; /* Spacing between the scoreboard and word list */
+}
 
+#scoreBoard, #wordList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
 
-
-
-/* Responsive design adjustments */
-@media (max-width: 600px) and (orientation: landscape) {
-  .wrapper, #loginPage, #lobbyPage, #gamePage {
-      padding: 10px;
-  }
-
-  input[type="text"], button {
-      padding: 8px;
-      font-size: 14px;
-  }
-
-  .player-list > div {
-      padding: 8px;
-  }
-
-  table#grid td {
-      width: 30px;
-      height: 30px;
-  }
-
-  #chatArea {
-      width: 50%; /* Half-width for better use of space */
-      height: 100vh; /* Full height */
-      bottom: auto; /* Align to side */
-  }
-
-
-  .player-list > div {
-      flex-direction: column;
-  }
+#scoreBoard li, #wordList li {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
 }
