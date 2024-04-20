@@ -17,8 +17,8 @@ public class Server_Status {
     
     public void updateStatus(MainLobby lobby) {
        
-        this.concurrentGames = lobby.getConcurrentGames();
-        this.totalPlayers = lobby.getTotalPlayers();
+        //this.concurrentGames = lobby.getConcurrentGames();
+        //this.totalPlayers = lobby.getTotalPlayers();
     }
 
    

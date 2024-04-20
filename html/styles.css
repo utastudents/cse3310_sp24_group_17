@@ -1,74 +1,196 @@
-body{
-  
-  justify-content: center;
+/* Basic body and global settings */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+/* Typography enhancements */
+h1, h2 {
+  font-size: 2rem; /* Larger font size for headers */
+}
+
+p {
+  font-size: 1rem;
+  color: #666; /* Lighter text color for less emphasis */
+}
+
+/* Centering and general styling for all major sections */
+.wrapper, #loginPage, #lobbyPage, #gamePage {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  min-height: 100vh;
-    background-color:rgb(253, 253, 253); 
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Specific styling for visibility and transitions */
+#loginPage, #lobbyPage, #gamePage {
+  width: 100%;
+  height: 100vh; /* Take full height of the viewport */
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Hidden sections */
+#lobbyPage, #gamePage {
+  opacity: 0;
+  pointer-events: none; /* Prevent interaction with hidden sections */
+}
+
+/* Visible sections */
+#loginPage.active, #lobbyPage.active, #gamePage.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Form and inputs styling */
+form {
+  margin-top: 20px;
+}
+
+input[type="text"] {
+  padding: 10px;
+  margin: 10px 0;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+
+
+
+button:hover {
+  background-color: #6a7bf2;
+  transition: background-color 0.3s;
+}
+
+/* Button focus and active states */
+button:focus, button:active {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(92, 103, 242, 0.5);
+}
+
+/* Disabled button style */
+button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+/* Additional styling for list of players and game content */
+.player-list {
+  margin: 20px;
+  padding: 15px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.player-list > div {
+  padding: 10px;
+  background-color: #eaeaea;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Grid cell hover effect */
+table#grid td:hover {
+  background-color: #dedeff;
+}
+
+table#grid td {
+  width: 40px; /* Adjust the width of each cell */
+  height: 40px; /* Adjust the height of each cell */
+  border: 1px solid black;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+/* Chat area as a sidebar */
+#chatArea {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 250px;
+  background-color: #fff;
+  border-left: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000; /* ensures it stays on top of other content */
+}
+
+/* Chat messages differentiation */
+#chatDisplay p:nth-child(odd) {
+  background-color: #e1e1ff; /* Light blue for one set of messages */
+}
+
+#chatDisplay p:nth-child(even) {
+  background-color: #f1f1f1; /* Light grey for another set */
+  margin-left: 10px; /* Indentation for differentiation */
+}
+
+#chatArea, button {
+  flex-shrink: 0;
+  color: #4CAF50;
+}
+
+
+/* Style for the send button */
+button:focus, input[type="text"]:focus {
+  border-color: #5c67f2;
+  box-shadow: 0 0 0 2px rgba(92, 103, 242, 0.75);
+}
+
+
+.button-group {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* Creates space between buttons */
+}
+
+
+
+
+
+
+
+
+
+
+/* Responsive design adjustments */
+@media (max-width: 600px) and (orientation: landscape) {
+  .wrapper, #loginPage, #lobbyPage, #gamePage {
+      padding: 10px;
   }
 
-  .wrapper{
-    width: 420px;
-    background: #0ac768;
-    color: white;
+  input[type="text"], button {
+      padding: 8px;
+      font-size: 14px;
+  }
+
+  .player-list > div {
+      padding: 8px;
+  }
+
+  table#grid td {
+      width: 30px;
+      height: 30px;
+  }
+
+  #chatArea {
+      width: 50%; /* Half-width for better use of space */
+      height: 100vh; /* Full height */
+      bottom: auto; /* Align to side */
   }
 
 
-
-  h1{
-    background-color: white;
-    text-align:center;
+  .player-list > div {
+      flex-direction: column;
   }
-  
-  h2{
-    background-color: white;
-    text-align:center;
-  }
-
-  .
-
-table {
-    border-collapse: collapse;
-    width: 100%; /* Make table fill the entire width of the viewport */
-    max-width: 1000px; /* Limit maximum width to prevent it from becoming too wide */
-  }
-
-
-  
-  td {
-    width: 10px; /* Adjust the width of each cell */
-    height: 10px; /* Adjust the height of each cell */
-    border: 1px solid black;
-    cursor: pointer;
-  }
-
-  .login-container {
-    width: 300px;
-    margin: 50px auto;
-    text-align: center;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  label, input {
-    margin-bottom: 10px;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    align-items: center;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-
- 
-  
+}
