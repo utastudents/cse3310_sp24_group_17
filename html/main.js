@@ -126,13 +126,24 @@ function updatePlayerList(players) {
         playerElem.innerHTML = `${player.name} - <span style="color: ${player.isReady ? 'green' : 'red'}">${player.isReady ? 'Ready' : 'Not Ready'}</span>`;
         playerListDiv.appendChild(playerElem);
     });
+    checkReadyPlayers(); // Check if the start condition is met after updating the list
 }
+
+
+
 
   //update player status
   function updateStatus(status) {
-    const message = { type: 'updateStatus', status: status };
-    connection.send(JSON.stringify(message));
-  }
+    // Make sure the WebSocket is connected before sending a message
+    if (connection.readyState === WebSocket.OPEN) {
+        const message = { type: 'updateStatus', status: status };
+        connection.send(JSON.stringify(message));
+    } else {
+        console.log("WebSocket is not yet open. Waiting to send the status update.");
+        // Optionally, wait and try again or handle according to your needs
+    }
+}
+
 
   function changeLobby(lobbySize) {
     const message = { type: 'changeLobby', lobbySize: lobbySize };
@@ -246,11 +257,32 @@ function updateScoreboard(players) {
   }
   
 
-function ready() {
-    isReady = !isReady;  // Toggle the player's ready status
-    updateStatus(isReady);  // Send the new status to the server
-    updateLocalPlayerReadyStatus();  // Update the UI to reflect the change
+  function ready() {
+    isReady = !isReady;
+    // If the WebSocket is not open, wait for a bit and then try to update the status
+    if (connection.readyState !== WebSocket.OPEN) {
+        console.log("Waiting for the WebSocket to open...");
+        setTimeout(() => {
+            updateStatus(isReady);
+        }, 1000); // Wait for 1 second before trying again
+    } else {
+        updateStatus(isReady);
+    }
+    updateLocalPlayerReadyStatus();
 }
+
+function checkReadyPlayers() {
+    const listId = `${requiredPlayers}PlayerList`;
+    const players = Array.from(document.querySelectorAll(`#${listId} > div`));
+    const readyCount = players.reduce((count, player) => {
+        return count + (player.textContent.includes('Ready') ? 1 : 0);
+    }, 0);
+
+    const startButton = document.getElementById('startGameButton');
+    startButton.disabled = readyCount < requiredPlayers;
+}
+
+
 
 function updateStatus(isReady) {
     // Construct the message to send the updated status to the server
@@ -269,19 +301,81 @@ function updateLocalPlayerReadyStatus() {
     });
 }
 
+function setPlayerCount(playerCount) {
+    requiredPlayers = playerCount;
 
+    // Define the lists for different modes
+    const lists = {
+        2: document.getElementById('twoPlayerList'),
+        3: document.getElementById('threePlayerList'),
+        4: document.getElementById('fourPlayerList')
+    };
 
-function twoplayers(){
+    // Hide all lists and then display the selected one
+    Object.values(lists).forEach(list => list.style.display = 'none');
+    lists[requiredPlayers].style.display = 'block';
+
+    // Clear the selected list and move players from the main list to the selected one
+    var players = Array.from(document.querySelectorAll('#playerList > div'));
+    var selectedListDiv = lists[requiredPlayers];
+    selectedListDiv.innerHTML = '';  // Clear the existing list
     
+    // Move players to the selected list (assuming all players are moved for simplicity)
+    players.forEach(player => {
+        selectedListDiv.appendChild(player.cloneNode(true)); // Clone the player element
+    });
+
+    // Check the readiness of players based on the selected mode
+    checkReadyPlayers();
 }
 
-function threeplayers(){
-    
+// Now use this function for the buttons in HTML
+// For 2 players: onclick="setPlayerCount(2)"
+// For 3 players: onclick="setPlayerCount(3)"
+// For 4 players: onclick="setPlayerCount(4)"
+
+
+
+
+function twoplayers() {
+    requiredPlayers = 3;
+    updatePlayerMode('twoPlayerList');
 }
 
-function fourplayers(){
-    
+
+function threeplayers() {
+    requiredPlayers = 3;
+    updatePlayerMode('threePlayerList');
 }
+
+function fourplayers() {
+    requiredPlayers = 4;
+    updatePlayerMode('fourPlayerList');
+}
+
+function updatePlayerMode(modeListId) {
+    // Hide all player mode lists
+    ['twoPlayerList', 'threePlayerList', 'fourPlayerList'].forEach(listId => {
+        document.getElementById(listId).style.display = 'none';
+    });
+
+    // Get the selected mode's list and display it
+    var selectedModeList = document.getElementById(modeListId);
+    selectedModeList.innerHTML = `<h3>${modeListId.split('PlayerList')[0]} Mode</h3>`;
+    selectedModeList.style.display = 'block';
+
+    // Move players to the selected mode list
+    var players = document.querySelectorAll('#playerList > div');
+    players.forEach(player => {
+        // Clone the node to avoid removing it from the original playerList
+        selectedModeList.appendChild(player.cloneNode(true));
+    });
+
+    // Update the start button state based on the new mode
+    checkReadyPlayers();
+}
+
+
 
 function back() {
     // Check if the user is currently on the game page

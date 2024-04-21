@@ -155,6 +155,18 @@ button:hover {
   background-color: #555; /* Lighten the background on hover */
 }
 
+button {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+
+button.player-active {
+  background-color: #0044cc; /* A darker shade for active state */
+  color: #fff;
+  border: 2px solid #002244; /* Additional styling to highlight active button */
+}
+
+
 #gameContainer {
   display: flex;
   justify-content: space-between;

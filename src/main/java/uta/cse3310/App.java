@@ -76,16 +76,17 @@ public class App extends WebSocketServer {
 
     public static void main(String[] args) {
         
-        int port = 9017;
-        HttpServer Http = new HttpServer(port, "./html");
+    // Set the port for the Http server - 9017
+        int Http_port = Integer.parseInt(System.getenv("HTTP_PORT"));
+        HttpServer Http = new HttpServer(Http_port, "./html");
         Http.start();
-        System.out.println("http Server started on port:" + port);
+        System.out.println("http Server started on port:" + Http_port);
  
         
-     // Set the port for the WebSocket server
-        port = 9117;
-        App app = new App(port);
+     // Set the port for the WebSocket server - 9117
+        int Websocket_port = Integer.parseInt(System.getenv("WEBSOCKET_PORT"));
+        App app = new App(Websocket_port);
         app.start();
-        System.out.println("WebSocket Server started on port: " + port);
+        System.out.println("WebSocket Server started on port: " + Websocket_port);
     }
 }
