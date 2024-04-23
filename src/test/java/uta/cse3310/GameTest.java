@@ -1,35 +1,31 @@
 package uta.cse3310;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
-import java.util.Arrays;
+import junit.framework.TestCase;
 
 
-public class GameTest {
+public class GameTest extends TestCase {
     private Game game;
 
-    @Before
     public void setUp() {
-        game = new Game("testWords.txt", 5, 10);
+        
+        game = new Game("dummyPath", 5, 10);
+        game.initializeMatrix();
     }
 
-    @Test
     public void testMatrixInitialization() {
         char[][] matrix = game.getMatrix();
-        for (char[] row : matrix) {
-            for (char cell : row) {
-                assertEquals('.', cell);
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                assertEquals("Matrix should be initialized with dots.", '.', matrix[i][j]);
             }
         }
     }
 
-    @Test
     public void testWordPlacement() {
+        
         game.placeWords();
-        assertTrue("Expected at least one word placed", game.getNumofWords() > 0);
+        assertTrue("at least one word to be placed", game.getNumofWords() > 0);
     }
 
-    @Test
     public void testFillRandom() {
         game.fillRandom();
         char[][] matrix = game.getMatrix();
@@ -45,9 +41,9 @@ public class GameTest {
         assertTrue("Matrix should contain random letters", hasRandomLetters);
     }
 
-    @Test
     public void testCheckAnswer() {
-        assertTrue("Word should be found", game.check_ans(0, 0, 0, 3));
-        assertFalse("Word should not be found", game.check_ans(0, 0, 5, 5));
+        
+        assertTrue("Word should be found at this cordinat", game.check_ans(0, 0, 0, 3));
+        assertFalse("No word should match these cordinat", game.check_ans(0, 0, 5, 5));
     }
 }
