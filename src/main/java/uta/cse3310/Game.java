@@ -62,7 +62,7 @@ class Game {
     
     
 
-    private void placeWords() {
+    public void placeWords() {
         for (String word : wordsList) {
             boolean placed = false;
             for (int attempts = 0; attempts < 100 && !placed; attempts++) {
@@ -212,7 +212,7 @@ class Game {
         }
         return false;
     }
-    private void fillRandom(){
+    public void fillRandom(){
         Random random = new Random();
         for(int i = 0; i < MAX; i++){
             for(int j = 0; j < MAX; j++){

@@ -1,7 +1,9 @@
+package uta.cse3310;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.Arrays;
+
 
 public class GameTest {
     private Game game;
