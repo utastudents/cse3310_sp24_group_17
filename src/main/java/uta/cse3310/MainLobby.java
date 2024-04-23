@@ -132,21 +132,30 @@ public class MainLobby { /*
     private static final int MAX_PLAYERS = 20;
     private ArrayList<Player> players = new ArrayList<>();
 
-    public boolean addPlayerToMainLobby(WebSocket conn, String name){
+
+    // add new players to main lobby
+    public boolean logIn(WebSocket conn, String name){
+        //check for unique username
+        for(Player player : players){
+            if(player.getName() == name){
+                return false;
+            }
+        }
+
         if(players.size() < MAX_PLAYERS){
             Player player = new Player(name, conn);
             players.add(player);
-            return true;
+            return true;    //if # of players is not max, create player
         }
         else{
-            return false;
+            return false;   // if # of players is max, don't create player
         }
     }
 
-    public void removePlayerFromMainLobby(WebSocket conn){
+    public void logOff(WebSocket conn){
         Player remove = null;
         for(Player player : players){
-            if(player.getConn().equals(conn)){
+            if(player.getConn() == conn){
                 remove = player;
                 break;
             }

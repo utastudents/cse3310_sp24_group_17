@@ -8,6 +8,8 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Vector;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.util.ArrayList;
 
 
@@ -17,6 +19,7 @@ public class App extends WebSocketServer {
     private int GameId = 1;
     private int connectionId = 0;
     private MainLobby mainLobby = new MainLobby();
+    private Event eventMaker = new Event();
 
     public App(int port) {
         super(new InetSocketAddress(port));
@@ -24,36 +27,35 @@ public class App extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        if(mainLobby.addPlayerToMainLobby(conn, "random")){
-            conn.send("Welcome");
-        }
-        else{
-            conn.send("Game is full");
-            conn.close();
-        }
+       System.out.println("New connection: " + conn.getRemoteSocketAddress());
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         System.out.println("Closed connection: " + conn.getRemoteSocketAddress());
-        mainLobby.removePlayerFromMainLobby(conn);
+        mainLobby.logOff(conn);
         broadcast("Player has left");
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println("Recieved message from " + conn.getRemoteSocketAddress());
+    
+        //Parse JSON string 
+        JsonObject json = JsonParser.parseString(message).getAsJsonObject();
 
-        JsonObject json = new JsonObject();
-
+        //Process the type of request
         String type = json.get("type").getAsString();
-        String username = json.get("username").getAsString();
 
         if(type == "login"){
-            Player player = new Player(username, conn);
+            //Parse JSON string for event data (username)
+            JsonObject eventData = json.getAsJsonObject("eventData");
+            String username = eventData.get("username").getAsString();
 
-            mainLobby.addPlayerToMainLobby(conn, username);
-            System.out.println("players: " + mainLobby);
+            //add new player to mainLobby - returns true if successfulky added
+            if(mainLobby.logIn(conn, username)){
+                eventMaker.loginSuccess(conn); // send json message back to JS
+            }
+            
         }
     }
 
