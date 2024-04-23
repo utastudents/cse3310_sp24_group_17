@@ -6,11 +6,12 @@ import java.io.IOException;
 
 class Game {
     private  int MAX = 50;
-    private static final Random random = new Random();
+    private  Random random = new Random();
     private int gameID;
     private char[][] wordMatrix = new char[MAX][MAX];
     private List<String> wordsList = new ArrayList<>();
     private ArrayList<String> wordsInMatrix = new ArrayList<>();
+    
      
 
     public Game(String filePath, int numOfWords,int gridSize) {
@@ -19,21 +20,36 @@ class Game {
         initializeMatrix();
         try {
             readWordsFromFile(filePath, numOfWords);
-            placeWords(); //places the words
-            fillRandom(); //fills dots with random A to Z
+            
             
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
         }
-        placeWords();
-        fillRandom();
         
+        
+    }
+    public Game(String filePath, int numOfWords, int gridSize, Random random) { //for testing only
+        this.random = random;
+        this.MAX = gridSize;
+        this.gameID = this.random.nextInt(1000);
+        initializeMatrix();
+        try {
+            readWordsFromFile(filePath, numOfWords);
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+    }
+    public void fillWithwords (){
+        placeWords();
+    }
+    public void fillWithrandom(){
+        fillRandom();
     }
     public char[][] getMatrix(){
         return wordMatrix;
     }
 
-    public void initializeMatrix() {
+    private void initializeMatrix() {
         for (int i = 0; i < MAX; i++) {
             Arrays.fill(wordMatrix[i], '.');
         }
