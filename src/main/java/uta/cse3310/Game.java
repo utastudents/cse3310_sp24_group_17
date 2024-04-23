@@ -33,7 +33,7 @@ class Game {
         return wordMatrix;
     }
 
-    private void initializeMatrix() {
+    public void initializeMatrix() {
         for (int i = 0; i < MAX; i++) {
             Arrays.fill(wordMatrix[i], '.');
         }
