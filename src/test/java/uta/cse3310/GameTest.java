@@ -1,6 +1,6 @@
 package uta.cse3310;
 import junit.framework.TestCase;
-
+import java.util.Arrays;
 
 public class GameTest extends TestCase {
     private Game game;
@@ -23,7 +23,7 @@ public class GameTest extends TestCase {
     public void testWordPlacement() {
         
         game.placeWords();
-        assertTrue("at least one word to be placed", game.getNumofWords() > 0);
+        assertTrue("Expected at least one word to be placed", game.getNumofWords() > 0);
     }
 
     public void testFillRandom() {
@@ -43,7 +43,7 @@ public class GameTest extends TestCase {
 
     public void testCheckAnswer() {
         
-        assertTrue("Word should be found at this cordinat", game.check_ans(0, 0, 0, 3));
-        assertFalse("No word should match these cordinat", game.check_ans(0, 0, 5, 5));
+        assertTrue("Word should be found at the specified coordinates", game.check_ans(0, 0, 0, 3));
+        assertFalse("No word should match these coordinates", game.check_ans(0, 0, 5, 5));
     }
 }
