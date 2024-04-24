@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Search Game</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
-    <script src="main.js"></script>
+    <script src="main.js" defer></script>
 </head>
 <body>
     
@@ -18,12 +18,9 @@
         <div class="wrapper">
             <div id="login">
                 <h2>User Login</h2>
-                <form id="login-form">
                     <label for="username">Enter your name (can only be at least 2 char, letters/numbers, and no fowl language):</label>
                     <input type="text" id="username" name="username" required minlength="2" maxlength="12" pattern="[A-Za-z0-9_]+">
-                    <button type="submit" id="submit">Submit</button>
-                </form>
-                
+                    <button type="submit" id="submit" onclick="login()">Submit</button>
             </div>
         </div>
     </div>

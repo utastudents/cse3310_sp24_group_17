@@ -14,6 +14,7 @@ public class Event {
         JsonObject json = new JsonObject();
         json.addProperty("type", "loginSuccess");
         connection.send(json.toString());
+        System.out.println("json: " + json);
     }
 
     public void Error(WebSocket connection, String message){

@@ -1,4 +1,4 @@
-var serverUrl = "ws://sp24.cse3310.org:" + (Number(location.port) + 100);
+var serverUrl = "ws://" + window.location.hostname + ":" + (parseInt(location.port) + 100);
 var connection = new WebSocket(serverUrl);
 
 
@@ -17,23 +17,31 @@ connection.onclose = function(event){
 
 connection.onmessage = function(event){
     //read in event
+    console.log("event :" + event);
     var message = event.data;
+    console.log("message: " + message);
 
     //parse message for object
     var data = JSON.parse(message);
+    console.log("data: " + data.type);
 
-    if(data == "loginSuccess"){
+   switch(data.type){
+    case 'loginSuccess':
+        console.log("login success");
         showLobby();
-    }
+        break;
+   }
 };
 
 function login(){
+    console.log("function call")
     var username = document.getElementById("username").value;
+    console.log("username: " + username);
 
     var data = {
         type: "login",
         eventData: {
-            username : "username"
+            username : username
         }
     };
 
