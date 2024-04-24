@@ -5,20 +5,18 @@ var username;
 var connection;
 
 // Wait for the DOM to fully load before running the script
-document.addEventListener("DOMContentLoaded", function() {
-    // Initialize WebSocket connection
-    initializeWebSocket();
-
-    // Attach event listener to the login form
-    var loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(event) {
+document.addEventListener('DOMContentLoaded', function() {
+    var submitButton = document.getElementById('submit');
+    if (submitButton) {
+        submitButton.addEventListener('click', function(event) {
             event.preventDefault();
-            username = document.getElementById('username').value.trim();
+            let username = document.getElementById('username').value.trim();
 
             // Send username to the server
             if (connection && connection.readyState === WebSocket.OPEN) {
                 connection.send(JSON.stringify({ type: "login", username: username }));
+            } else {
+                console.error('WebSocket connection is not open.');
             }
 
             // Update UI to show the lobby page
@@ -28,14 +26,24 @@ document.addEventListener("DOMContentLoaded", function() {
             updatePlayerList([{name: username, isReady: false}]); // Add player to the list
         });
     } else {
-        console.error('Login form not found!');
+        console.error('Submit button not found!');
     }
 });
+
+document.getElementById('readyButton').addEventListener('click', function() {
+    // Send a message to the server indicating that the player is ready
+    if (connection && connection.readyState === WebSocket.OPEN) {
+        connection.send(JSON.stringify({ type: 'playerReady' }));
+    } else {
+        console.error('WebSocket connection is not open.');
+    }
+});
+
 
 // Initialize WebSocket and setup handlers
 function initializeWebSocket() {
     // Assuming you're running the WebSocket server locally on port 8080
-    var serverUrl = "ws://localhost:8080";
+    var  serverUrl = "ws://" + window.location.hostname +":"+ (parseInt(location.port) + 100);
     console.log("Connecting to WebSocket server at " + serverUrl);
 
     connection = new WebSocket(serverUrl);
@@ -60,7 +68,9 @@ connection.onmessage = function (event) {
             break;
         case 'chat':
                 displayChatMessage(data.username, data.message);
-                break; 
+                break;
+        default:
+            console.log("Unknown message type:", data.type);
 
     // If the message type indicates an update to the player list
     //if (data.type === 'playerListUpdate') {
@@ -79,6 +89,23 @@ connection.onmessage = function (event) {
         // Avoid using alert here; instead, you might want to show a message in the UI
     };
 }
+}
+
+function handleLogin() {
+    let username = document.getElementById('username').value.trim();
+
+    // Send username to the server
+    if (connection && connection.readyState === WebSocket.OPEN) {
+        connection.send(JSON.stringify({ type: "login", username: username }));
+    } else {
+        console.error('WebSocket connection is not open.');
+    }
+
+    // Update UI to show the lobby page
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('lobbyPage').style.display = 'block';
+    document.getElementById('chatArea').style.display = 'block';
+    updatePlayerList([{name: username, isReady: false}]); // Add player to the list
 }
 
 // Handle different types of messages from the server
