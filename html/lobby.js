@@ -1,44 +1,4 @@
-// Assume userSession and connection are already defined and available
 
-const readyButton = document.querySelector("#readyButton");
-const exitReadyButton = document.querySelector("#exitReadyButton");
-
-readyButton.addEventListener('click', () => {
-    let isReady = !readyButton.classList.contains("ready");
-    readyButton.classList.toggle("ready");
-    readyButton.textContent = isReady ? "Unready" : "Ready";
-
-    let message = {
-        screen: "ready",
-        type: "updateStatus",
-        uid: userSession.uid,
-        ready: isReady,
-        gameId: userSession.gameId
-    };
-    connection.send(JSON.stringify(message));
-});
-
-exitReadyButton.addEventListener('click', () => {
-    let message = {
-        screen: "lobby",
-        type: "leaveGame",
-        uid: userSession.uid,
-        gameId: userSession.gameId,
-    };
-    connection.send(JSON.stringify(message));
-
-    userSession.gameId = null;
-    // Assuming enterLobby is a function to handle UI transition
-    enterLobby();  
-});
-
-function enterLobby() {
-    // Code to switch to lobby screen
-}
-
-function enterGame() {
-    // Code to transition to the game screen
-}
 
 // Function to update the player list in the lobby
 function updatePlayerList(players) {
@@ -104,4 +64,22 @@ function updateLocalPlayerReadyStatus() {
     });
 }
 
-window.updatePlayerDisplays = updatePlayerDisplays;
+
+
+function twoplayers() {
+    requiredPlayers = 3;
+    updatePlayerMode('twoPlayerList');
+}
+
+
+function threeplayers() {
+    requiredPlayers = 3;
+    updatePlayerMode('threePlayerList');
+}
+
+function fourplayers() {
+    requiredPlayers = 4;
+    updatePlayerMode('fourPlayerList');
+}
+
+window.updatePlayerList = updatePlayerList;

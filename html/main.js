@@ -1,147 +1,108 @@
 var gridsize = 30;
-var isReady = false;  // Global variable to keep track of the player's ready status
-// Variables for player information and WebSocket connection
-var username;
-var connection;
+var isReady = false;
+var username; // Global variable to store the user's username
+var connection; // WebSocket connection
 
-// Wait for the DOM to fully load before running the script
 document.addEventListener('DOMContentLoaded', function() {
+    initializeWebSocket(); // Initialize WebSocket connection on page load
     var submitButton = document.getElementById('submit');
     if (submitButton) {
-        submitButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            let username = document.getElementById('username').value.trim();
-
-            // Send username to the server
-            if (connection && connection.readyState === WebSocket.OPEN) {
-                connection.send(JSON.stringify({ type: "login", username: username }));
-            } else {
-                console.error('WebSocket connection is not open.');
-            }
-
-            // Update UI to show the lobby page
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('lobbyPage').style.display = 'block';
-            document.getElementById('chatArea').style.display = 'block';
-            updatePlayerList([{name: username, isReady: false}]); // Add player to the list
-        });
+        submitButton.addEventListener('click', submitLogin);
     } else {
         console.error('Submit button not found!');
     }
 });
 
-document.getElementById('readyButton').addEventListener('click', function() {
-    // Send a message to the server indicating that the player is ready
-    if (connection && connection.readyState === WebSocket.OPEN) {
-        connection.send(JSON.stringify({ type: 'playerReady' }));
-    } else {
-        console.error('WebSocket connection is not open.');
-    }
-});
-
-
-// Initialize WebSocket and setup handlers
 function initializeWebSocket() {
-    // Assuming you're running the WebSocket server locally on port 8080
-    var  serverUrl = "ws://" + window.location.hostname +":"+ (parseInt(location.port) + 100);
+    var serverUrl = "ws://" + window.location.hostname + ":" + (parseInt(location.port) + 100);
     console.log("Connecting to WebSocket server at " + serverUrl);
-
     connection = new WebSocket(serverUrl);
 
-    connection.onopen = function () {
+    connection.onopen = function() {
         console.log("Connected to the server.");
-        // Possibly update the UI to show connection status
+        
     };
 
-    // When a message from the server is received
-connection.onmessage = function (event) {
-    var data = JSON.parse(event.data);
-    console.log("Message received:", data);
+    connection.onmessage = function(event) {
+        try {
+            var data = JSON.parse(event.data);
+            console.log("Received from server:", data);
+        
+            if (data.type) {
+                handleServerMessages(data);
+            } else {
+                console.log("Message does not contain a type:", data);
+            }
+        } catch (error) {
+            console.error("Error parsing JSON from the server:", error);
+            console.error("Raw data:", event.data);
+        }
+    };
+    
+    
 
-    // Handle different types of messages
-    switch (data.type) {
-        case 'playerListUpdate':
-            updatePlayerList(data.players);
-            break;
-        case 'gameStarted':
-            startGame();
-            break;
-        case 'chat':
-                displayChatMessage(data.username, data.message);
-                break;
-        default:
-            console.log("Unknown message type:", data.type);
-
-    // If the message type indicates an update to the player list
-    //if (data.type === 'playerListUpdate') {
-      //  updateLobbyWithPlayers(data.players); // data.players should be an array of player objects
-    //}
-};
-
-    connection.onerror = function (error) {
+    connection.onerror = function(error) {
         console.error("WebSocket Error:", error);
-        // Possibly update the UI to reflect the error status without using alert
     };
 
-    connection.onclose = function () {
+    connection.onclose = function() {
         console.log("Connection closed by the server.");
-        // Update the UI to show the connection is not currently active
-        // Avoid using alert here; instead, you might want to show a message in the UI
     };
 }
-}
 
-function handleLogin() {
-    let username = document.getElementById('username').value.trim();
+function submitLogin() {
+    var username = document.getElementById('username').value.trim();
+    if (!username) {
+        alert("Please enter a username.");
+        return;
+    }
 
-    // Send username to the server
-    if (connection && connection.readyState === WebSocket.OPEN) {
-        connection.send(JSON.stringify({ type: "login", username: username }));
+    var message = JSON.stringify({
+        type: "login",
+        username: username
+    });
+
+    if (connection.readyState === WebSocket.OPEN) {
+        connection.send(message);
+        console.log("Login request sent:", message);
     } else {
         console.error('WebSocket connection is not open.');
+        alert("Cannot connect to the server. Please try again later.");
     }
 
-    // Update UI to show the lobby page
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('lobbyPage').style.display = 'block';
-    document.getElementById('chatArea').style.display = 'block';
-    updatePlayerList([{name: username, isReady: false}]); // Add player to the list
+        // Update UI to show the lobby page
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('lobbyPage').style.display = 'block';
+        document.getElementById('chatArea').style.display = 'block';
+        updatePlayerList([{name: username, isReady: false}]); // Add player to the list
 }
 
-// Handle different types of messages from the server
+
 function handleServerMessages(data) {
-    switch (data.type) {
-        case 'playerListUpdate':
-            updatePlayerList(data.players); // Use this function to update the lobby
-            break;
-        case 'gameStarted':
-            startGame();
-            break;
-        // Add more cases as needed
-    }
-}
-
-function sendMessage() {
-    var input = document.getElementById('chatInput');
-    var message = input.value.trim();
-    if (message) {
-        if (connection && connection.readyState === WebSocket.OPEN) {
-            connection.send(JSON.stringify({ type: "chat", username: username, message: message }));
+    if (data.type) {
+        switch (data.type) {
+            case 'welcome':
+                console.log("Welcome message received:", data.message);
+                break;
+            case 'playerListUpdate':
+                updatePlayerList(data.players);
+                break;
+            case 'gameStarted':
+                startGame();
+                break;
+            case 'chat':
+                displayChatMessage(data.username, data.message);
+                break;
+            case 'broadcast':
+                console.log("Broadcast message:", data.content);
+                break;
+            default:
+                console.log("Unknown message type:", data.type);
         }
-        displayChatMessage(username, message);  // Ensure this is called
-        input.value = '';  // Clear the input field after sending
+    } else {
+        console.log("Received message without type:", data);
     }
 }
-
-function displayChatMessage(username, message) {
-    const chatDisplay = document.getElementById('chatDisplay');
-    const messageElem = document.createElement('p');
-    messageElem.innerHTML = `<strong>${username}</strong>: ${message}`;
-    chatDisplay.appendChild(messageElem);
-    chatDisplay.scrollTop = chatDisplay.scrollHeight; // Automatically scroll to the latest message
-}
-
-
 
 
 // Function to update the player list in the lobby
@@ -177,111 +138,7 @@ function updatePlayerList(players) {
     connection.send(JSON.stringify(message));
   }
 
-// Start the game
-function startGame() {
-    if (!isReady) {  // Check if the player is ready before starting the game
-        alert("Please mark yourself as ready before starting the game!");
-        return;
-    }
-    document.getElementById('lobbyPage').style.display = 'none';
-    document.getElementById('gamePage').style.display = 'block';
-    document.getElementById('chatArea').style.display = 'block';
-    initializeGrid();
-    loadWordList();
-    console.log('Game started.');
-}
 
-function loadWordList() {
-    fetch('http://yourserver.com/wordlist.txt')
-        .then(response => response.text())
-        .then(data => {
-            const words = data.split(/\r?\n/); // Split the text file into an array of words
-            displayWords(words);
-        })
-        .catch(error => console.error('Error loading word list:', error));
-  }
-  
-  function displayWords(words) {
-    const wordListContainer = document.getElementById('wordList');
-    wordListContainer.innerHTML = ''; // Clear existing content
-    words.forEach(word => {
-        if (word.trim().length > 0) { // Avoid empty lines
-            const wordElement = document.createElement('li');
-            wordElement.textContent = word;
-            wordListContainer.appendChild(wordElement);
-        }
-    });
-  }
-
-let startPoint = null;
-
-//create grid
-
-function initializeGrid() {
-  const grid = document.getElementById("grid");
-  for (let i = 0; i < gridsize; i++) {
-      const row = grid.insertRow();
-      for (let j = 0; j < gridsize; j++) {
-          const cell = row.insertCell();
-          cell.id = `cell-${i}-${j}`;
-          cell.addEventListener("click", function() { handleCellClick(i, j); });
-          // Placeholder for letters, replace with actual game data
-          cell.textContent = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-      }
-  }
-}
-
-function handleCellClick(row, col) {
-  const cellId = `cell-${row}-${col}`;
-  const cell = document.getElementById(cellId);
-  if (!startPoint) {
-      // Mark the start point
-      startPoint = { row, col };
-      cell.style.backgroundColor = "yellow"; // Highlight starting cell
-  } else {
-      // Determine the direction and highlight the path
-      highlightPath(startPoint, { row, col });
-      startPoint = null; // Reset start point for next word
-  }
-}
-
-function highlightPath(start, end) {
-  if (start.row === end.row) {
-      // Horizontal path
-      for (let j = Math.min(start.col, end.col); j <= Math.max(start.col, end.col); j++) {
-          document.getElementById(`cell-${start.row}-${j}`).style.backgroundColor = "lightgreen";
-      }
-  } else if (start.col === end.col) {
-      // Vertical path
-      for (let i = Math.min(start.row, end.row); i <= Math.max(start.row, end.row); i++) {
-          document.getElementById(`cell-${i}-${start.col}`).style.backgroundColor = "lightgreen";
-      }
-  } else {
-      // Diagonal path
-      const rowIncrement = start.row < end.row ? 1 : -1;
-      const colIncrement = start.col < end.col ? 1 : -1;
-      let row = start.row;
-      let col = start.col;
-      while (row !== end.row + rowIncrement && col !== end.col + colIncrement) {
-          document.getElementById(`cell-${row}-${col}`).style.backgroundColor = "lightgreen";
-          row += rowIncrement;
-          col += colIncrement;
-      }
-  }
-}
-
-function updateScoreboard(players) {
-    const scoreboard = document.getElementById('scoreBoard');
-    scoreboard.innerHTML = ''; // Clear existing scoreboard
-  
-    players.forEach(player => {
-      const scoreItem = document.createElement('li');
-      scoreItem.classList.add('playerScore');
-      scoreItem.textContent = `${player.name}: ${player.score}`;
-      scoreItem.style.color = player.color; // Assign color dynamically
-      scoreboard.appendChild(scoreItem);
-    });
-  }
   
 
   function ready() {
@@ -363,22 +220,6 @@ function setPlayerCount(playerCount) {
 
 
 
-
-function twoplayers() {
-    requiredPlayers = 3;
-    updatePlayerMode('twoPlayerList');
-}
-
-
-function threeplayers() {
-    requiredPlayers = 3;
-    updatePlayerMode('threePlayerList');
-}
-
-function fourplayers() {
-    requiredPlayers = 4;
-    updatePlayerMode('fourPlayerList');
-}
 
 function updatePlayerMode(modeListId) {
     // Hide all player mode lists

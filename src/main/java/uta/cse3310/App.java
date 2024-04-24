@@ -4,7 +4,7 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.Gson;
 
 import java.net.InetSocketAddress;
 import java.util.Vector;
@@ -20,25 +20,29 @@ public class App extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        // Initial message when player connects
-        conn.send("Welcome");
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "welcome");
+        response.addProperty("message", "Welcome to the server!");
+        conn.send(response.toString());
+        System.out.println("New connection: " + conn.getRemoteSocketAddress() + " - Welcome message sent");
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         mainLobby.removePlayerFromMainLobby(conn);
-        broadcast("Player has left");
+        broadcastPlayerListUpdate();  // Broadcast the updated player list after removing a player
+        System.out.println("Connection closed: " + conn.getRemoteSocketAddress());
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        JsonObject json = JsonParser.parseString(message).getAsJsonObject();
-        String type = json.get("type").getAsString();
-        if (type.equals("login")) {
-            String username = json.get("username").getAsString();
-            Player player = new Player(username, conn);
-            mainLobby.addPlayerToMainLobby(conn, username);
-            broadcast("New player: " + username);
+        try {
+            JsonObject json = new Gson().fromJson(message, JsonObject.class);
+            String type = json.get("type").getAsString();
+            handleType(conn, type, json);
+        } catch (Exception e) {
+            System.out.println("Error processing message: " + e.getMessage());
+            sendErrorMessage(conn, "Invalid JSON");
         }
     }
 
@@ -49,14 +53,48 @@ public class App extends WebSocketServer {
 
     @Override
     public void onStart() {
-        System.out.println("WebSocket server started successfully");
+        System.out.println("WebSocket server started successfully on port: " + getPort());
+    }
+
+    private void handleType(WebSocket conn, String type, JsonObject json) {
+        switch (type) {
+            case "login":
+                String username = json.get("username").getAsString();
+                if (mainLobby.addPlayerToMainLobby(conn, username)) {
+                    broadcastPlayerListUpdate();  // Broadcast the updated player list after adding a new player
+                } else {
+                    sendErrorMessage(conn, "Lobby is full");
+                }
+                break;
+            // Add more case handlers as needed
+        }
     }
 
     public void broadcast(String message) {
-        mainLobby.getPlayers().forEach(player -> {
-            player.sendMessage(message);
-        });
+        JsonObject jsonMessage = new JsonObject();
+        jsonMessage.addProperty("type", "broadcast");
+        jsonMessage.addProperty("content", message);
+        String json = jsonMessage.toString();
+        mainLobby.getPlayers().forEach(player -> player.sendMessage(json));
     }
+    
+
+    private void sendErrorMessage(WebSocket conn, String errorMessage) {
+        JsonObject errorResponse = new JsonObject();
+        errorResponse.addProperty("type", "error");
+        errorResponse.addProperty("message", errorMessage);
+        conn.send(errorResponse.toString());
+    }
+
+    private void broadcastPlayerListUpdate() {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "playerListUpdate");
+        response.add("players", new Gson().toJsonTree(mainLobby.getPlayers().stream().map(Player::getName).toArray()));
+        String responseString = response.toString();
+        mainLobby.getPlayers().forEach(player -> player.sendMessage(responseString));
+    }
+    
+    
 
 
     public static void main(String[] args) {
