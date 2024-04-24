@@ -1,39 +1,70 @@
 package uta.cse3310;
 
-public class Server_Status {
-    private int concurrentGames;
-    private int totalPlayers;
-    private int maxConcurrentGames; 
-    private int maxTotalPlayers;
+import org.java_websocket.WebSocket;
+
+public class Player {
+    private int color;
+    private String name;
+    private int inGameScore;
+    private int totalScore;
+    private WebSocket conn;
 
     // Constructor
-    public Server_Status(int maxConcurrentGames, int maxTotalPlayers) {
-        this.maxConcurrentGames = maxConcurrentGames;
-        this.maxTotalPlayers = maxTotalPlayers;
-        this.concurrentGames = 0;
-        this.totalPlayers = 0;
+    public Player(String name, WebSocket conn) {
+        this.color = 0;  // Default color index, you might want to change how color is managed based on your game logic
+        this.name = name;
+        this.inGameScore = 0;
+        this.totalScore = 0;
+        this.conn = conn;
     }
 
-    
-    public void updateStatus(MainLobby lobby) {
-       
-        this.concurrentGames = lobby.getConcurrentGames();
-        this.totalPlayers = lobby.getTotalPlayers();
+    // Getters and Setters
+    public int getColor() {
+        return color;
     }
 
-   
-    public boolean isMaxGames() {
-        return concurrentGames >= maxConcurrentGames;
+    public String getName() {
+        return name;
     }
 
-    public boolean isMaxPlayers() {
-        return totalPlayers >= maxTotalPlayers;
+    public int getInGameScore() {
+        return inGameScore;
     }
 
-   
-    public void displayStatus() {
-        System.out.println("Server Status:");
-        System.out.println("Concurrent Games: " + concurrentGames + "/" + maxConcurrentGames);
-        System.out.println("Total Players: " + totalPlayers + "/" + maxTotalPlayers);
+    public int getTotalScore() {
+        return totalScore;
+    }
+
+    public WebSocket getConn() {
+        return conn;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setInGameScore(int inGameScore) {
+        this.inGameScore = inGameScore;
+    }
+
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
+    }
+
+    public void setConn(WebSocket conn) {
+        this.conn = conn;
+    }
+
+    // Method to send a message through the WebSocket connection
+    public void sendMessage(String message) {
+        if (this.conn != null && this.conn.isOpen()) {
+            this.conn.send(message);
+        } else {
+            System.out.println("Failed to send message, connection is closed or null.");
+        }
     }
 }
