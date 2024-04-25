@@ -30,8 +30,20 @@ class Game {
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
         }
-        
-        
+        placeWords();
+        fillRandom();
+    }
+    public Game(String filePath, int numOfWords,int gridSize,int x) {
+        this.MAX=gridSize;
+        this.gameID = random.nextInt(1000);
+        initializeMatrix();
+        try {
+            readWordsFromFile(filePath, numOfWords);
+            
+            
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        } 
     }
 
     public void initializwithdots(){
