@@ -165,7 +165,16 @@ public class MainLobby { /*
         }
     }
 
-    public ArrayList<Player> getPlayers(){
+    public Player findPlayerInMainLobby(WebSocket conn){
+        for(Player player : players){
+            if(player.getConn().equals(conn)){
+                return player;
+            }
+        }
+        return null;
+    }
+
+    public List<Player> getPlayers(){
         return players;
     }
 

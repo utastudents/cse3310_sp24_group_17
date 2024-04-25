@@ -8,65 +8,38 @@ public class SubLobby{
     private static int lobbyCounter = 0;
     private String lobbyID;
     private int subLobbySize;
-    private List<Player> players;
-    private Player player1;
-    private Player player2;
-    private Player player3;
-    private Player player4;
+    private Player[] players;
+    private int playerCount;
 
     public static final int MAX_ACTIVE_GAMES = 5;
 
-    public SubLobby(int subLobbySize, Player newPlayer){
+    public SubLobby(int subLobbySize, Player player1){
         this.subLobbySize = subLobbySize;
         this.lobbyID = "lobby_"+(++lobbyCounter);
-        this.players = new ArrayList<>();
-        player1 = newPlayer;
-        player2 = null;
-        player3 = null;
-        player4 = null;
+        this.players = new Player[4];
+        this.players[0] = player1;
+        this.playerCount = 1;
     }
 
     //adds player to sublobby if not full
-    public void addPlayer(Player player){
-        if(!isSubLobbyFull()){
-            if(player1 == null){
-                player1 = player;
-            }
-            else if(subLobbySize >= 2 && player2 == null){
-                player2 = player;
-            }
-            else if(subLobbySize >= 3 && player3 == null){
-                player3 = player;
-            }
-            else if(subLobbySize == 4 && player4 == null){
-                player4 = player;
-            }
-        }
-        if(players.size() < subLobbySize){
-            players.add(player);
+    public void addPlayer(Player newPlayer){
+        if (playerCount < subLobbySize) {
+            players[playerCount] = newPlayer; // Add the new player to the next available slot
+            playerCount++; // Increment the current player count
         }
     }
 
     //checks if sub lobby is full
     public boolean isSubLobbyFull(){
-        switch(subLobbySize){
-            case 1:
-                return player1 != null;
-            case 2:
-                return player1 != null && player2 != null;
-            case 3:
-                return player1 != null && player2 != null && player3 != null;
-            case 4:
-                return player1 != null && player2 != null && player3 != null && player4 != null;
-            default:
-                return false;
-        }
+        return playerCount >= subLobbySize;
     }
+    
 
     // creates a sublobby if other lobbies of the same type are full. joins a sublobby if existing lobby is not full
     public static SubLobby createOrJoinSubLobby(int subLobbySize, Vector<SubLobby> ActiveGames, Player newPlayer){
         for(SubLobby subLobby : ActiveGames){
-            if(subLobby.subLobbySize == subLobbySize && !subLobby.isSubLobbyFull()){
+            if(subLobby.getSubLobbySize() == subLobbySize && !subLobby.isSubLobbyFull()){
+                subLobby.addPlayer(newPlayer);
                 return subLobby;
             }
         }
@@ -80,19 +53,23 @@ public class SubLobby{
     }
 
     public List<Player> getPlayers(){
-        return players;
+        List<Player> playerList = new ArrayList<>();
+        for (Player player : players) {
+            if (player != null) {
+                playerList.add(player);
+            }
+        }
+        return playerList;
     }
 
     public String getLobbyID(){
         return lobbyID;
     }
 
-    public Player getPlayer1(){
-        return player1; 
+    public int getSubLobbySize(){
+        return subLobbySize;
     }
 
-    public Player getPlayer2(){
-        return player1; 
-    }
+
 
 }

@@ -75,19 +75,14 @@ public class App extends WebSocketServer {
             int subLobbySize = eventData.get("subLobbySize").getAsInt();
             System.out.println("SubLobbysize: " + subLobbySize);
 
-            Player newPlayer = null;
-            for(Player player : mainLobby.getPlayers()){
-                if(player.getConn() == conn){
-                    newPlayer = player;
-                }
-            }
-
+            Player newPlayer = mainLobby.findPlayerInMainLobby(conn);
             System.out.println("new player: " + newPlayer.getName());
 
             SubLobby subLobby = SubLobby.createOrJoinSubLobby(subLobbySize, ActiveGames, newPlayer);
             
-            System.out.println("player1: " + subLobby.getPlayer1().getName());
-            System.out.println("player2: " + subLobby.getPlayer2().getName());
+            for(Player player : subLobby.getPlayers()){
+                System.out.println("sublobby players: "+ player.getName());
+            }
 
             if(subLobby != null){
                 eventMaker.joinedSubLobbySuccess(conn, subLobby.getLobbyID(), subLobby.getPlayers());
