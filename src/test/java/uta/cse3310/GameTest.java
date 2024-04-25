@@ -10,7 +10,7 @@ public class GameTest extends TestCase {
     public Game game;
     private int max=50;
     public void setUp() {
-        game = new Game("src/test/java/uta/cse3310/testWords.txt", 5, max); 
+        game = new Game("src/test/java/uta/cse3310/testWords.txt", 5, max,1); 
     }
     
 
