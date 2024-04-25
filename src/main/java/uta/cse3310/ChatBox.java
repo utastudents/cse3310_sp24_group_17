@@ -1,19 +1,27 @@
 package uta.cse3310;
 import java.util.List;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
+
 public class ChatBox {
-    private List<String> local_messages;
-    private List<String> global_messages;
+    private List<String> messages = new ArrayList<>();
 
-    public void addMessage(String message){
-
+    public void addMessage(String message) {
+        JsonObject chatJson = new JsonObject();
+        messages.add(message);  // Store message
+        chatJson.addProperty("type", "chatMessage");
+        
     }
 
-    public void postMessage(List<String> messages){
-
+    public List<String> getMessages() {
+        return messages;  // Retrieve all messages
     }
 
     public boolean checkLanguage(String line){
         return true;
     }
+
 }

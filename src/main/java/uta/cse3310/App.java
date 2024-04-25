@@ -20,6 +20,13 @@ public class App extends WebSocketServer {
     private int connectionId = 0;
     private MainLobby mainLobby = new MainLobby();
     private Event eventMaker = new Event();
+    //setup file
+    private Game gameBoard = new Game(
+        "C:\\Users\\rohan\\OneDrive\\Documents\\2024 Spring\\CSE 3310\\Project_workspace\\New folder\\cse3310_sp24_group_17\\src\\main\\java\\uta\\cse3310\\wordsNew.txt", 
+        10000, 50);
+        
+
+
 
     public App(int port) {
         super(new InetSocketAddress(port));
@@ -86,10 +93,26 @@ public class App extends WebSocketServer {
                 eventMaker.joinedSubLobbySuccess(conn, subLobby.getLobbyID(), subLobby.getPlayers());
             }
             else{
-                eventMaker.joinedSubLobbyError(conn);
+                // eventMaker.joinedSubLobbyError(conn);
             }
-
+         
             
+        }//sublobby end
+        else if(type.equals("startGame")){
+            System.out.println("Server side game Started");
+                // Initialize game board or ensure it's ready
+                /*
+                 * check if the both players are ready case
+                 * if not reroute to make sure both players are ready
+                 * if Both are ready, move to initialize the game
+                 */
+                gameBoard.initializeMatrix();
+                gameBoard.placeWords();
+                gameBoard.fillWithrandom();
+                 // Send back the game data to client side
+                String gridData = gameBoard.getGridAndWordsAsJson();
+                conn.send(gridData);  // Send grid data to the client who requested to start the game
+                System.out.println("Game data send to client");
         }
     }
 

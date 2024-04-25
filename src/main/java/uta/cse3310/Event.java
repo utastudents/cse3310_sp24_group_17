@@ -49,6 +49,16 @@ public class Event {
         System.out.println("json sublobby: " + json);
     }
 
+    public void sendChatMessage(WebSocket conn, String playerName, String message) {
+        JsonObject json = new JsonObject();
+        json.addProperty("type", "chatMessage");
+        json.addProperty("playerName", playerName);
+        json.addProperty("message", playerName + ": " + message);
+        conn.send(json.toString());
+    }
+    
+    
+
 
 
 }
