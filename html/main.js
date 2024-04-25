@@ -30,11 +30,15 @@ connection.onmessage = function(event){
         console.log("login success");
         showLobby();
         break;
+    case 'subLobbySuccess':
+        console.log("sublobby success");
+        updatePlayerList(data);
+        break;
    }
 };
 
 function login(){
-    console.log("function call")
+    console.log("function call");
     var username = document.getElementById("username").value;
     console.log("username: " + username);
 
@@ -46,7 +50,20 @@ function login(){
     };
 
     connection.send(JSON.stringify(data));
+};
 
+function createSubLobby(subLobbySize){
+    console.log("function 2 call");
+
+    var data = {
+        type: "createSubLobby",
+        eventData: {
+            subLobbySize : subLobbySize
+        }
+    };
+
+    console.log("sublobby size :" + subLobbySize);
+    connection.send(JSON.stringify(data));
 };
 
 function showLogin(){
@@ -64,4 +81,20 @@ function showGame(){
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("lobbyPage").style.display = "none";
     document.getElementById("gamePage").style.display = "block";
+}
+
+function updatePlayerList(json){
+    console.log("function call 3 js");
+    var lobby = json.lobby;
+    var players = json.players;
+
+    var playersListElement = document.getElementById("playerList");
+    playersListElement.innerHTML = "";
+
+    players.forEach(function(player) {
+        var playerListItem = document.createElement("li");
+        playerListItem.textContent = player;
+        playersListElement.appendChild(playerListItem);
+        console.log(player);
+    });
 }

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class App extends WebSocketServer {
 
-    private Vector<Game> ActiveGames = new Vector<>();
+    private Vector<SubLobby> ActiveGames = new Vector<>();
     private int GameId = 1;
     private int connectionId = 0;
     private MainLobby mainLobby = new MainLobby();
@@ -60,6 +60,35 @@ public class App extends WebSocketServer {
                 System.out.println("mainlobby: "  + mainLobby);
                 eventMaker.loginSuccess(conn); // send json message back to JS
             }
+            
+        }
+        else if(type.equals("createSubLobby")){
+            JsonObject eventData = json.getAsJsonObject("eventData");
+            System.out.println("eventData2: " + eventData);
+            int subLobbySize = eventData.get("subLobbySize").getAsInt();
+            System.out.println("SubLobbysize: " + subLobbySize);
+
+            Player newPlayer = null;
+            for(Player player : mainLobby.getPlayers()){
+                if(player.getConn() == conn){
+                    newPlayer = player;
+                }
+            }
+
+            System.out.println("new player: " + newPlayer.getName());
+
+            SubLobby subLobby = SubLobby.createOrJoinSubLobby(subLobbySize, ActiveGames, newPlayer);
+            
+            System.out.println("player1: " + subLobby.getPlayer1().getName());
+            System.out.println("player2: " + subLobby.getPlayer2().getName());
+
+            if(subLobby != null){
+                eventMaker.joinedSubLobbySuccess(conn, subLobby.getLobbyID(), subLobby.getPlayers());
+            }
+            else{
+                eventMaker.joinedSubLobbyError(conn);
+            }
+
             
         }
     }
