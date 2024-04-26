@@ -3,7 +3,7 @@ package uta.cse3310;
 public class Server_Status {
     private int concurrentGames;
     private int totalPlayers;
-    private int maxConcurrentGames;
+    private int maxConcurrentGames; 
     private int maxTotalPlayers;
 
     // Constructor
@@ -14,14 +14,14 @@ public class Server_Status {
         this.totalPlayers = 0;
     }
 
-
+    
     public void updateStatus(MainLobby lobby) {
-
+       
         //this.concurrentGames = lobby.getConcurrentGames();
         //this.totalPlayers = lobby.getTotalPlayers();
     }
 
-
+   
     public boolean isMaxGames() {
         return concurrentGames >= maxConcurrentGames;
     }
@@ -30,7 +30,7 @@ public class Server_Status {
         return totalPlayers >= maxTotalPlayers;
     }
 
-
+   
     public void displayStatus() {
         System.out.println("Server Status:");
         System.out.println("Concurrent Games: " + concurrentGames + "/" + maxConcurrentGames);

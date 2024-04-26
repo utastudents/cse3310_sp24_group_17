@@ -1,0 +1,12 @@
+apple
+grape
+computer
+mobile
+javac
+bottle
+speaker
+monitor
+lightbulb
+markers
+cables
+chargers
