@@ -22,7 +22,7 @@ public class App extends WebSocketServer {
     private Event eventMaker = new Event();
     //setup file
     private Game gameBoard = new Game(
-        "C:\\Users\\rohan\\OneDrive\\Documents\\2024 Spring\\CSE 3310\\Project_workspace\\New folder\\cse3310_sp24_group_17\\src\\main\\java\\uta\\cse3310\\wordsNew.txt", 
+        "src\\main\\java\\uta\\cse3310\\wordsNew.txt", 
         10000, 50);
         
 

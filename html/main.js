@@ -141,6 +141,34 @@ function resetGameState() {
     }
 }
 
+function startGame() {
+    console.log('Game started.');
+    var data = {
+        type: "startGame",
+        eventData: {
+        } // Include any necessary event data, if needed
+    };
+    //display game in UI
+    // showGame();
+    connection.send(JSON.stringify(data)); // Send the start game request to the server
+    console.log("Start game request sent to the server., Display--");
+    //  displayGridAndWords(data);
+}
+
+function displayGrid() {
+    var gridElement = document.getElementById("grid");
+    gridElement.innerHTML = ''; // Clear previous entries if any
+    grid.forEach(function(row) {
+        var rowElement = document.createElement("tr");
+        row.split('').forEach(function(char) {
+            var cell = document.createElement("td");
+            cell.textContent = char;
+            rowElement.appendChild(cell);
+        });
+        gridElement.appendChild(rowElement);
+    });
+}
+
 
 
 
@@ -234,19 +262,7 @@ function updatePlayerList(json){
 
 
     
-    function displayGrid() {
-        var gridElement = document.getElementById("grid");
-        gridElement.innerHTML = ''; // Clear previous entries if any
-        grid.forEach(function(row) {
-            var rowElement = document.createElement("tr");
-            row.split('').forEach(function(char) {
-                var cell = document.createElement("td");
-                cell.textContent = char;
-                rowElement.appendChild(cell);
-            });
-            gridElement.appendChild(rowElement);
-        });
-    }
+
     
   
    
