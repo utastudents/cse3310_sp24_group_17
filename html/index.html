@@ -1,120 +1,199 @@
+<<<<<<<<< Temporary merge branch 1
+=========
+
+>>>>>>>>> Temporary merge branch 2
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Search Game</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="main.js" defer></script>
+<<<<<<<<< Temporary merge branch 1
+    
+
 </head>
+<body>
+    <!-- Login Section -->
+    <div id="loginPage">
+        <h1>The WordSearch Game</h1>
+        <h2>Welcome Everyone</h2>
+        <p>Rules...</p>
+        <div class="wrapper">
+            <div id="login">
+                <h2>User Login</h2>
+                <div id="login-form">
+                    <label for="username">Enter your name:</label>
+                    <input type="text" id="username" name="username" required minlength="2" maxlength="12" pattern="[A-Za-z0-9_]+">
+                    <button type="button" id="submit" onclick="submitLogin()">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<label id="topMessage"></label>
+    <!-- Lobby Section -->
+    <div id="lobbyPage" style="display:none;">
+        <h1>The WordSearch Game</h1>
+        <h2>Welcome to the Lobby</h2>
+        <p>List of players:</p>
+        <div id="playerList" class="player-list"></div>
+        <div id="twoPlayerList" class="player-list" style="display:none;">
+            <h3>2 Player Mode</h3>
+        </div>
+        <div id="threePlayerList" class="player-list" style="display:none;">
+            <h3>3 Player Mode</h3>
+        </div>
+        <div id="fourPlayerList" class="player-list" style="display:none;">
+            <h3>4 Player Mode</h3>
+        </div>
+        <!-- Game control buttons -->
+        <div class="button-group">
+            <button id="startGameButton" onclick="startGame()" >Start Game</button>
+            <button id="readyButton" onclick="ready()">Ready</button>
+            <button id="backButtonLobby" onclick="back()">BACK</button>
+        </div>
+        <!-- Player configuration buttons -->
+        <div class="button-group">
+            <button onclick="setPlayerCount(2)">2 players</button>
+            <button onclick="setPlayerCount(3)">3 players</button>
+            <button onclick="setPlayerCount(4)">4 players</button>
+        </div>
+    </div>
 
-<table>
-    <tr>
+    <!-- Game Section (Hidden Initially) -->
+    <div id="gamePage" style="display:none;">
+        <h1>The WordSearch Game</h1>
+        <div id="gameContainer">
+            <div id="sidebar">
+                <!-- Scoreboard Section -->
+                <div id="scoreBoardContainer">
+                    <h2>Scoreboard</h2>
+                    <ul id="scoreBoard">
+                    </ul>
+                </div>
+                <!-- Word List Section -->
+                <div id="wordListContainer">
+                    <h2>Word List</h2>
+                    <ul id="wordList">
+                    </ul>
+                </div>
+            </div>
+            <!-- Grid Section -->
+            <table id="grid">
+            </table>
+            <button id="backButtonGame" onclick="back()">BACK</button>
+        </div>
+    </div>
 
-        <td><input type="button" value="?" id="b1" onclick=buttonclick(0)></input></td>
-        <td><input type="button" value="?" id="b2" onclick=buttonclick(1)></input></td>
-        <td><input type="button" value="?" id="b3" onclick=buttonclick(2)></input></td>
+=========
+</head>
+<body>
+    
 
-    </tr>
-    <tr>
+    <!-- Login Section -->
+    <div id="loginPage">
+        <h1>The WordSearch Game</h1>
+        <h2>Welcome Everyone</h2>
+        <div class="wrapper">
+            <div id="login">
+                <h2>User Login</h2>
+                    <label for="username">Enter your name (can only be at least 2 char, letters/numbers, and no fowl language):</label>
+                    <input type="text" id="username" name="username" required minlength="2" maxlength="12" pattern="[A-Za-z0-9_]+">
+                    <button type="submit" id="submit" onclick="login()">Submit</button>
+            </div>
+        </div>
+    </div>
 
-        <td><input type="button" value="?" id="b4" onclick=buttonclick(3)></input></td>
-        <td><input type="button" value="?" id="b5" onclick=buttonclick(4)></input></td>
-        <td><input type="button" value="?" id="b6" onclick=buttonclick(5)></input></td>
+<!-- Lobby Section -->
+<div id="lobbyPage" style="display:none;">
+    <h1>The WordSearch Game</h1>
+    <h2>Welcome to the Lobby</h2>
+    <p>List of players in your selected game lobby:</p>
+    <div id="playerList" class="player-list"></div>
+    <div id="twoPlayerList" class="player-list" style="display:none;">
+        <h3>2 Player Mode</h3>
+        <!-- Players will be moved here when '2 players' is clicked -->
+    </div>
+    <div id="threePlayerList" class="player-list" style="display:none;">
+        <h3>3 Player Mode</h3>
+        <!-- Players will be moved here when '3 players' is clicked -->
+    </div>
+    
+    <div id="fourPlayerList" class="player-list" style="display:none;">
+        <h3>4 Player Mode</h3>
+        <!-- Players will be moved here when '4 players' is clicked -->
+    </div>
+    
+    
 
-    </tr>
+    <!-- Game control buttons -->
+    <div class="button-group">
+        <button id="startGameButton" onclick="startGame()" >Start Game</button>
+        <button onclick="ready()">Ready</button>
+        <button id="backButton" onclick="back()">BACK</button>
+    </div>
 
-    <tr>
-
-        <td><input type="button" value="?" id="b7" onclick=buttonclick(6)></input></td>
-        <td><input type="button" value="?" id="b8" onclick=buttonclick(7)></input></td>
-        <td><input type="button" value="?" id="b9" onclick=buttonclick(8)></input></td>
-
-    </tr>
-</table>
-
-<label id="timeMsg"></label>
-<label id="statMsg"></label>
-
-<script>
-    var idx = -1;
-    var gameid = -1;
-    class UserEvent {
-        Button = -1;
-        PlayerIdx = 0;
-        GameId = 0;
-    }
-    var connection = null;
-
-    var serverUrl;
-    serverUrl = "ws://" + window.location.hostname + ":9880";
-    // Create the connection with the server
-    connection = new WebSocket(serverUrl);
-
-    connection.onopen = function (evt) {
-        console.log("open");
-    }
-    connection.onclose = function (evt) {
-        console.log("close");
-        document.getElementById("topMessage").innerHTML = "Server Offline"
-    }
-    const ButtonStateToDisplay = new Map();
-    ButtonStateToDisplay.set("XPLAYER", "X");
-    ButtonStateToDisplay.set("OPLAYER", "O");
-    ButtonStateToDisplay.set("NOPLAYER", " ");
-    connection.onmessage = function (evt) {
-        var msg;
-        msg = evt.data;
-
-        console.log("Message received: " + msg);
-        const obj = JSON.parse(msg);
-
-        if ('YouAre' in obj) {
-            if (obj.YouAre == "XPLAYER") {
-                idx = 0;
-            }
-            else {
-                idx = 1;
-            }
-
-            gameid = obj.GameId;
-        }
-        else if ('CurrentTurn' in obj) {
-            // show statistics to everyone
-            var t = obj.Stats;
-            if (t) {
-                document.getElementById("timeMsg").innerHTML = "elapsed time " + t.RunningTime;
-                document.getElementById("statMsg").innerHTML =
-                    " in progress " + t.GamesInProgress + " XWin " + t.XWins + " OWin " + t.OWins +
-                    " Draw " + t.Draws + " Total " + t.TotalGames;
-            }
-
-            // only pay attention to this game
-            if (gameid == obj.GameId) {
-                // button state to display values
-
-                document.getElementById("b1").value = ButtonStateToDisplay.get(obj.Button[0]);
-                document.getElementById("b2").value = ButtonStateToDisplay.get(obj.Button[1]);
-                document.getElementById("b3").value = ButtonStateToDisplay.get(obj.Button[2]);
-                document.getElementById("b4").value = ButtonStateToDisplay.get(obj.Button[3]);
-                document.getElementById("b5").value = ButtonStateToDisplay.get(obj.Button[4]);
-                document.getElementById("b6").value = ButtonStateToDisplay.get(obj.Button[5]);
-                document.getElementById("b7").value = ButtonStateToDisplay.get(obj.Button[6]);
-                document.getElementById("b8").value = ButtonStateToDisplay.get(obj.Button[7]);
-                document.getElementById("b9").value = ButtonStateToDisplay.get(obj.Button[8]);
+    <!-- Player configuration buttons -->
+    <div class="button-group">
+        <button id="2playerButton" onclick="createSubLobby(2)">2 players</button>
+        <button id="3playerButton" onclick="createSubLobby(3)">3 players</button>
+        <button id="4playerButton" onclick="createSubLobby(4)">4 players</button>
+    </div>
+</div>
 
 
-                // the message line
-                document.getElementById("topMessage").innerHTML = obj.Msg[idx];
-            }
-        }
-    }
 
-    function buttonclick(i) {
-        U = new UserEvent();
-        U.Button = i;
-        if (idx == 0)
-            U.PlayerIdx = "XPLAYER";
-        else
-            U.PlayerIdx = "OPLAYER";
-        U.GameId = gameid;
-        connection.send(JSON.stringify(U));
-        console.log(JSON.stringify(U))
-    }
-</script>
+<!-- Game Section (Hidden Initially) -->
+    <div id="gamePage" style="display:none;">
+    <h1>The WordSearch Game</h1>
+
+    <div id="gameContainer">
+        <div id="sidebar">
+
+        <!-- Scoreboard Section -->
+        <div id="scoreBoardContainer">
+            <h2>Scoreboard</h2>
+            <ul id="scoreBoard">
+                <!-- Player scores will be populated with JavaScript -->
+            </ul>
+        </div>
+
+        <!-- Word List Section -->
+        <div id="wordListContainer">
+            <h2>Word List</h2>
+            <ul id="wordList">
+                <!-- Word list will be populated with JavaScript -->
+            </ul>
+        </div>
+        </div>
+        
+        <!-- Grid Section -->
+        <table id="grid">
+            <!-- Grid will be populated with JavaScript -->
+        </table>
+
+        <button id="backButton" onclick="back()">BACK</button>
+
+    </div>
+
+
+
+>>>>>>>>> Temporary merge branch 2
+    <!-- Chat Area (Hidden Initially) -->
+    <div id="chatArea" style="display:none;">
+        <h2>Chat</h2>
+        <div id="chatDisplay" ></div>
+        <input type="text" id="chatInput" placeholder="Write your message here..." >
+<<<<<<<<< Temporary merge branch 1
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</body>
+</html>
+=========
+        <button type="submit" id="chatButton" onclick="sendMessage()"> Send </button>
+    </div>
+
+</body>
+</html>
+>>>>>>>>> Temporary merge branch 2
