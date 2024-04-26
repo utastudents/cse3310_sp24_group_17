@@ -1,65 +1,73 @@
 package uta.cse3310;
-<<<<<<<<< Temporary merge branch 1
 
-=========
->>>>>>>>> Temporary merge branch 2
 import org.java_websocket.WebSocket;
 
 public class Player {
-    private int color;
     private String name;
-    private int inGameScore;
-    private int totalScore;
-    private WebSocket conn;
+    private int score;
+    private WebSocket playerConn;
 
-    //Constructor
-    public Player(String name, WebSocket conn){
-        color = 0;
+    public Player(String name, WebSocket newConn) {
         this.name = name;
-        inGameScore = 0;
-        totalScore = 0;
-        this.conn = conn;
+        this.playerConn = newConn;
+        this.score = 0;
     }
 
-    //Getters and Setters
-    public int getColor(){
-        return color;
-    }
-
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public int getInGameScore(){
-        return inGameScore;
+    public void setName(String name) {
+        if (name != null && !name.isEmpty()) {
+            this.name = name;
+        } else {
+            System.out.println("Invalid name provided!");
+        }
     }
 
-    public int getTotalScore(){
-        return totalScore;
+    public int getScore() {
+        return score;
     }
 
-    public WebSocket getConn(){
-        return conn;
+    public void increaseScore(int points) {
+        if (points > 0) {
+            this.score += points;
+        } else {
+            System.out.println("Attempted to increase score with invalid points: " + points);
+        }
     }
 
-    public void setColor(int color){
-        this.color = color;
+    public WebSocket getPlayerConn() {
+        return playerConn;
     }
 
-    public void setName(String name){
-        this.name = name;
+    public void setPlayerConn(WebSocket playerConn) {
+        this.playerConn = playerConn;
     }
 
-    public void setInGameScore(int inGameScore){
-        this.inGameScore = inGameScore;
+    public void sendMessage(String message) {
+        if (playerConn != null && message != null && !message.isEmpty()) {
+            try {
+                playerConn.send(message);
+            } catch (Exception e) {
+                System.out.println("Failed to send message: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Unable to send message due to null connection or empty message.");
+        }
     }
 
-    public void setTotalScore(int totalScore){
-        this.totalScore = totalScore;
+    public void resetScore() {
+        this.score = 0;
     }
 
-    public void setConn(WebSocket conn){
-        this.conn = conn;
->>>>>>>>> Temporary merge branch 2
+    public void disconnect() {
+        if (playerConn != null) {
+            try {
+                playerConn.close();
+            } catch (Exception e) {
+                System.out.println("Failed to close WebSocket connection: " + e.getMessage());
+            }
+        }
     }
 }
