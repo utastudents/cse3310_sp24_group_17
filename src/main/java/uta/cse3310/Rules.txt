@@ -1,0 +1,11 @@
+- word length requirement.
+- No use of bad words on the chatbox.
+-Words Directions:
+-Vertical Down
+-Vertical Up
+-Horizontal Left
+-Horizontal Right
+-diagonal Up Left
+-Diagonal Down left
+-Diagonal Up Right
+-Diagonal Down Right
