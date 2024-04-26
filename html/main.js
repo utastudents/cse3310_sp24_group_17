@@ -41,8 +41,48 @@ connection.onmessage = function(event){
     case 'StartGame':
             showGame(data.grid,data.words );
             break;
+    case 'resetLobbyState':
+            console.log("Lobby state reset.");
+            break;
+    case 'chatMessage':
+            displayChatMessage(data.playerName, data.message);
+            break;
+    case 'errorMessage':
+            displayErrorMessage(data.message);
+            break;
+    default:
+            console.log("Unknown message type:", data.type);
    }
 };
+
+
+
+
+
+function displayChatMessage(playerName, message) {
+    const chatDisplay = document.getElementById('chatDisplay');
+    const messageElement = document.createElement('p');
+    messageElement.textContent = playerName + ": " + message;
+    chatDisplay.appendChild(messageElement);
+}
+
+function displayErrorMessage(message) {
+    const errorDisplay = document.getElementById('errorDisplay'); // Ensure this element exists
+    errorDisplay.textContent = message; // Display or handle error messages
+}
+
+function sendMessage() {
+    var message = document.getElementById('chatInput').value;
+    var data = {
+        type: "chatMessage",
+        playerName: "Current Player Name", // This should be dynamically set
+        message: message
+    };
+    connection.send(JSON.stringify(data));
+    document.getElementById('chatInput').value = ''; // Clear input after sending
+}
+
+
 
 function displayWordList(words) {
     var wordListElement = document.getElementById("wordList");
@@ -55,19 +95,53 @@ function displayWordList(words) {
     });
 }
 
-function startGame() {
-    console.log('Game started.');
-    var data = {
-        type: "startGame",
-        eventData: {
-        } // Include any necessary event data, if needed
-    };
-    //display game in UI
-    // showGame();
-    connection.send(JSON.stringify(data)); // Send the start game request to the server
-    console.log("Start game request sent to the server., Display--");
-    //  displayGridAndWords(data);
+function back() {
+    console.log('Back button clicked'); // Debugging statement
+
+    if (document.getElementById('gamePage').style.display === 'block') {
+        console.log('Currently on game page, switching to lobby page');
+        document.getElementById('gamePage').style.display = 'none';
+        document.getElementById('lobbyPage').style.display = 'block';
+        resetGameState();
+    } else if (document.getElementById('lobbyPage').style.display === 'block') {
+        console.log('Currently on lobby page, switching to login page');
+        document.getElementById('lobbyPage').style.display = 'none';
+        document.getElementById('loginPage').style.display = 'block';
+        resetLobbyState();
+    } else {
+        console.log('No page change needed');
+    }
 }
+
+function resetLobbyState() {
+    const username = document.getElementById('username').value;
+    console.log('Resetting lobby state for', username); // Debugging
+    document.getElementById('username').value = "";
+
+    const playerListDiv = document.getElementById('playerList');
+    playerListDiv.innerHTML = '';
+
+    if (connection && connection.readyState === WebSocket.OPEN) {
+        const data = {
+            type: "resetLobbyState",
+            username: username
+        };
+        connection.send(JSON.stringify(data));
+        console.log('Reset lobby state message sent to server');
+    } else {
+        console.log('WebSocket is not open');
+    }
+}
+
+function resetGameState() {
+    console.log('Resetting game state'); // Debugging
+    const grid = document.getElementById("grid");
+    while (grid.firstChild) {
+        grid.removeChild(grid.firstChild);
+    }
+}
+
+
 
 
 function login(){
@@ -154,6 +228,10 @@ function updatePlayerList(json){
         console.log(player);
     });
 
+    function Mainlobby(){
+
+    }
+
 
     
     function displayGrid() {
@@ -171,9 +249,8 @@ function updatePlayerList(json){
     }
     
   
+   
     
-    
-    
-    
+
     
 }

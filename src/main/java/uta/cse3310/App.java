@@ -40,9 +40,15 @@ public class App extends WebSocketServer {
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         System.out.println("Closed connection: " + conn.getRemoteSocketAddress());
-        mainLobby.logOff(conn);
-        broadcast("Player has left");
+        boolean result = mainLobby.logOff(conn);
+        if (result) {
+            broadcast("A player has left the game.");
+        } else {
+            System.out.println("No player found for the closed connection.");
+        }
     }
+    
+    
 
     @Override
     public void onMessage(WebSocket conn, String message) {
@@ -109,6 +115,46 @@ public class App extends WebSocketServer {
                 conn.send(gridData);  // Send grid data to the client who requested to start the game
                 System.out.println("Game data send to client");
         }
+        else if (type.equals("resetLobbyState")) {
+            String username = json.get("username").getAsString();
+            if (mainLobby.resetUser(username)) {
+                System.out.println("Lobby state reset for " + username);
+                JsonObject response = new JsonObject();
+                response.addProperty("type", "resetConfirmation");
+                response.addProperty("status", "success");
+                conn.send(response.toString());
+            } else {
+                JsonObject response = new JsonObject();
+                response.addProperty("type", "resetConfirmation");
+                response.addProperty("status", "failed");
+                conn.send(response.toString());
+            }
+        }else if (type.equals("sendChatMessage")) {
+            JsonObject eventData = json.getAsJsonObject("eventData");
+            String playerName = eventData.get("playerName").getAsString();
+             message = eventData.get("message").getAsString();
+            JsonObject chatMessage = new JsonObject();
+            chatMessage.addProperty("type", "chatMessage");
+            chatMessage.addProperty("playerName", playerName);
+            chatMessage.addProperty("message", playerName + ": " + message);
+            broadcast(chatMessage.toString()); // This sends the chat message to all connected clients
+        }
+        else if (type.equals("sendErrorMessage")) {
+            JsonObject eventData = json.getAsJsonObject("eventData");
+            String errorMessage = eventData.get("errorMessage").getAsString();
+            WebSocket playerConn = mainLobby.findPlayerWebSocket(eventData.get("username").getAsString());
+                if (playerConn != null) {
+                    JsonObject errorResponse = new JsonObject();
+                    errorResponse.addProperty("type", "errorMessage");
+                    errorResponse.addProperty("message", errorMessage);
+                    playerConn.send(errorResponse.toString()); // Sends the error message only to the requesting client
+                }
+        }
+        
+
+
+
+        
     }
 
     @Override
@@ -126,6 +172,8 @@ public class App extends WebSocketServer {
             player.getConn().send(message);
         }
     }    
+
+    
     
 
     public static void main(String[] args) {
