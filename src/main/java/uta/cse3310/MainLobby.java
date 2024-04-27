@@ -1,47 +1,109 @@
 package uta.cse3310;
 
-import org.java_websocket.WebSocket;
+import java.util.Scanner;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import org.java_websocket.WebSocket;
 
-public class MainLobby {
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+public class MainLobby { 
+    
     private static final int MAX_PLAYERS = 20;
-    private List<Player> players = new CopyOnWriteArrayList<>();
+    private ArrayList<Player> players = new ArrayList<>();
 
-    public boolean addPlayerToMainLobby(WebSocket conn, String name) {
-        if (players.size() < MAX_PLAYERS) {
+
+    // add new players to main lobby
+    public boolean logIn(WebSocket conn, String name){
+        //check for unique username
+        for(Player player : players){
+            if(player.getName() == name){
+                return false;
+            }
+        }
+
+        if(players.size() < MAX_PLAYERS){
             Player player = new Player(name, conn);
             players.add(player);
-            broadcastPlayerListUpdate(); // Optional: Notify all players of the new player
-            return true;
-        } else {
-            return false;
+            return true;    //if # of players is not max, create player
+        }
+        else{
+            return false;   // if # of players is max, don't create player
         }
     }
 
-    public void removePlayerFromMainLobby(WebSocket conn) {
-        Player toRemove = players.stream()
-                .filter(player -> player.getPlayerConn().equals(conn))
-                .findFirst()
-                .orElse(null);
+    public boolean logOff(WebSocket conn) {
+        Player toRemove = null;
+        for (Player player : players) {
+            if (player.getConn().equals(conn)) {
+                toRemove = player;
+                break;
+            }
+        }
         if (toRemove != null) {
             players.remove(toRemove);
-            broadcastPlayerListUpdate(); // Optional: Notify all players of the player removal
+            System.out.println(toRemove.getName() + " has logged off.");
+            return true;
         }
+        return false;
     }
 
-    public List<Player> getPlayers() {
+    // Reset user state in the lobby
+    public boolean resetUser(String username) {
+        Player toReset = findPlayerByUsername(username);
+        if (toReset != null) {
+            // Additional reset logic can go here if needed
+            System.out.println("Resetting state for " + username);
+            return true;
+        }
+        return false;
+    }
+
+    // Helper method to find a player by username
+    private Player findPlayerByUsername(String username) {
+        for (Player player : players) {
+            if (player.getName().equals(username)) {
+                return player;
+            }
+        }
+        return null;
+    }
+    
+    
+    
+
+    public Player findPlayerInMainLobby(WebSocket conn){
+        for(Player player : players){
+            if(player.getConn().equals(conn)){
+                return player;
+            }
+        }
+        return null;
+    }
+
+    
+public WebSocket findPlayerWebSocket(String username) {
+    
+    for (Player player : players) {
+        if (player.getName().equals(username)) {
+            return player.getConn();  
+        }
+    }
+    return null;  
+}
+
+
+    public List<Player> getPlayers(){
         return players;
     }
 
-    // Optional: Method to broadcast the current player list to all players
-    private void broadcastPlayerListUpdate() {
-        String message = "Updated player list: " + players.stream()
-                .map(Player::getName)
-                .reduce((a, b) -> a + ", " + b)
-                .orElse("No players");
-        for (Player player : players) {
-            player.sendMessage(message);
-        }
-    }
+  
+
+
+
+    
 }
+

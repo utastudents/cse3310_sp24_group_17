@@ -1,5 +1,9 @@
 package uta.cse3310;
 import java.util.*;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -26,9 +30,22 @@ class Game {
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
         }
-        
-        
+        placeWords();
+        fillRandom();
     }
+    public Game(String filePath, int numOfWords,int gridSize,int x) {
+        this.MAX=gridSize;
+        this.gameID = random.nextInt(1000);
+        initializeMatrix();
+        try {
+            readWordsFromFile(filePath, numOfWords);
+            
+            
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        } 
+    }
+
     public void initializwithdots(){
         initializeMatrix();
 
@@ -240,4 +257,26 @@ class Game {
         return this.gameID;
     }
 
+    // need to change how the data is displayed
+    public String getGridAndWordsAsJson() {
+        JsonObject gridJson = new JsonObject();
+        JsonArray rows = new JsonArray();
+        JsonArray wordsJson = new JsonArray();
+    
+        for (char[] row : wordMatrix) {
+            rows.add(new String(row));
+        }
+        for (String word : wordsInMatrix) {
+            wordsJson.add(word);
+        }
+        gridJson.addProperty("type", "StartGame");
+        gridJson.add("grid", rows);
+        gridJson.add("words", wordsJson);
+        return gridJson.toString();
+    }
+    
+
 }
+
+
+

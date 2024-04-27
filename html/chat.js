@@ -1,3 +1,17 @@
+
+connection.onmessage = function(event) {
+    var data = JSON.parse(event.data);
+    switch (data.type) {
+        case 'chatMessage':
+            var chatBox = document.getElementById('chatMessages');
+            var messageElement = document.createElement('p');
+            messageElement.textContent = data.playerName + ": " + data.message;
+            chatBox.appendChild(messageElement);
+            break;
+        // handle other message types...
+    }
+};
+
 function sendMessage() {
     var input = document.getElementById('chatInput');
     var message = input.value.trim();
