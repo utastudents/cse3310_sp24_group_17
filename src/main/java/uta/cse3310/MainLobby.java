@@ -19,8 +19,11 @@ public class MainLobby {
     // add new players to main lobby
     public boolean logIn(WebSocket conn, String name){
         //check for unique username
+        if(name.equals("")){
+            return false;
+        }
         for(Player player : players){
-            if(player.getName() == name){
+            if(player.getName().equals(name)){
                 return false;
             }
         }

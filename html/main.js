@@ -1,7 +1,7 @@
 var serverUrl = "ws://" + window.location.hostname + ":" + (parseInt(location.port) + 100);
 var connection = new WebSocket(serverUrl);
 
-
+//format for json
 function UserEvent(type, eventData){
     this.type = type;
     this.eventData = eventData;
@@ -15,8 +15,6 @@ connection.onclose = function(event){
     console.log("Websocket closed");
 };
 
-
-
 connection.onmessage = function(event){
     //read in event
     console.log("event :" + event);
@@ -27,16 +25,23 @@ connection.onmessage = function(event){
     //parse message for object
     var data = JSON.parse(message);
 
-    
-
+    //Handle incoming json messages
    switch(data.type){
     case 'loginSuccess':
         console.log("login success");
         showLobby();
         break;
+    case 'loginError':
+        console.log("login error");
+        handleLoginError();
+        break;
     case 'subLobbySuccess':
         console.log("sublobby success");
         updatePlayerList(data);
+        break;
+    case 'subLobbyError':
+        console.log("sublobby error");
+        handleSubLobbyError();
         break;
     case 'StartGame':
             showGame(data.grid,data.words );
@@ -173,7 +178,6 @@ function displayGrid() {
 
 
 function login(){
-    console.log("function call");
     var username = document.getElementById("username").value;
     console.log("username: " + username);
 
@@ -187,8 +191,27 @@ function login(){
     connection.send(JSON.stringify(data));
 };
 
+//send json of which sublobby player wants to join
 function createSubLobby(subLobbySize){
-    console.log("function 2 call");
+    /*var button1 = document.getElementById("2playerButton");
+    var button2 = document.getElementById("3playerButton");
+    var button3 = document.getElementById("4playerButton");
+
+    if(subLobbySize === 2){
+        button1.disabled = true;
+        button2.disabled = false;
+        button3.disabled = false;
+    }
+    else if(subLobbySize === 3){
+        button1.disabled = false;
+        button2.disabled = true;
+        button3.disabled = false;
+    }
+    else if(subLobbySize === 4){
+        button1.disabled = false;
+        button2.disabled = false;
+        button3.disabled = true;
+    }*/
 
     var data = {
         type: "createSubLobby",
@@ -200,6 +223,15 @@ function createSubLobby(subLobbySize){
     console.log("sublobby size :" + subLobbySize);
     connection.send(JSON.stringify(data));
 };
+// handle invalid username
+function handleLoginError(){
+    alert('Username Invalid');
+}
+
+//handle if max games reached
+function handleSubLobbyError(){
+    alert('Lobbies are all full - Try again later');
+}
 
 function showLogin(){
     document.getElementById('lobbyPage').style.display = 'none';
@@ -240,7 +272,7 @@ function initializeGrid() {
     }
   }
 
-
+// Updates the sublobby playerlist
 function updatePlayerList(json){
     console.log("function call 3 js");
     var lobby = json.lobby;

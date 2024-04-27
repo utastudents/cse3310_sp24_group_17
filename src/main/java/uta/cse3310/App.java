@@ -70,8 +70,13 @@ public class App extends WebSocketServer {
 
             //add new player to mainLobby - returns true if successfulky added
             if(mainLobby.logIn(conn, username)){
-                System.out.println("mainlobby: "  + mainLobby);
+                for(Player player : mainLobby.getPlayers()){
+                    System.out.println("players in mainLobby: " + player.getName());
+                }
                 eventMaker.loginSuccess(conn); // send json message back to JS
+            }
+            else{
+                eventMaker.loginError(conn, "invalid username");
             }
             
         }
@@ -85,16 +90,19 @@ public class App extends WebSocketServer {
             System.out.println("new player: " + newPlayer.getName());
 
             SubLobby subLobby = SubLobby.createOrJoinSubLobby(subLobbySize, ActiveGames, newPlayer);
-            
-            for(Player player : subLobby.getPlayers()){
-                System.out.println("sublobby players: "+ player.getName());
-            }
 
             if(subLobby != null){
-                eventMaker.joinedSubLobbySuccess(conn, subLobby.getLobbyID(), subLobby.getPlayers());
+                eventMaker.joinedSubLobbySuccess(conn, subLobby.getPlayers());
             }
             else{
-                // eventMaker.joinedSubLobbyError(conn);
+                eventMaker.joinedSubLobbyError(conn);
+            }
+
+            for (SubLobby SL : ActiveGames) {
+                System.out.println("lobby: " + SL.getLobbyID());
+                for (Player player : SL.getPlayers()){ 
+                    System.out.println("Player: " + player.getName());
+                }
             }
          
             
