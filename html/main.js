@@ -1,70 +1,55 @@
 var serverUrl = "ws://" + window.location.hostname + ":" + (parseInt(location.port) + 100);
 var connection = new WebSocket(serverUrl);
-var playerName = ''; // Store player's name after successful login
 
-connection.onopen = function(event) {
+//format for json
+function UserEvent(type, eventData){
+    this.type = type;
+    this.eventData = eventData;
+}
+
+connection.onopen = function(event){
     console.log("Websocket open");
 };
 
-connection.onclose = function(event) {
+connection.onclose = function(event){
     console.log("Websocket closed");
 };
 
-connection.onerror = function(error) {
-    console.log('WebSocket Error: ' + error);
+connection.onmessage = function(event){
+    //read in event
+    console.log("event :" + event);
+    var message = event.data;
+    console.log("message: " + message);
+
+
+    //parse message for object
+    var data = JSON.parse(message);
+
+    //Handle incoming json messages
+   switch(data.type){
+    case 'loginSuccess':
+        console.log("login success");
+        showLobby();
+        break;
+    case 'loginError':
+        console.log("login error");
+        handleLoginError();
+        break;
+    case 'subLobbySuccess':
+        console.log("sublobby success");
+        updatePlayerList(data);
+        break;
+    case 'subLobbyError':
+        console.log("sublobby error");
+        handleSubLobbyError();
+        break;
+    case 'StartGame':
+        showGame(data.grid,data.words );
+        break;
+    case 'updateLobbyPage':
+        updatePlayerList(data);
+   }
 };
-
-connection.onmessage = function(event) {
-    var data = JSON.parse(event.data);
-    console.log("Received message: ", data);
-    handleMessageType(data);
-};
-
-function handleMessageType(data) {
-    switch(data.type) {
-        case 'loginSuccess':
-            playerName = data.playerName; // Assuming server sends back the playerName on login success
-            showLobby();
-            break;
-        case 'chatMessage':
-            displayChatMessage(data.playerName, data.message);
-            break;
-        case 'errorMessage':
-            displayErrorMessage(data.message);
-            break;
-        default:
-            console.log("Unknown message type:", data.type);
-    }
-}
-
-
-
-
-
-function displayChatMessage(playerName, message) {
-    const chatDisplay = document.getElementById('chatDisplay');
-    const messageElement = document.createElement('p');
-    messageElement.textContent = playerName + ": " + message;
-    chatDisplay.appendChild(messageElement);
-}
-
-function displayErrorMessage(message) {
-    const errorDisplay = document.getElementById('errorDisplay'); // Make sure this exists in HTML
-    errorDisplay.textContent = message;
-}
-
-function sendMessage() {
-    var message = document.getElementById('chatInput').value;
-    var data = {
-        type: "chatMessage",
-        playerName: playerName, // Use the stored playerName
-        message: message
-    };
-    connection.send(JSON.stringify(data));
-    document.getElementById('chatInput').value = ''; // Clear input after sending
-}
-
-
 
 function displayWordList(words) {
     var wordListElement = document.getElementById("wordList");
@@ -75,52 +60,6 @@ function displayWordList(words) {
         wordListElement.appendChild(wordItem);
         
     });
-}
-
-function back() {
-    console.log('Back button clicked'); // Debugging statement
-
-    if (document.getElementById('gamePage').style.display === 'block') {
-        console.log('Currently on game page, switching to lobby page');
-        document.getElementById('gamePage').style.display = 'none';
-        document.getElementById('lobbyPage').style.display = 'block';
-        resetGameState();
-    } else if (document.getElementById('lobbyPage').style.display === 'block') {
-        console.log('Currently on lobby page, switching to login page');
-        document.getElementById('lobbyPage').style.display = 'none';
-        document.getElementById('loginPage').style.display = 'block';
-        resetLobbyState();
-    } else {
-        console.log('No page change needed');
-    }
-}
-
-function resetLobbyState() {
-    const username = document.getElementById('username').value;
-    console.log('Resetting lobby state for', username); // Debugging
-    document.getElementById('username').value = "";
-
-    const playerListDiv = document.getElementById('playerList');
-    playerListDiv.innerHTML = '';
-
-    if (connection && connection.readyState === WebSocket.OPEN) {
-        const data = {
-            type: "resetLobbyState",
-            username: username
-        };
-        connection.send(JSON.stringify(data));
-        console.log('Reset lobby state message sent to server');
-    } else {
-        console.log('WebSocket is not open');
-    }
-}
-
-function resetGameState() {
-    console.log('Resetting game state'); // Debugging
-    const grid = document.getElementById("grid");
-    while (grid.firstChild) {
-        grid.removeChild(grid.firstChild);
-    }
 }
 
 function startGame() {
@@ -137,25 +76,8 @@ function startGame() {
     //  displayGridAndWords(data);
 }
 
-function displayGrid() {
-    var gridElement = document.getElementById("grid");
-    gridElement.innerHTML = ''; // Clear previous entries if any
-    grid.forEach(function(row) {
-        var rowElement = document.createElement("tr");
-        row.split('').forEach(function(char) {
-            var cell = document.createElement("td");
-            cell.textContent = char;
-            rowElement.appendChild(cell);
-        });
-        gridElement.appendChild(rowElement);
-    });
-}
-
-
-
-
+//Send json of username info 
 function login(){
-    console.log("function call");
     var username = document.getElementById("username").value;
     console.log("username: " + username);
 
@@ -169,8 +91,27 @@ function login(){
     connection.send(JSON.stringify(data));
 };
 
+//send json of which sublobby player wants to join
 function createSubLobby(subLobbySize){
-    console.log("function 2 call");
+    /*var button1 = document.getElementById("2playerButton");
+    var button2 = document.getElementById("3playerButton");
+    var button3 = document.getElementById("4playerButton");
+
+    if(subLobbySize === 2){
+        button1.disabled = true;
+        button2.disabled = false;
+        button3.disabled = false;
+    }
+    else if(subLobbySize === 3){
+        button1.disabled = false;
+        button2.disabled = true;
+        button3.disabled = false;
+    }
+    else if(subLobbySize === 4){
+        button1.disabled = false;
+        button2.disabled = false;
+        button3.disabled = true;
+    }*/
 
     var data = {
         type: "createSubLobby",
@@ -182,6 +123,15 @@ function createSubLobby(subLobbySize){
     console.log("sublobby size :" + subLobbySize);
     connection.send(JSON.stringify(data));
 };
+// handle invalid username
+function handleLoginError(){
+    alert('Username Invalid');
+}
+
+//handle if max games reached
+function handleSubLobbyError(){
+    alert('Lobbies are all full - Try again later');
+}
 
 function showLogin(){
     document.getElementById('lobbyPage').style.display = 'none';
@@ -222,7 +172,7 @@ function initializeGrid() {
     }
   }
 
-
+// Updates the sublobby playerlist
 function updatePlayerList(json){
     console.log("function call 3 js");
     var lobby = json.lobby;
@@ -238,17 +188,26 @@ function updatePlayerList(json){
         console.log(player);
     });
 
-    function Mainlobby(){
-
-    }
-
 
     
-
+    function displayGrid() {
+        var gridElement = document.getElementById("grid");
+        gridElement.innerHTML = ''; // Clear previous entries if any
+        grid.forEach(function(row) {
+            var rowElement = document.createElement("tr");
+            row.split('').forEach(function(char) {
+                var cell = document.createElement("td");
+                cell.textContent = char;
+                rowElement.appendChild(cell);
+            });
+            gridElement.appendChild(rowElement);
+        });
+    }
     
   
-   
     
-
+    
+    
+    
     
 }

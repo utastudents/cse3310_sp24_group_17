@@ -9,12 +9,13 @@ import java.util.List;
 import org.java_websocket.WebSocket;
 
 public class Event {
-    private int Game_ID;
-    private String User_ID;
-    private int button;
+    public void broadcast(String message, SubLobby subLobby){
+        for(Player player : subLobby.getPlayers()){
+            player.getConn().send(message);
+        }
+    }    
 
-
-
+    //Sends json for valid username login
     public void loginSuccess(WebSocket connection){
         JsonObject json = new JsonObject();
         json.addProperty("type", "loginSuccess");
@@ -22,26 +23,30 @@ public class Event {
         System.out.println("json: " + json);
     }
 
+    //Sends json for invalid username login
     public void loginError(WebSocket connection, String message){
         JsonObject json = new JsonObject();
-        json.addProperty("type", "error");
+        json.addProperty("type", "loginError");
         json.addProperty("message", message);
         connection.send(json.toString());
     }
 
-    public void joinedSubLobbySuccess(WebSocket connection, String lobbyID, List<Player> subLobbyPlayers){
+    //Sends json for player has successfully joined the sublobby they selected - broadcasts to all players in sublobby
+    public void joinedSubLobbySuccess(WebSocket connection, List<Player> subLobbyPlayers){
         JsonObject json = new JsonObject();
         json.addProperty("type", "subLobbySuccess");
-        json.addProperty("lobby", lobbyID);
 
         JsonArray players = new JsonArray();
         subLobbyPlayers.forEach(player -> players.add(player.getName()));
         json.add("players", players);
 
-        connection.send(json.toString());
+        for(Player player : subLobbyPlayers){
+            player.getConn().send(json.toString());
+        }
         System.out.println("json sublobby: " + json);
     }
 
+    //Sends json for max games reached
     public void joinedSubLobbyError(WebSocket connection){
         JsonObject json = new JsonObject();
         json.addProperty("type", "subLobbyError");
@@ -56,6 +61,7 @@ public class Event {
         json.addProperty("message", playerName + ": " + message);
         conn.send(json.toString());
     }
+
     
     
 

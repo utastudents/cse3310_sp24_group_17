@@ -7,11 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.java_websocket.WebSocket;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
-public class MainLobby { 
-    
+public class MainLobby{
     private static final int MAX_PLAYERS = 20;
     private ArrayList<Player> players = new ArrayList<>();
 
@@ -19,8 +15,11 @@ public class MainLobby {
     // add new players to main lobby
     public boolean logIn(WebSocket conn, String name){
         //check for unique username
+        if(name.equals("")){
+            return false;
+        }
         for(Player player : players){
-            if(player.getName() == name){
+            if(player.getName().equals(name)){
                 return false;
             }
         }
@@ -35,45 +34,18 @@ public class MainLobby {
         }
     }
 
-    public boolean logOff(WebSocket conn) {
-        Player toRemove = null;
-        for (Player player : players) {
-            if (player.getConn().equals(conn)) {
-                toRemove = player;
+    public void logOff(WebSocket conn){
+        Player remove = null;
+        for(Player player : players){
+            if(player.getConn() == conn){
+                remove = player;
                 break;
             }
         }
-        if (toRemove != null) {
-            players.remove(toRemove);
-            System.out.println(toRemove.getName() + " has logged off.");
-            return true;
+        if(remove != null){
+            players.remove(remove);
         }
-        return false;
     }
-
-    // Reset user state in the lobby
-    public boolean resetUser(String username) {
-        Player toReset = findPlayerByUsername(username);
-        if (toReset != null) {
-            // Additional reset logic can go here if needed
-            System.out.println("Resetting state for " + username);
-            return true;
-        }
-        return false;
-    }
-
-    // Helper method to find a player by username
-    private Player findPlayerByUsername(String username) {
-        for (Player player : players) {
-            if (player.getName().equals(username)) {
-                return player;
-            }
-        }
-        return null;
-    }
-    
-    
-    
 
     public Player findPlayerInMainLobby(WebSocket conn){
         for(Player player : players){
@@ -84,26 +56,9 @@ public class MainLobby {
         return null;
     }
 
-    
-public WebSocket findPlayerWebSocket(String username) {
-    
-    for (Player player : players) {
-        if (player.getName().equals(username)) {
-            return player.getConn();  
-        }
-    }
-    return null;  
-}
-
-
     public List<Player> getPlayers(){
         return players;
     }
 
-  
-
-
-
     
 }
-
