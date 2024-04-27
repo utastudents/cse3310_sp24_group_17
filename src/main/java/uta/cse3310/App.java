@@ -137,15 +137,16 @@ public class App extends WebSocketServer {
                 response.addProperty("status", "failed");
                 conn.send(response.toString());
             }
-        }else if (type.equals("sendChatMessage")) {
-            JsonObject eventData = json.getAsJsonObject("eventData");
-            String playerName = eventData.get("playerName").getAsString();
-             message = eventData.get("message").getAsString();
-            JsonObject chatMessage = new JsonObject();
-            chatMessage.addProperty("type", "chatMessage");
-            chatMessage.addProperty("playerName", playerName);
-            chatMessage.addProperty("message", playerName + ": " + message);
-            broadcast(chatMessage.toString()); // This sends the chat message to all connected clients
+        }
+        else if (type.equals("chatMessage")) {
+            //working chat still need fix
+            String playerName = json.get("playerName").getAsString();
+            String chatMessage = json.get("message").getAsString();
+            JsonObject chatJson = new JsonObject();
+            chatJson.addProperty("type", "chatMessage");
+             chatJson.addProperty("playerName", playerName);
+            chatJson.addProperty("message", chatMessage);
+            broadcast(chatJson.toString()); // This sends the chat message to all connected clients
         }
         else if (type.equals("sendErrorMessage")) {
             JsonObject eventData = json.getAsJsonObject("eventData");

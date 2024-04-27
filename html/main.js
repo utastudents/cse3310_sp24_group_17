@@ -72,6 +72,7 @@ connection.onmessage = function(event){
 };
 
 function displayChatMessage(playerName, message) {
+    console.log("display message");
     const chatDisplay = document.getElementById('chatDisplay');
     if (chatDisplay) {
         const messageElement = document.createElement('p');
@@ -288,6 +289,7 @@ function showLobby(){
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('lobbyPage').style.display = 'block';
     document.getElementById('gamePage').style.display = 'none';
+    document.getElementById('chatArea').style.display = 'block';
 }
 
 function showGame(grid, words){
