@@ -1,5 +1,6 @@
 var serverUrl = "ws://" + window.location.hostname + ":" + (parseInt(location.port) + 100);
 var connection = new WebSocket(serverUrl);
+var currentPlayerName = null;
 
 //format for json
 function UserEvent(type, eventData){
@@ -24,12 +25,18 @@ connection.onmessage = function(event){
 
     //parse message for object
     var data = JSON.parse(message);
+    console.log("Handling message type: ", data.type);
 
     //Handle incoming json messages
    switch(data.type){
     case 'loginSuccess':
-        console.log("login success");
-        showLobby();
+        if (data.username) {
+            currentPlayerName = data.username;
+            console.log("Username set to: ", currentPlayerName);
+            showLobby();
+        } else {
+            console.log("Username not provided in loginSuccess message");
+        }
         break;
     case 'loginError':
         console.log("login error");
@@ -50,26 +57,33 @@ connection.onmessage = function(event){
             console.log("Lobby state reset.");
             break;
     case 'chatMessage':
+        console.log("Displaying chat message from:", data.playerName);
             displayChatMessage(data.playerName, data.message);
             break;
     case 'errorMessage':
             displayErrorMessage(data.message);
             break;
+    case 'toggleready':
+        toggleready(username);
+        break;
     default:
             console.log("Unknown message type:", data.type);
    }
 };
 
-
-
-
-
 function displayChatMessage(playerName, message) {
     const chatDisplay = document.getElementById('chatDisplay');
-    const messageElement = document.createElement('p');
-    messageElement.textContent = playerName + ": " + message;
-    chatDisplay.appendChild(messageElement);
+    if (chatDisplay) {
+        const messageElement = document.createElement('p');
+        messageElement.textContent = `${playerName}: ${message}`;
+        chatDisplay.appendChild(messageElement);
+        chatDisplay.scrollTop = chatDisplay.scrollHeight; // Scroll to the bottom
+    } else {
+        console.log('Chat display element not found');
+    }
 }
+
+
 
 function displayErrorMessage(message) {
     const errorDisplay = document.getElementById('errorDisplay'); // Ensure this element exists
@@ -77,15 +91,30 @@ function displayErrorMessage(message) {
 }
 
 function sendMessage() {
-    var message = document.getElementById('chatInput').value;
+    if (connection.readyState !== WebSocket.OPEN) {
+        console.log('WebSocket is not open. Current state:', connection.readyState);
+        return;
+    }
+    console.log("Attempting to send message", currentPlayerName);
+    var message = document.getElementById('chatInput').value.trim();
+    if (!message) {
+        console.log('Message is empty');
+        return;
+    }
+    if (!currentPlayerName) {
+        console.log('Player name is not set');
+        return;
+    }
+
     var data = {
         type: "chatMessage",
-        playerName: "Current Player Name", // This should be dynamically set
+        playerName: currentPlayerName,
         message: message
     };
     connection.send(JSON.stringify(data));
     document.getElementById('chatInput').value = ''; // Clear input after sending
 }
+
 
 
 
@@ -118,6 +147,29 @@ function back() {
     }
 }
 
+function resetGameState() {
+    console.log('Resetting game state');
+
+    // Clear the grid
+    const gridContainer = document.getElementById("gridContainer"); // Adjust this ID to match your HTML
+    if (gridContainer) {
+        gridContainer.innerHTML = ''; // This will remove all children elements, effectively clearing the grid
+    } else {
+        console.log('Grid container element not found');
+    }
+
+    // Clear the word list
+    const wordListContainer = document.getElementById("wordListContainer"); // Adjust this ID to match your HTML
+    if (wordListContainer) {
+        wordListContainer.innerHTML = ''; // This will remove all word list elements
+    } else {
+        console.log('Word list container element not found');
+    }
+
+    console.log('Game state has been reset');
+}
+
+
 function resetLobbyState() {
     const username = document.getElementById('username').value;
     console.log('Resetting lobby state for', username); // Debugging
@@ -138,13 +190,7 @@ function resetLobbyState() {
     }
 }
 
-function resetGameState() {
-    console.log('Resetting game state'); // Debugging
-    const grid = document.getElementById("grid");
-    while (grid.firstChild) {
-        grid.removeChild(grid.firstChild);
-    }
-}
+
 
 function startGame() {
     console.log('Game started.');
@@ -272,6 +318,23 @@ function initializeGrid() {
     }
   }
 
+  function updateStatus(isReady) {
+    // Construct the message to send the updated status to the server
+    const message = { type: 'updateStatus', username: username, isReady: isReady };
+    connection.send(JSON.stringify(message));
+}
+
+function updateLocalPlayerReadyStatus() {
+    const playerListDiv = document.getElementById('playerList');
+    // Assuming each player's entry is wrapped in a div, and username is directly within this div
+    Array.from(playerListDiv.children).forEach(child => {
+        if (child.textContent.includes(username)) {
+            // Correctly update the innerHTML to reflect the new status
+            child.innerHTML = `${username} - <span style="color: ${isReady ? 'green' : 'red'}">${isReady ? 'Ready' : 'Not Ready'}</span>`;
+        }
+    });
+}
+
 // Updates the sublobby playerlist
 function updatePlayerList(json){
     console.log("function call 3 js");
@@ -293,11 +356,12 @@ function updatePlayerList(json){
     }
 
 
-    
+
 
     
-  
-   
+
+
+
     
 
     

@@ -73,7 +73,7 @@ public class App extends WebSocketServer {
                 for(Player player : mainLobby.getPlayers()){
                     System.out.println("players in mainLobby: " + player.getName());
                 }
-                eventMaker.loginSuccess(conn); // send json message back to JS
+                eventMaker.loginSuccess(conn,username); // send json message back to JS
             }
             else{
                 eventMaker.loginError(conn, "invalid username");

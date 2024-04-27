@@ -15,12 +15,12 @@ public class Event {
         }
     }    
 
-    //Sends json for valid username login
-    public void loginSuccess(WebSocket connection){
+    public void loginSuccess(WebSocket connection, String username){
         JsonObject json = new JsonObject();
         json.addProperty("type", "loginSuccess");
+        json.addProperty("username", username);  // Add the username to the JSON response
         connection.send(json.toString());
-        System.out.println("json: " + json);
+        System.out.println("loginSuccess JSON: " + json);
     }
 
     //Sends json for invalid username login
@@ -63,8 +63,5 @@ public class Event {
     }
 
     
-    
-
-
 
 }

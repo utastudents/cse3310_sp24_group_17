@@ -123,23 +123,12 @@ button:hover {
   z-index: 1000; /* ensures it stays on top of other content */
 }
 
-/* Chat messages differentiation */
-#chatDisplay p:nth-child(odd) {
-  overflow-y: auto; /* Allows scrolling */
-  flex-grow: 1; /* Takes up all available space */
-  padding: 10px; /* Padding around messages for better readability */
-  background-color: #e1e1ff; /* Light blue for one set of messages */
+
+
+#chatDisplay {
+  background-color: rgb(212, 212, 201); /* Temporary bright background to confirm visibility */
 }
 
-#chatDisplay p:nth-child(even) {
-  background-color: #f1f1f1; /* Light grey for another set */
-  margin-left: 10px; /* Indentation for differentiation */
-}
-
-#chatArea, button {
-  flex-shrink: 0;
-  color: #04ff04;
-}
 
 /* BACK button placement */
 #backButton {

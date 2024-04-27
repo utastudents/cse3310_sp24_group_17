@@ -7,6 +7,7 @@
     <title>Word Search Game</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
     <script src="main.js" defer></script>
+    <script src="lobby.js" defer></script>
 </head>
 <body>
     
@@ -50,7 +51,7 @@
     <!-- Game control buttons -->
     <div class="button-group">
         <button id="startGameButton" onclick="startGame()" >START GAME</button>
-        <button onclick="ready()">READY</button>
+        <button onclick="updateStatus()">READY</button>
         <button onclick="Mainlobby()">BACK TO MAIN LOBBY</button>
         <button id="backButton" onclick="back()">BACK</button>
     </div>
@@ -103,7 +104,7 @@
     <!-- Chat Area (Hidden Initially) -->
     <div id="chatArea" style="display:none;">
         <h2>Chat</h2>
-        <div id="chatDisplay" ></div>
+        <div id="chatDisplay" style="height: 300px; overflow-y: scroll;"></div>
         <input type="text" id="chatInput" placeholder="Write your message here..." >
         <button type="submit" id="chatButton" onclick="sendMessage()"> Send </button>
     </div>
