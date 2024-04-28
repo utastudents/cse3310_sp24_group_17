@@ -376,12 +376,20 @@ function displayGrid(grid) {
 
 function displayGrid(grid) {
     const gridElement = document.getElementById("grid");
-    gridElement.innerHTML = '';  // Clear any previous content
-    grid.forEach(row => {
+    if (!gridElement) {
+        console.error('Grid element not found!');
+        return;
+    }
+
+    gridElement.innerHTML = ''; // Clear any existing grid content
+
+    // Iterate over each row in the grid
+    grid.forEach(function(row) {
         const rowElement = document.createElement('tr');
-        row.split('').forEach(char => {
+        // Iterate over each cell in the row
+        row.forEach(function(cell) {
             const cellElement = document.createElement('td');
-            cellElement.textContent = char;
+            cellElement.textContent = cell; // Each cell contains a character
             rowElement.appendChild(cellElement);
         });
         gridElement.appendChild(rowElement);
