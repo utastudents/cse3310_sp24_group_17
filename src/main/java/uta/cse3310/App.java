@@ -145,7 +145,7 @@ public class App extends WebSocketServer {
                 break;
             case "toggleReady":
                 username = json.get("username").getAsString();
-                togglePlayerReady(conn);
+                togglReady(conn);
                 
     
             default:
@@ -170,16 +170,18 @@ public class App extends WebSocketServer {
             player.getConn().send(message);
         }
     }    
-    public void togglePlayerReady(WebSocket conn) {
+    public void togglReady(WebSocket conn) {
         // Loop through all sublobbies
-        for (int i = 0; i < ActiveGames.size(); i++) {
-            SubLobby subLobby = ActiveGames.get(i);
+        for (SubLobby subLobby : ActiveGames) {
             // Loop through all players in the current sublobby
-            for (int j = 0; j < subLobby.getPlayers().size(); j++) {
-                Player player = subLobby.getPlayers().get(j);
+            for (Player player : subLobby.getPlayers()) {
                 if (player.getConn().equals(conn)) { // Check if the player's connection matches
                     player.setReady(!player.isReady()); // Toggle the readiness state
-                    //notifyReadinessChange(subLobby, player); // Optional: Notify all players in the sublobby
+    
+                    // Check if all players are ready and start the game if they are
+                    if (subLobby.allPlayersReady()) {
+                        startGameSilently(subLobby); // Start the game silently if all players are ready
+                    }
                     return; // Exit as soon as the matching player is found and updated
                 }
             }
