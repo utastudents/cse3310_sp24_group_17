@@ -64,9 +64,12 @@ connection.onmessage = function(event){
         console.log('Readiness Updated:', message.players);
             break;
     case 'gameStateUpdate':
-        displayGrid(message.grid);  // Assuming 'grid' is the key for the matrix data
+        displayGrid(message.grid);  
     break;
-    
+    case 'toggleReady':
+        username = json.get("username").getAsString();
+        toggleReady(conn);
+    break;
     default:
             console.log("Unknown message type:", data.type);
    }
