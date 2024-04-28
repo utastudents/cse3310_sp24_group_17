@@ -211,34 +211,7 @@ function startGame() {
     console.log("Start game request sent to the server., Display--");
 }
 
-function displayGrid(grid) {
-    const gridElement = document.getElementById("grid");
-    if (!gridElement) {
-        console.error('Grid element not found!');
-        return;
-    }
 
-    gridElement.innerHTML = ''; // Clear any existing grid content
-
-    if (!Array.isArray(grid)) {
-        console.error('Invalid grid data:', grid);
-        return;
-    }
-
-    grid.forEach(function(row) {
-        const rowElement = document.createElement('tr');
-        if (!Array.isArray(row)) {
-            console.error('Invalid row data:', row);
-            return; // Skip this iteration
-        }
-        row.forEach(function(cell) {
-            const cellElement = document.createElement('td');
-            cellElement.textContent = cell; // Assuming 'cell' is the character or value to display
-            rowElement.appendChild(cellElement);
-        });
-        gridElement.appendChild(rowElement);
-    });
-}
 
 
 
@@ -299,20 +272,6 @@ function handleSubLobbyError(){
     alert('Lobbies are all full - Try again later');
 }
 
-function showLogin(){
-    document.getElementById('lobbyPage').style.display = 'none';
-    document.getElementById('gamePage').style.display = 'none';
-}
-
-function showLobby(){
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('lobbyPage').style.display = 'block';
-    document.getElementById('gamePage').style.display = 'none';
-    document.getElementById('chatArea').style.display = 'block';
-}
-
-
-
 
 
 function initializeGrid() {
@@ -325,10 +284,28 @@ function initializeGrid() {
             cell.id = `cell-${i}-${j}`;
             cell.addEventListener("click", function() { handleCellClick(i, j); });
             
-            cell.textContent = String.fromCharCode(65 + Math.floor(Math.random() * 26));
         }
     }
   }
+  function displayGrid(grid) {
+    const gridElement = document.getElementById("grid");
+    if (!gridElement) {
+        console.error('Grid element not found!');
+        return;
+    }
+
+    gridElement.innerHTML = ''; // Clear any existing grid content
+
+    grid.forEach(function(row) {
+        const rowElement = document.createElement('tr');
+        row.forEach(function(cell) {
+            const cellElement = document.createElement('td');
+            cellElement.textContent = cell;
+            rowElement.appendChild(cellElement);
+        });
+        gridElement.appendChild(rowElement);
+    });
+}
 
   function updateStatus(isReady) {
     
@@ -369,47 +346,16 @@ function updatePlayerList(json){
     }
     
 }
-function displayGrid(grid) {
-    const gridElement = document.getElementById("grid");
-    if (!gridElement) {
-        console.error('Grid element not found!');
-        return;
-    }
-
-    gridElement.innerHTML = ''; 
-
-    // Loop through each row in the grid
-    grid.forEach(function(row) {
-        const rowElement = document.createElement('tr');
-        row.forEach(function(char) { 
-            const cellElement = document.createElement('td');
-            cellElement.textContent = char; 
-            rowElement.appendChild(cellElement);
-        });
-        gridElement.appendChild(rowElement);
-    });
+function showLogin(){
+    document.getElementById('lobbyPage').style.display = 'none';
+    document.getElementById('gamePage').style.display = 'none';
 }
 
-function displayGrid(grid) {
-    const gridElement = document.getElementById("grid");
-    if (!gridElement) {
-        console.error('Grid element not found!');
-        return;
-    }
-
-    gridElement.innerHTML = ''; // Clear any existing grid content
-
-    // Iterate over each row in the grid
-    grid.forEach(function(row) {
-        const rowElement = document.createElement('tr');
-        // Iterate over each cell in the row
-        row.forEach(function(cell) {
-            const cellElement = document.createElement('td');
-            cellElement.textContent = cell; // Each cell contains a character
-            rowElement.appendChild(cellElement);
-        });
-        gridElement.appendChild(rowElement);
-    });
+function showLobby(){
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('lobbyPage').style.display = 'block';
+    document.getElementById('gamePage').style.display = 'none';
+    document.getElementById('chatArea').style.display = 'block';
 }
 function showGame(grid, words) {
     // Logic to display the game grid and word list
@@ -418,7 +364,7 @@ function showGame(grid, words) {
     document.getElementById('gamePage').style.display = 'block';
     document.getElementById("loginPage").style.display = "none";
     document.getElementById('chatArea').style.display = 'block';
-    initializeGrid();
+    
     displayGrid(grid);
     displayWordList(words);
 }
