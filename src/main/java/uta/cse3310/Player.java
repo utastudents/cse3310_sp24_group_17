@@ -1,4 +1,5 @@
 package uta.cse3310;
+
 import org.java_websocket.WebSocket;
 
 public class Player {
@@ -7,54 +8,63 @@ public class Player {
     private int inGameScore;
     private int totalScore;
     private WebSocket conn;
+    private boolean isReady = false;
 
-    //Constructor
-    public Player(String name, WebSocket conn){
-        color = 0;
+    // Constructor
+    public Player(String name, WebSocket conn) {
+        this.color = 0;
         this.name = name;
-        inGameScore = 0;
-        totalScore = 0;
+        this.inGameScore = 0;
+        this.totalScore = 0;
         this.conn = conn;
     }
 
-    //Getters and Setters
-    public int getColor(){
+    // Getters and Setters
+    public int getColor() {
         return color;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public int getInGameScore(){
+    public int getInGameScore() {
         return inGameScore;
     }
 
-    public int getTotalScore(){
+    public int getTotalScore() {
         return totalScore;
     }
 
-    public WebSocket getConn(){
+    public WebSocket getConn() {
         return conn;
     }
 
-    public void setColor(int color){
+    public boolean isReady() {
+        return isReady;
+    }
+
+    public void setColor(int color) {
         this.color = color;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setInGameScore(int inGameScore){
+    public void setInGameScore(int inGameScore) {
         this.inGameScore = inGameScore;
     }
 
-    public void setTotalScore(int totalScore){
+    public void setTotalScore(int totalScore) {
         this.totalScore = totalScore;
     }
 
-    public void setConn(WebSocket conn){
+    public void setConn(WebSocket conn) {
         this.conn = conn;
+    }
+
+    public void setReady(boolean isReady) {
+        this.isReady = isReady;
     }
 }

@@ -61,7 +61,7 @@ public class Event {
         json.addProperty("message", playerName + ": " + message);
         conn.send(json.toString());
     }
-
+    
     
 
 }

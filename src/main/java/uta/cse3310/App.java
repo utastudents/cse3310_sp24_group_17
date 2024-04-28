@@ -7,6 +7,8 @@ import org.java_websocket.server.WebSocketServer;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Vector;
+
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -21,9 +23,7 @@ public class App extends WebSocketServer {
     private MainLobby mainLobby = new MainLobby();
     private Event eventMaker = new Event();
     //setup file
-    private Game gameBoard = new Game(
-        "src\\main\\java\\uta\\cse3310\\wordsNew.txt", 
-        10000, 50);
+    
         
 
 
@@ -52,119 +52,108 @@ public class App extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-    
-        System.out.println("message recieved: " + message);
-        //Parse JSON string 
+        System.out.println("message received: " + message);
+        // Parse JSON string
         JsonObject json = JsonParser.parseString(message).getAsJsonObject();
-
-        //Process the type of request
+    
+        // Process the type of request
         String type = json.get("type").getAsString();
         System.out.println("type: " + type);
-
-        if(type.equals("login")){
-            //Parse JSON string for event data (username)
-            JsonObject eventData = json.getAsJsonObject("eventData");
-            System.out.println("eventData: " + eventData);
-            String username = eventData.get("username").getAsString();
-            System.out.println("username: " + username);
-
-            //add new player to mainLobby - returns true if successfulky added
-            if(mainLobby.logIn(conn, username)){
-                for(Player player : mainLobby.getPlayers()){
-                    System.out.println("players in mainLobby: " + player.getName());
+    
+        switch (type) {
+            case "login":
+                JsonObject eventData = json.getAsJsonObject("eventData");
+                System.out.println("eventData: " + eventData);
+                String username = eventData.get("username").getAsString();
+                System.out.println("username: " + username);
+    
+                if (mainLobby.logIn(conn, username)) {
+                    for (Player player : mainLobby.getPlayers()) {
+                        System.out.println("players in mainLobby: " + player.getName());
+                    }
+                    eventMaker.loginSuccess(conn, username); // Send JSON message back to JS
+                } else {
+                    eventMaker.loginError(conn, "invalid username");
                 }
-                eventMaker.loginSuccess(conn,username); // send json message back to JS
-            }
-            else{
-                eventMaker.loginError(conn, "invalid username");
-            }
-            
-        }
-        else if(type.equals("createSubLobby")){
-            JsonObject eventData = json.getAsJsonObject("eventData");
-            System.out.println("eventData2: " + eventData);
-            int subLobbySize = eventData.get("subLobbySize").getAsInt();
-            System.out.println("SubLobbysize: " + subLobbySize);
-
-            Player newPlayer = mainLobby.findPlayerInMainLobby(conn);
-            System.out.println("new player: " + newPlayer.getName());
-
-            SubLobby subLobby = SubLobby.createOrJoinSubLobby(subLobbySize, ActiveGames, newPlayer);
-
-            if(subLobby != null){
-                eventMaker.joinedSubLobbySuccess(conn, subLobby.getPlayers());
-            }
-            else{
-                eventMaker.joinedSubLobbyError(conn);
-            }
-
-            for (SubLobby SL : ActiveGames) {
-                System.out.println("lobby: " + SL.getLobbyID());
-                for (Player player : SL.getPlayers()){ 
-                    System.out.println("Player: " + player.getName());
+                break;
+    
+            case "createSubLobby":
+                eventData = json.getAsJsonObject("eventData");
+                System.out.println("eventData2: " + eventData);
+                int subLobbySize = eventData.get("subLobbySize").getAsInt();
+                System.out.println("SubLobbysize: " + subLobbySize);
+    
+                Player newPlayer = mainLobby.findPlayerInMainLobby(conn);
+                System.out.println("new player: " + newPlayer.getName());
+    
+                SubLobby subLobby = SubLobby.createOrJoinSubLobby(subLobbySize, ActiveGames, newPlayer);
+                if (subLobby != null) {
+                    eventMaker.joinedSubLobbySuccess(conn, subLobby.getPlayers());
+                } else {
+                    eventMaker.joinedSubLobbyError(conn);
                 }
-            }
-         
-            
-        }//sublobby end
-        else if(type.equals("startGame")){
-            System.out.println("Server side game Started");
-                // Initialize game board or ensure it's ready
-                /*
-                 * check if the both players are ready case
-                 * if not reroute to make sure both players are ready
-                 * if Both are ready, move to initialize the game
-                 */
-                gameBoard.initializeMatrix();
-                gameBoard.placeWords();
-                gameBoard.fillWithrandom();
-                 // Send back the game data to client side
-                String gridData = gameBoard.getGridAndWordsAsJson();
-                conn.send(gridData);  // Send grid data to the client who requested to start the game
-                System.out.println("Game data send to client");
-        }
-        else if (type.equals("resetLobbyState")) {
-            String username = json.get("username").getAsString();
-            if (mainLobby.resetUser(username)) {
-                System.out.println("Lobby state reset for " + username);
-                JsonObject response = new JsonObject();
-                response.addProperty("type", "resetConfirmation");
-                response.addProperty("status", "success");
-                conn.send(response.toString());
-            } else {
-                JsonObject response = new JsonObject();
-                response.addProperty("type", "resetConfirmation");
-                response.addProperty("status", "failed");
-                conn.send(response.toString());
-            }
-        }
-        else if (type.equals("chatMessage")) {
-            //working chat still need fix
-            String playerName = json.get("playerName").getAsString();
-            String chatMessage = json.get("message").getAsString();
-            JsonObject chatJson = new JsonObject();
-            chatJson.addProperty("type", "chatMessage");
-             chatJson.addProperty("playerName", playerName);
-            chatJson.addProperty("message", chatMessage);
-            broadcast(chatJson.toString()); // This sends the chat message to all connected clients
-        }
-        else if (type.equals("sendErrorMessage")) {
-            JsonObject eventData = json.getAsJsonObject("eventData");
-            String errorMessage = eventData.get("errorMessage").getAsString();
-            WebSocket playerConn = mainLobby.findPlayerWebSocket(eventData.get("username").getAsString());
+                for (SubLobby SL : ActiveGames) {
+                    System.out.println("lobby: " + SL.getLobbyID());
+                    for (Player player : SL.getPlayers()) {
+                        System.out.println("Player: " + player.getName());
+                    }
+                }
+                break;
+    
+            case "startGame":
+                System.out.println("Server side game Started");
+                // Additional game start logic here
+                System.out.println("Game data sent to client");
+                break;
+    
+            case "resetLobbyState":
+                username = json.get("username").getAsString();
+                if (mainLobby.resetUser(username)) {
+                    System.out.println("Lobby state reset for " + username);
+                    JsonObject response = new JsonObject();
+                    response.addProperty("type", "resetConfirmation");
+                    response.addProperty("status", "success");
+                    conn.send(response.toString());
+                } else {
+                    JsonObject response = new JsonObject();
+                    response.addProperty("type", "resetConfirmation");
+                    response.addProperty("status", "failed");
+                    conn.send(response.toString());
+                }
+                break;
+    
+            case "chatMessage":
+                String playerName = json.get("playerName").getAsString();
+                String chatMessage = json.get("message").getAsString();
+                JsonObject chatJson = new JsonObject();
+                chatJson.addProperty("type", "chatMessage");
+                chatJson.addProperty("playerName", playerName);
+                chatJson.addProperty("message", chatMessage);
+                broadcast(chatJson.toString()); // This sends the chat message to all connected clients
+                break;
+    
+            case "sendErrorMessage":
+                eventData = json.getAsJsonObject("eventData");
+                String errorMessage = eventData.get("errorMessage").getAsString();
+                WebSocket playerConn = mainLobby.findPlayerWebSocket(eventData.get("username").getAsString());
                 if (playerConn != null) {
                     JsonObject errorResponse = new JsonObject();
                     errorResponse.addProperty("type", "errorMessage");
                     errorResponse.addProperty("message", errorMessage);
                     playerConn.send(errorResponse.toString()); // Sends the error message only to the requesting client
                 }
+                break;
+            case "toggleReady":
+                username = json.get("username").getAsString();
+                togglePlayerReady(conn);
+                
+    
+            default:
+                System.out.println("Unhandled message type: " + type);
+                break;
         }
-        
-
-
-
-        
     }
+    
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
@@ -181,6 +170,47 @@ public class App extends WebSocketServer {
             player.getConn().send(message);
         }
     }    
+    public void togglePlayerReady(WebSocket conn) {
+        // Loop through all sublobbies
+        for (int i = 0; i < ActiveGames.size(); i++) {
+            SubLobby subLobby = ActiveGames.get(i);
+            // Loop through all players in the current sublobby
+            for (int j = 0; j < subLobby.getPlayers().size(); j++) {
+                Player player = subLobby.getPlayers().get(j);
+                if (player.getConn().equals(conn)) { // Check if the player's connection matches
+                    player.setReady(!player.isReady()); // Toggle the readiness state
+                    //notifyReadinessChange(subLobby, player); // Optional: Notify all players in the sublobby
+                    return; // Exit as soon as the matching player is found and updated
+                }
+            }
+        }
+    }
+
+    
+    private void startGame(SubLobby subLobby) {
+        // Logic to start the game goes here
+        subLobby.getGameMatrix();// Assume this prepares the game
+    }
+    private String convertMatrixToJson(char[][] matrix) {
+        JsonObject obj = new JsonObject();
+        JsonArray rows = new JsonArray();
+        for (char[] row : matrix) {
+            JsonArray jsonRow = new JsonArray();
+            for (char c : row) {
+                jsonRow.add(Character.toString(c));
+            }
+            rows.add(jsonRow);
+        }
+        obj.add("grid", rows);
+        obj.addProperty("type", "gameStateUpdate");
+        return obj.toString();
+    }
+    private void startGameSilently(SubLobby subLobby) {
+        char[][] gameMatrix = subLobby.getGameMatrix();  // Get the game matrix
+        String matrixJson = convertMatrixToJson(gameMatrix);   // Convert matrix to JSON string
+        subLobby.broadcastToSubLobby(matrixJson);  // Send the game matrix to all players
+    }
+    
 
     
     

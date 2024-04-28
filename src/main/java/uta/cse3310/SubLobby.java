@@ -1,6 +1,9 @@
 package uta.cse3310;
 
 import java.util.Vector;
+
+import org.java_websocket.WebSocket;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +14,8 @@ public class SubLobby{
     private List<Player> players;
 
     public static final int MAX_ACTIVE_GAMES = 5;
+    public Game game=new Game("Words.txt",150,50);
+
 
     public SubLobby(int subLobbySize, Player player1){
         this.subLobbySize = subLobbySize;
@@ -76,6 +81,33 @@ public class SubLobby{
     //Getter for lobby size
     public int getSubLobbySize(){
         return subLobbySize;
+    }
+    public char[][] getGameMatrix(){
+        return game.getMatrix();
+    }
+    
+    public List<String> getPlayerNames() {
+        List<String> names = new ArrayList<>();
+        for (Player player : players) {
+            names.add(player.getName());
+        }
+        return names;
+    }
+    public boolean allPlayersReady() {
+        for (Player player : players) {
+            if (!player.isReady()) {
+                return false;  // If any player is not ready, return false
+            }
+        }
+        return true;  
+    }
+    public void broadcastToSubLobby(String message) {
+        for (Player player : players) {
+            WebSocket conn = player.getConn();
+            if (conn != null && conn.isOpen()) {
+                conn.send(message);
+            }
+        }
     }
 
 

@@ -51,7 +51,7 @@ connection.onmessage = function(event){
         handleSubLobbyError();
         break;
     case 'StartGame':
-            showGame(data.grid,data.words );
+            showGame(data.grid, data.words);
             break;
     case 'resetLobbyState':
             console.log("Lobby state reset.");
@@ -60,12 +60,13 @@ connection.onmessage = function(event){
         console.log("Displaying chat message from:", data.playerName);
             displayChatMessage(data.playerName, data.message);
             break;
-    case 'errorMessage':
-            displayErrorMessage(data.message);
+    case 'updateReadiness':
+        console.log('Readiness Updated:', message.players);
             break;
-    case 'toggleready':
-        toggleready(username);
-        break;
+    case 'gameStateUpdate':
+        displayGrid(message.grid);  // Assuming 'grid' is the key for the matrix data
+    break;
+    
     default:
             console.log("Unknown message type:", data.type);
    }
@@ -113,7 +114,7 @@ function sendMessage() {
         message: message
     };
     connection.send(JSON.stringify(data));
-    document.getElementById('chatInput').value = ''; // Clear input after sending
+    document.getElementById('chatInput').value = '';
 }
 
 
@@ -198,24 +199,23 @@ function startGame() {
     var data = {
         type: "startGame",
         eventData: {
-        } // Include any necessary event data, if needed
+        } 
     };
-    //display game in UI
-    // showGame();
+    
     connection.send(JSON.stringify(data)); // Send the start game request to the server
     console.log("Start game request sent to the server., Display--");
-    //  displayGridAndWords(data);
 }
 
-function displayGrid() {
-    var gridElement = document.getElementById("grid");
-    gridElement.innerHTML = ''; // Clear previous entries if any
+function displayGrid(grid) {
+    const gridElement = document.getElementById("grid");
+    gridElement.innerHTML = '';  // Clear any existing grid
+
     grid.forEach(function(row) {
-        var rowElement = document.createElement("tr");
-        row.split('').forEach(function(char) {
-            var cell = document.createElement("td");
-            cell.textContent = char;
-            rowElement.appendChild(cell);
+        const rowElement = document.createElement('tr');
+        row.forEach(function(cellChar) {
+            const cellElement = document.createElement('td');
+            cellElement.textContent = cellChar;
+            rowElement.appendChild(cellElement);
         });
         gridElement.appendChild(rowElement);
     });
@@ -298,8 +298,8 @@ function showGame(grid, words){
     document.getElementById("gamePage").style.display = "block";
     document.getElementById('chatArea').style.display = 'block';
     
-    initializeGrid(grid);
-    displayWordList(words);
+    
+    
     
 
 }
@@ -321,10 +321,11 @@ function initializeGrid() {
   }
 
   function updateStatus(isReady) {
-    // Construct the message to send the updated status to the server
+    
     const message = { type: 'updateStatus', username: username, isReady: isReady };
     connection.send(JSON.stringify(message));
 }
+
 
 function updateLocalPlayerReadyStatus() {
     const playerListDiv = document.getElementById('playerList');
@@ -356,15 +357,53 @@ function updatePlayerList(json){
     function Mainlobby(){
 
     }
-
-
-
-
-    
-
-
-
-    
-
     
 }
+function displayWordList(words) {
+    const wordListElement = document.getElementById("wordList");
+    wordListElement.innerHTML = '';  // Clear previous words
+    words.forEach(word => {
+        const wordItem = document.createElement("li");
+        wordItem.textContent = word;
+        wordListElement.appendChild(wordItem);
+    });
+}
+function displayGrid(grid) {
+    const gridElement = document.getElementById("grid");
+    gridElement.innerHTML = '';  // Clear any previous content
+    grid.forEach(row => {
+        const rowElement = document.createElement('tr');
+        row.split('').forEach(char => {
+            const cellElement = document.createElement('td');
+            cellElement.textContent = char;
+            rowElement.appendChild(cellElement);
+        });
+        gridElement.appendChild(rowElement);
+    });
+}
+function showGame(grid, words) {
+    // Logic to display the game grid and word list
+    document.getElementById('lobbyPage').style.display = 'none';
+    document.getElementById('gamePage').style.display = 'block';
+    displayGrid(grid);
+    displayWordList(words);
+}
+function toggleReady() {
+    
+        var data = {
+            type: "toggleReady",
+            username: currentPlayerName
+        };
+        connection.send(JSON.stringify(data));
+    }
+
+    function updateReadinessDisplay(players) {
+        console.log("Updating readiness display.");
+        players.forEach(function(player) {
+            var playerElement = document.getElementById(player.username + '_ready');
+            if (playerElement) {
+                playerElement.textContent = player.isReady ? "Ready" : "Not Ready";
+            }
+        });
+    }
+    

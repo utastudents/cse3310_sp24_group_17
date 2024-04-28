@@ -66,7 +66,7 @@ public class MainLobby {
     }
 
     // Helper method to find a player by username
-    private Player findPlayerByUsername(String username) {
+    public Player findPlayerByUsername(String username) {
         for (Player player : players) {
             if (player.getName().equals(username)) {
                 return player;
@@ -103,10 +103,5 @@ public WebSocket findPlayerWebSocket(String username) {
         return players;
     }
 
-  
-
-
-
-    
 }
 
