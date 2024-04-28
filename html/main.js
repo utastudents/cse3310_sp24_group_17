@@ -26,7 +26,9 @@ connection.onmessage = function(event){
     //parse message for object
     var data = JSON.parse(message);
     console.log("Handling message type: ", data.type);
-
+    if (data.type === 'gameStateUpdate' && Array.isArray(data.grid)) {
+        displayGrid(data.grid);
+    }
     //Handle incoming json messages
    switch(data.type){
     case 'loginSuccess':
@@ -211,13 +213,27 @@ function startGame() {
 
 function displayGrid(grid) {
     const gridElement = document.getElementById("grid");
-    gridElement.innerHTML = '';  // Clear any existing grid
+    if (!gridElement) {
+        console.error('Grid element not found!');
+        return;
+    }
+
+    gridElement.innerHTML = ''; // Clear any existing grid content
+
+    if (!Array.isArray(grid)) {
+        console.error('Invalid grid data:', grid);
+        return;
+    }
 
     grid.forEach(function(row) {
         const rowElement = document.createElement('tr');
-        row.forEach(function(cellChar) {
+        if (!Array.isArray(row)) {
+            console.error('Invalid row data:', row);
+            return; // Skip this iteration
+        }
+        row.forEach(function(cell) {
             const cellElement = document.createElement('td');
-            cellElement.textContent = cellChar;
+            cellElement.textContent = cell; // Assuming 'cell' is the character or value to display
             rowElement.appendChild(cellElement);
         });
         gridElement.appendChild(rowElement);
