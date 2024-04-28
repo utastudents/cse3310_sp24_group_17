@@ -33,26 +33,14 @@ public class SubLobby{
         return players.size() >= subLobbySize;
     }
 
-    public void findPlayerInSubLobby(Vector<SubLobby> ActiveGames, Player playerToFind){
-        for (SubLobby subLobby : ActiveGames) {
-            for (Player player : subLobby.getPlayers()){ 
-                if (player.equals(playerToFind)) { // Assuming proper equals() implementation in Player class
-                    subLobby.removePlayer(player); // Remove the player from the existing sub-lobby
-                    return;
-                }
-            }
-        }
-    }
-    
-
     // creates a sublobby if other lobbies of the same type are full. joins a sublobby if existing lobby is not full
     public static SubLobby createOrJoinSubLobby(int subLobbySize, Vector<SubLobby> ActiveGames, Player newPlayer){
         //loop through to see if player is already in a sublobby
         outerloop:
-        for (SubLobby subLobby : ActiveGames) {
+        for (SubLobby subLobby : ActiveGames){
             for (Player player : subLobby.getPlayers()){ 
-                if (player.equals(newPlayer)) { // Assuming proper equals() implementation in Player class
-                    subLobby.removePlayer(player); // Remove the player from the existing sub-lobby
+                if (player.equals(newPlayer)){ 
+                    subLobby.removePlayer(player); 
                     break outerloop;
                 }
             }
