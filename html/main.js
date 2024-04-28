@@ -394,6 +394,7 @@ function showGame(grid, words) {
     document.getElementById('gamePage').style.display = 'block';
     document.getElementById("loginPage").style.display = "none";
     document.getElementById('chatArea').style.display = 'block';
+    initializeGrid();
     displayGrid(grid);
     displayWordList(words);
 }
