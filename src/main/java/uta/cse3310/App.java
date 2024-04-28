@@ -11,6 +11,7 @@ import java.util.Vector;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -193,7 +194,7 @@ public class App extends WebSocketServer {
         // Logic to start the game goes here
         subLobby.getGameMatrix();// Assume this prepares the game
     }
-    private String convertMatrixToJson(char[][] matrix) {
+    /*private String convertMatrixToJson(char[][] matrix) {
         JsonObject obj = new JsonObject();
         JsonArray rows = new JsonArray();
         for (char[] row : matrix) {
@@ -206,9 +207,14 @@ public class App extends WebSocketServer {
         obj.add("grid", rows);
         obj.addProperty("type", "gameStateUpdate");
         return obj.toString();
+    }*/
+    private String convertMatrixToJson(char[][] matrix){
+        Gson gson =new Gson();
+        String json=gson.toJson(matrix);
+        return json;
     }
     private void startGameSilently(SubLobby subLobby) {
-        char[][] gameMatrix = subLobby.getGameMatrix();  // Get the game matrix
+        char[][] gameMatrix = subLobby.getGameMatrix();  
         String matrixJson = convertMatrixToJson(gameMatrix);   // Convert matrix to JSON string
         subLobby.broadcastToSubLobby(matrixJson);  // Send the game matrix to all players
     }
