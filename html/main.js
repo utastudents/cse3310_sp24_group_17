@@ -64,7 +64,7 @@ connection.onmessage = function(event){
         console.log('Readiness Updated:', message.players);
             break;
     case 'gameStateUpdate':
-        displayGrid(message.grid);  
+        displayGrid(data.grid);  
     break;
     case 'toggleReady':
         username = json.get("username").getAsString();
@@ -295,17 +295,16 @@ function showLobby(){
     document.getElementById('chatArea').style.display = 'block';
 }
 
-function showGame(grid, words){
+function showGame(grid, words) {
+    console.log('showGame called with grid:', grid, 'and words:', words);
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("lobbyPage").style.display = "none";
     document.getElementById("gamePage").style.display = "block";
     document.getElementById('chatArea').style.display = 'block';
-    
-    
-    
-    
-
+    displayGrid(grid);
+    displayWordList(words);
 }
+
 
 
 function initializeGrid() {
@@ -362,15 +361,32 @@ function updatePlayerList(json){
     }
     
 }
-function displayWordList(words) {
-    const wordListElement = document.getElementById("wordList");
-    wordListElement.innerHTML = '';  // Clear previous words
-    words.forEach(word => {
-        const wordItem = document.createElement("li");
-        wordItem.textContent = word;
-        wordListElement.appendChild(wordItem);
+function displayGrid(grid) {
+    const gridElement = document.getElementById("grid");
+    if (!gridElement) {
+        console.log("Grid element not found");
+        return; // Stop the function if the grid element is not found
+    }
+
+    gridElement.innerHTML = ''; // Clear any existing grid content
+
+    // Ensure 'grid' is an array of arrays (2D array)
+    if (!Array.isArray(grid) || !Array.isArray(grid[0])) {
+        console.log("Invalid grid data:", grid);
+        return; // Stop the function if grid data is invalid
+    }
+
+    grid.forEach(row => {
+        const rowElement = document.createElement('tr');
+        row.forEach(cellChar => {
+            const cellElement = document.createElement('td');
+            cellElement.textContent = cellChar;
+            rowElement.appendChild(cellElement);
+        });
+        gridElement.appendChild(rowElement);
     });
 }
+
 function displayGrid(grid) {
     const gridElement = document.getElementById("grid");
     gridElement.innerHTML = '';  // Clear any previous content
