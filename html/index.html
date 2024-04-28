@@ -45,7 +45,7 @@
         <h3>4 Player Mode</h3>
         <!-- Players will be moved here when '4 players' is clicked -->
     </div>
-    
+      <div id="timer">20:00</div>
     
 
     <!-- Game control buttons -->
@@ -110,6 +110,40 @@
     </div>
 
     <div id="errorDisplay" style="display:none;"></div> <!-- For displaying error messages -->
+
+         </div>
+    
+    <script>
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            var timerInterval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    alert("Time's up!");
+                    display.textContent = "00:00"; // Reset timer display
+                }
+            }, 1000);
+        }
+
+        function startGameTimer() {
+            var twentyMinutes = 60 * 20, // 20 minutes in seconds
+                display = document.querySelector('#timer');
+            startTimer(twentyMinutes, display);
+        }
+
+        window.onload = function() {
+            startGameTimer(); // You can also trigger this based on game start conditions
+        };
+    </script>
+        
 
 </body>
 </html>
