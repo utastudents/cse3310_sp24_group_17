@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.security.PublicKey;
 
 class Game {
-    private  int MAX = 50;
+    private  int MAX = 20;
     private  static final Random random = new Random();
     private int gameID;
     private char[][] wordMatrix = new char[MAX][MAX];

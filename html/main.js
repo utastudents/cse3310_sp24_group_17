@@ -64,7 +64,7 @@ connection.onmessage = function(event){
         updateReadinessDisplay(data);
         break;
     case 'matrixCreated':
-        generateGrid(json.eventData);
+        generateGrid(data);
         showGame();
         break;
     default:
@@ -241,8 +241,11 @@ function handleSubLobbyError(){
 
 
   function generateGrid(json) {
-    const rows = Data.grid.length;
-    const cols = Data.grid[0].length;
+
+    const gridData = JSON.parse(json.eventData);
+
+    const rows = gridData.length;
+    const cols = gridData[0].length;
     const gridElement = document.getElementById('grid');
     gridElement.innerHTML = ''; // Clear previous grid if any
 
@@ -251,13 +254,14 @@ function handleSubLobbyError(){
         for (let j = 0; j < cols; j++) {
             const cellButton = document.createElement('button');
             cellButton.id = `cell-${i}-${j}`; // Assign unique ID
-            cellButton.innerHTML = Data.grid[i][j]; // Set letter from JSON data
+            cellButton.innerHTML = gridData[i][j]; // Set letter from grid data
             cellButton.onclick = function() { handleCellClick(i, j); };
             row.appendChild(cellButton);
         }
         gridElement.appendChild(row);
     }
 }
+
 function handleCellClick(row, col) {
     const cellId = `cell-${row}-${col}`;
     const cell = document.getElementById(cellId);
@@ -315,7 +319,7 @@ function showLobby(){
 }
 function showGame() {
     // Logic to display the game grid and word list
-    console.log('showGame called with grid:', grid, 'and words:', words);
+    //console.log('showGame called with grid:', grid, 'and words:', words);
     document.getElementById('lobbyPage').style.display = 'none';
     document.getElementById('gamePage').style.display = 'block';
     document.getElementById("loginPage").style.display = "none";

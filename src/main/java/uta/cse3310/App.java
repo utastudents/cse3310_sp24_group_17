@@ -233,8 +233,8 @@ public class App extends WebSocketServer {
         char[][] gameMatrix = subLobby.getGameMatrix(); 
         String matrixJson = convertMatrixToJson(gameMatrix);   // Convert matrix to JSON string
         json.addProperty("eventData", matrixJson);
-        subLobby.broadcastToSubLobby(matrixJson);  // Send the game matrix to all players in sublobby
-        System.out.println("WordGridJson: " + matrixJson);
+        subLobby.broadcastToSubLobby(json.toString());  // Send the game matrix to all players in sublobby
+        System.out.println("WordGridJson: " + json);
     }
     
 
