@@ -146,12 +146,10 @@ public class App extends WebSocketServer {
                 break;
             case "toggleReady":
                 username = json.get("username").getAsString();
-                togglReady(conn);
-                
-    
-            default:
-                System.out.println("Unhandled message type: " + type);
+                toggleReady(conn);
                 break;
+    
+           
         }
     }
     
@@ -171,18 +169,36 @@ public class App extends WebSocketServer {
             player.getConn().send(message);
         }
     }    
-    public void togglReady(WebSocket conn) {
+    public void toggleReady(WebSocket conn) {
         // Loop through all sublobbies
+        JsonObject json = new JsonObject();
+    
         for (SubLobby subLobby : ActiveGames) {
             // Loop through all players in the current sublobby
+            JsonArray playerArray = new JsonArray();
             for (Player player : subLobby.getPlayers()) {
                 if (player.getConn().equals(conn)) { // Check if the player's connection matches
                     player.setReady(!player.isReady()); // Toggle the readiness state
     
+                    System.out.println("ready: " + player.isReady());
                     // Check if all players are ready and start the game if they are
-                    if (subLobby.allPlayersReady()) {
-                        startGameSilently(subLobby);
-                        // Start the game silently if all players are ready
+                    if (subLobby.allPlayersReady() && subLobby.getPlayers().size() == subLobby.getSubLobbySize()) {
+                        startGameSilently(subLobby); // Start the game silently if all players are ready
+                    } 
+                    // else update ready in playerlist - change name to green
+                    else {
+                        json.addProperty("type", "toggleReady");
+                        // Loop through all players in the current sublobby to construct the player array
+                        for (Player playersinSub : subLobby.getPlayers()) {
+                            JsonObject playerObject = new JsonObject();
+                            playerObject.addProperty("name", playersinSub.getName());
+                            playerObject.addProperty("ready", playersinSub.isReady()); 
+                            playerArray.add(playerObject);
+                        }
+                        json.add("eventData", playerArray);
+                        subLobby.broadcastToSubLobby(json.toString());
+    
+                        System.out.println("Ready Up Json: " + json);
                     }
                     return; // Exit as soon as the matching player is found and updated
                 }
@@ -214,10 +230,15 @@ public class App extends WebSocketServer {
         String json=gson.toJson(matrix);
         return json;
     }
-    private void startGameSilently(SubLobby subLobby) {
-        char[][] gameMatrix = subLobby.getGameMatrix();  
+    private void startGameSilently(SubLobby subLobby) { 
+        JsonObject json = new JsonObject();
+        json.addProperty("type", "matrixCreated");
+
+        char[][] gameMatrix = subLobby.getGameMatrix(); 
         String matrixJson = convertMatrixToJson(gameMatrix);   // Convert matrix to JSON string
-        subLobby.broadcastToSubLobby(matrixJson);  // Send the game matrix to all players
+        json.addProperty("eventData", matrixJson);
+        subLobby.broadcastToSubLobby(matrixJson);  // Send the game matrix to all players in sublobby
+        System.out.println("WordGridJson: " + matrixJson);
     }
     
 

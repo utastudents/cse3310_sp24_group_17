@@ -50,30 +50,24 @@ connection.onmessage = function(event){
         handleSubLobbyError();
         break;
     case 'StartGame':
-            showGame(data);
+        showGame(data);
         break;
-    case 'startGameScilently':
-        console.log("nothing to print SGS"); 
-
-        break;
-    case 'resetLobbyState':
-            console.log("Lobby state reset.");
-            break;
+    //case 'resetLobbyState':
+    //        console.log("Lobby state reset.");
+    //        break;
     case 'chatMessage':
         console.log("Displaying chat message from:", data.playerName);
             displayChatMessage(data.playerName, data.message);
             break;
-    case 'updateReadiness':
-        console.log('Readiness Updated:', message.players);
-            break;
     case 'gameStateUpdate':
         console.log("nothing to print"); 
         displayGrid(data.grid);
-    break;
+        break;
     case 'toggleReady':
-        username = json.get("username").getAsString();
-        toggleReady(conn);
-    break;
+        updateReadinessDisplay(data);
+        break;
+    case 'matrixCreated':
+        generateGrid(json.eventData);
     default:
             console.log("Unknown message type:", data.type);
    }
@@ -95,10 +89,11 @@ function displayChatMessage(playerName, message) {
 
 
 function displayErrorMessage(message) {
-    const errorDisplay = document.getElementById('errorDisplay'); // Ensure this element exists
+    const errorDisplay = document.getElementById('errorDisplay'); 
     errorDisplay.textContent = message; // Display or handle error messages
 }
 
+//Chat function
 function sendMessage() {
     if (connection.readyState !== WebSocket.OPEN) {
         console.log('WebSocket is not open. Current state:', connection.readyState);
@@ -146,11 +141,6 @@ function back() {
         document.getElementById('gamePage').style.display = 'none';
         document.getElementById('lobbyPage').style.display = 'block';
         resetGameState();
-    } else if (document.getElementById('lobbyPage').style.display === 'block') {
-        console.log('Currently on lobby page, switching to login page');
-        document.getElementById('lobbyPage').style.display = 'none';
-        document.getElementById('loginPage').style.display = 'block';
-        resetLobbyState();
     } else {
         console.log('No page change needed');
     }
@@ -179,7 +169,7 @@ function resetGameState() {
 }
 
 
-function resetLobbyState() {
+/*function resetLobbyState() {
     const username = document.getElementById('username').value;
     console.log('Resetting lobby state for', username); // Debugging
     document.getElementById('username').value = "";
@@ -197,7 +187,7 @@ function resetLobbyState() {
     } else {
         console.log('WebSocket is not open');
     }
-}
+}*/
 
 
 
@@ -229,25 +219,6 @@ function login(){
 
 //send json of which sublobby player wants to join
 function createSubLobby(subLobbySize){
-    /*var button1 = document.getElementById("2playerButton");
-    var button2 = document.getElementById("3playerButton");
-    var button3 = document.getElementById("4playerButton");
-
-    if(subLobbySize === 2){
-        button1.disabled = true;
-        button2.disabled = false;
-        button3.disabled = false;
-    }
-    else if(subLobbySize === 3){
-        button1.disabled = false;
-        button2.disabled = true;
-        button3.disabled = false;
-    }
-    else if(subLobbySize === 4){
-        button1.disabled = false;
-        button2.disabled = false;
-        button3.disabled = true;
-    }*/
 
     var data = {
         type: "createSubLobby",
@@ -269,19 +240,7 @@ function handleSubLobbyError(){
     alert('Lobbies are all full - Try again later');
 }
 
-function initializeGrid() {
-    const grid = document.getElementById("grid");
-    let gridsize= 50;
-    for (let i = 0; i < gridsize; i++) {
-        const row = grid.insertRow();
-        for (let j = 0; j < gridsize; j++) {
-            const cell = row.insertCell();
-            cell.id = `cell-${i}-${j}`;
-            cell.addEventListener("click", function() { handleCellClick(i, j); });
-            
-        }
-    }
-  }
+
   function generateGrid(json) {
     const rows = Data.grid.length;
     const cols = Data.grid[0].length;
@@ -321,16 +280,6 @@ function handleCellClick(row, col) {
 }
 
 
-function updateLocalPlayerReadyStatus() {
-    const playerListDiv = document.getElementById('playerList');
-    // Assuming each player's entry is wrapped in a div, and username is directly within this div
-    Array.from(playerListDiv.children).forEach(child => {
-        if (child.textContent.includes(username)) {
-            // Correctly update the innerHTML to reflect the new status
-            child.innerHTML = `${username} - <span style="color: ${isReady ? 'green' : 'red'}">${isReady ? 'Ready' : 'Not Ready'}</span>`;
-        }
-    });
-}
 
 // Updates the sublobby playerlist
 function updatePlayerList(json){
@@ -344,6 +293,7 @@ function updatePlayerList(json){
     players.forEach(function(player) {
         var playerListItem = document.createElement("li");
         playerListItem.textContent = player;
+        playerListItem.style.color = 'red';
         playersListElement.appendChild(playerListItem);
         console.log(player);
     });
@@ -382,13 +332,23 @@ function toggleReady() {
         connection.send(JSON.stringify(data));
     }
 
-    function updateReadinessDisplay(players) {
-        console.log("Updating readiness display.");
-        players.forEach(function(player) {
-            var playerElement = document.getElementById(player.username + '_ready');
-            if (playerElement) {
-                playerElement.textContent = player.isReady ? "Ready" : "Not Ready";
-            }
-        });
-    }
+function updateReadinessDisplay(json) {
+    console.log("Function call to toggle readiness status");
+        
+    var players = json.eventData;
+        
+    players.forEach(function(player) {
+        var playerName = player.name;
+        var playerReady = player.ready;
+        
+        // Find the player element in the player list
+        var playerListItem = document.getElementById(playerName);
+        
+        if (playerListItem) {
+         // Update color based on readiness status
+            playerListItem.style.color = playerReady ? 'green' : 'red';
+        }
+    });
+}
+    
     

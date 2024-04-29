@@ -14,7 +14,7 @@ public class SubLobby{
     private List<Player> players;
 
     public static final int MAX_ACTIVE_GAMES = 5;
-    public Game game=new Game("Words.txt",150,50);
+    public Game game;
 
 
     public SubLobby(int subLobbySize, Player player1){
@@ -22,6 +22,7 @@ public class SubLobby{
         this.lobbyID = "lobby_"+(++lobbyCounter); //creates unique id for each game
         this.players = new ArrayList<>(); //array for sublobby players
         this.players.add(player1); //sets the creater of lobby as the first player
+        this.game = new Game("words.txt",150,50);
     }
 
     //adds player to sublobby
