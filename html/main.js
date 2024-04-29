@@ -25,10 +25,7 @@ connection.onmessage = function(event){
 
     //parse message for object
     var data = JSON.parse(message);
-    console.log("Handling message type: ", data.type);
-    if (data.type === 'gameStateUpdate' && Array.isArray(data.grid)) {
-        displayGrid(data.grid);
-    }
+    
     //Handle incoming json messages
    switch(data.type){
     case 'loginSuccess':
@@ -53,8 +50,12 @@ connection.onmessage = function(event){
         handleSubLobbyError();
         break;
     case 'StartGame':
-            showGame(data.grid, data.words);
-            break;
+            showGame(data);
+        break;
+    case 'startGameScilently':
+        console.log("nothing to print SGS"); 
+
+        break;
     case 'resetLobbyState':
             console.log("Lobby state reset.");
             break;
@@ -66,7 +67,8 @@ connection.onmessage = function(event){
         console.log('Readiness Updated:', message.players);
             break;
     case 'gameStateUpdate':
-        displayGrid(data.grid);  
+        console.log("nothing to print"); 
+        displayGrid(data.grid);
     break;
     case 'toggleReady':
         username = json.get("username").getAsString();
@@ -211,11 +213,6 @@ function startGame() {
     console.log("Start game request sent to the server., Display--");
 }
 
-
-
-
-
-
 function login(){
     var username = document.getElementById("username").value;
     console.log("username: " + username);
@@ -272,8 +269,6 @@ function handleSubLobbyError(){
     alert('Lobbies are all full - Try again later');
 }
 
-
-
 function initializeGrid() {
     const grid = document.getElementById("grid");
     let gridsize= 50;
@@ -287,25 +282,37 @@ function initializeGrid() {
         }
     }
   }
-  function displayGrid(grid) {
-    const gridElement = document.getElementById("grid");
-    if (!gridElement) {
-        console.error('Grid element not found!');
-        return;
+  function generateGrid(json) {
+    const rows = Data.grid.length;
+    const cols = Data.grid[0].length;
+    const gridElement = document.getElementById('grid');
+    gridElement.innerHTML = ''; // Clear previous grid if any
+
+    for (let i = 0; i < rows; i++) {
+        const row = document.createElement('div');
+        for (let j = 0; j < cols; j++) {
+            const cellButton = document.createElement('button');
+            cellButton.id = `cell-${i}-${j}`; // Assign unique ID
+            cellButton.innerHTML = Data.grid[i][j]; // Set letter from JSON data
+            cellButton.onclick = function() { handleCellClick(i, j); };
+            row.appendChild(cellButton);
+        }
+        gridElement.appendChild(row);
     }
-
-    gridElement.innerHTML = ''; // Clear any existing grid content
-
-    grid.forEach(function(row) {
-        const rowElement = document.createElement('tr');
-        row.forEach(function(cell) {
-            const cellElement = document.createElement('td');
-            cellElement.textContent = cell;
-            rowElement.appendChild(cellElement);
-        });
-        gridElement.appendChild(rowElement);
-    });
 }
+function handleCellClick(row, col) {
+    const cellId = `cell-${row}-${col}`;
+    const cell = document.getElementById(cellId);
+    if (!startPoint) {
+        // Mark the start point
+        startPoint = { row, col };
+        cell.style.backgroundColor = "yellow"; 
+    } else {
+        
+        highlightPath(startPoint, { row, col });
+        startPoint = null; // Reset start point for next word
+    }
+  }
 
   function updateStatus(isReady) {
     
@@ -357,16 +364,14 @@ function showLobby(){
     document.getElementById('gamePage').style.display = 'none';
     document.getElementById('chatArea').style.display = 'block';
 }
-function showGame(grid, words) {
+function showGame(json) {
     // Logic to display the game grid and word list
     console.log('showGame called with grid:', grid, 'and words:', words);
     document.getElementById('lobbyPage').style.display = 'none';
     document.getElementById('gamePage').style.display = 'block';
     document.getElementById("loginPage").style.display = "none";
-    document.getElementById('chatArea').style.display = 'block';
-    
-    displayGrid(grid);
-    displayWordList(words);
+    document.getElementById('chatArea').style.display = 'block'
+    generateGrid(json);
 }
 function toggleReady() {
     

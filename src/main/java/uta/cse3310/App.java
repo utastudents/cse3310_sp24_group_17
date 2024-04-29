@@ -181,7 +181,8 @@ public class App extends WebSocketServer {
     
                     // Check if all players are ready and start the game if they are
                     if (subLobby.allPlayersReady()) {
-                        startGameSilently(subLobby); // Start the game silently if all players are ready
+                        startGameSilently(subLobby);
+                        // Start the game silently if all players are ready
                     }
                     return; // Exit as soon as the matching player is found and updated
                 }
