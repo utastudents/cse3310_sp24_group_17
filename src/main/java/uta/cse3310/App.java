@@ -41,12 +41,8 @@ public class App extends WebSocketServer {
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         System.out.println("Closed connection: " + conn.getRemoteSocketAddress());
-        boolean result = mainLobby.logOff(conn);
-        if (result) {
-            broadcast("A player has left the game.");
-        } else {
-            System.out.println("No player found for the closed connection.");
-        }
+        mainLobby.removeFromSubLobby(ActiveGames, conn);
+        mainLobby.logOff(conn);
     }
     
     

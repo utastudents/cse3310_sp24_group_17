@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.java_websocket.WebSocket;
+import java.util.Vector;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -45,6 +46,7 @@ public class MainLobby {
                 toRemove = player;
                 break;
             }
+            System.out.println("Mainlobby after remove: " + player);
         }
         if (toRemove != null) {
             players.remove(toRemove);
@@ -103,5 +105,19 @@ public WebSocket findPlayerWebSocket(String username) {
         return players;
     }
 
+
+    public void removeFromSubLobby(Vector<SubLobby> ActiveGames, WebSocket conn){
+        for(SubLobby subLobby : ActiveGames){
+            System.out.println("lobby: " + subLobby.getLobbyID());
+            for(Player player : subLobby.getPlayers()){
+                if(player.getConn().equals(conn)){
+                    subLobby.getPlayers().remove(player);
+                    return;
+                }
+                System.out.println("SubLobby after remove: " + player);
+            }
+        }
+
+    }
 }
 
