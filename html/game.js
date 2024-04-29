@@ -40,7 +40,7 @@ let startPoint = null;
 //create grid
 
 function initializeGrid() {
-    System.out.println();
+    //System.out.println();
   const grid = document.getElementById("grid");
   for (let i = 0; i < 50; i++) {
       const row = grid.insertRow();
