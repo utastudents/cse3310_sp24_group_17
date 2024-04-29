@@ -49,9 +49,6 @@ connection.onmessage = function(event){
         console.log("sublobby error");
         handleSubLobbyError();
         break;
-    case 'StartGame':
-        showGame(data);
-        break;
     //case 'resetLobbyState':
     //        console.log("Lobby state reset.");
     //        break;
@@ -68,6 +65,8 @@ connection.onmessage = function(event){
         break;
     case 'matrixCreated':
         generateGrid(json.eventData);
+        showGame();
+        break;
     default:
             console.log("Unknown message type:", data.type);
    }

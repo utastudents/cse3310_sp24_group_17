@@ -102,9 +102,7 @@ public class App extends WebSocketServer {
                 break;
     
             case "startGame":
-                System.out.println("Server side game Started");
-                // Additional game start logic here
-                System.out.println("Game data sent to client");
+                startGame(conn);
                 break;
     
             case "resetLobbyState":
@@ -209,30 +207,26 @@ public class App extends WebSocketServer {
     }
 
     
-    private void startGame(SubLobby subLobby) {
-        // Logic to start the game goes here
-        subLobby.getGameMatrix();// Assume this prepares the game
-    }
-    /*private String convertMatrixToJson(char[][] matrix) {
-        JsonObject obj = new JsonObject();
-        JsonArray rows = new JsonArray();
-        for (char[] row : matrix) {
-            JsonArray jsonRow = new JsonArray();
-            for (char c : row) {
-                jsonRow.add(Character.toString(c));
+    public void startGame(WebSocket conn) {
+        for (SubLobby subLobby : ActiveGames) {
+            // Loop through all players in the current sublobby
+            for (Player player : subLobby.getPlayers()) {
+                if (player.getConn().equals(conn)) {
+                    if (subLobby.allPlayersReady() && subLobby.getPlayers().size() == subLobby.getSubLobbySize()) {
+                        startGameSilently(subLobby);
+                        return;
+                    }
+                }
             }
-            rows.add(jsonRow);
-        }
-        obj.add("grid", rows);
-        obj.addProperty("type", "gameStateUpdate");
-        return obj.toString();
-    }*/
-    private String convertMatrixToJson(char[][] matrix){
+        }  
+    }
+   
+    public String convertMatrixToJson(char[][] matrix){
         Gson gson =new Gson();
         String json=gson.toJson(matrix);
         return json;
     }
-    private void startGameSilently(SubLobby subLobby) { 
+    public void startGameSilently(SubLobby subLobby) { 
         JsonObject json = new JsonObject();
         json.addProperty("type", "matrixCreated");
 
