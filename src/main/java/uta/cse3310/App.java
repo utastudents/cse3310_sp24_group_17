@@ -144,11 +144,13 @@ public class App extends WebSocketServer {
                     playerConn.send(errorResponse.toString()); // Sends the error message only to the requesting client
                 }
                 break;
+
             case "toggleReady":
                 username = json.get("username").getAsString();
                 toggleReady(conn);
                 break;
-    
+
+        
            
         }
     }
@@ -182,24 +184,24 @@ public class App extends WebSocketServer {
     
                     System.out.println("ready: " + player.isReady());
                     // Check if all players are ready and start the game if they are
-                    if (subLobby.allPlayersReady() && subLobby.getPlayers().size() == subLobby.getSubLobbySize()) {
+                    /*if (subLobby.allPlayersReady() && subLobby.getPlayers().size() == subLobby.getSubLobbySize()) {
                         startGameSilently(subLobby); // Start the game silently if all players are ready
-                    } 
+                    } */
                     // else update ready in playerlist - change name to green
-                    else {
-                        json.addProperty("type", "toggleReady");
+                    json.addProperty("type", "toggleReady");
                         // Loop through all players in the current sublobby to construct the player array
-                        for (Player playersinSub : subLobby.getPlayers()) {
-                            JsonObject playerObject = new JsonObject();
-                            playerObject.addProperty("name", playersinSub.getName());
-                            playerObject.addProperty("ready", playersinSub.isReady()); 
-                            playerArray.add(playerObject);
-                        }
-                        json.add("eventData", playerArray);
-                        subLobby.broadcastToSubLobby(json.toString());
-    
-                        System.out.println("Ready Up Json: " + json);
+                    for (Player playersinSub : subLobby.getPlayers()) {
+                        JsonObject playerObject = new JsonObject();
+                        playerObject.addProperty("name", playersinSub.getName());
+                        playerObject.addProperty("ready", playersinSub.isReady()); 
+                        playerArray.add(playerObject);
                     }
+                    json.add("eventData", playerArray);
+                    subLobby.broadcastToSubLobby(json.toString());
+    
+                    System.out.println("Ready Up Json: " + json);
+                        
+                    
                     return; // Exit as soon as the matching player is found and updated
                 }
             }

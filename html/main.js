@@ -314,14 +314,13 @@ function showLobby(){
     document.getElementById('gamePage').style.display = 'none';
     document.getElementById('chatArea').style.display = 'block';
 }
-function showGame(json) {
+function showGame() {
     // Logic to display the game grid and word list
     console.log('showGame called with grid:', grid, 'and words:', words);
     document.getElementById('lobbyPage').style.display = 'none';
     document.getElementById('gamePage').style.display = 'block';
     document.getElementById("loginPage").style.display = "none";
     document.getElementById('chatArea').style.display = 'block'
-    generateGrid(json);
 }
 function toggleReady() {
     
@@ -335,20 +334,25 @@ function toggleReady() {
 function updateReadinessDisplay(json) {
     console.log("Function call to toggle readiness status");
         
-    var players = json.eventData;
-        
-    players.forEach(function(player) {
-        var playerName = player.name;
-        var playerReady = player.ready;
-        
-        // Find the player element in the player list
-        var playerListItem = document.getElementById(playerName);
-        
-        if (playerListItem) {
-         // Update color based on readiness status
-            playerListItem.style.color = playerReady ? 'green' : 'red';
-        }
+    const playersList = document.getElementById('playerList');
+    playersList.innerHTML = '';
+
+    const players = json.eventData;
+
+    players.forEach(player => {
+        const playerElement = document.createElement('div');
+        playerElement.textContent = player.name + ' - ';
+
+        const statusSpan = document.createElement('span');
+        statusSpan.textContent = player.ready ? 'Ready' : 'Not Ready';
+        statusSpan.className = player.ready ? 'ready' : 'not-ready';
+        statusSpan.className += ' ' + (player.ready ? 'green-text' : '');
+        statusSpan.onclick = function() { toggleReady(player.name); };
+
+        playerElement.appendChild(statusSpan);
+        playersList.appendChild(playerElement);
     });
+
 }
     
     
