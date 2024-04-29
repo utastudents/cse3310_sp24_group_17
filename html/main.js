@@ -191,17 +191,17 @@ function resetGameState() {
 
 
 
-function startGame() {
-    console.log('Game started.');
-    var data = {
-        type: "startGame",
-        eventData: {
-        } 
-    };
+// function startGame() {
+//     console.log('Game started.');
+//     var data = {
+//         type: "startGame",
+//         eventData: {
+//         } 
+//     };
     
-    connection.send(JSON.stringify(data)); // Send the start game request to the server
-    console.log("Start game request sent to the server., Display--");
-}
+//     connection.send(JSON.stringify(data)); // Send the start game request to the server
+//     console.log("Start game request sent to the server., Display--");
+// }
 
 function login(){
     var username = document.getElementById("username").value;
