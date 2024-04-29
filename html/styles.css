@@ -227,6 +227,14 @@ button.player-active {
   border-radius: 5px;
 }
 
+.ready {
+  color: green;
+}
+
+.not-ready {
+  color: red;
+}
+
 @media (max-width: 768px) {
   body, .wrapper, #loginPage, #lobbyPage, #gamePage {
     flex-direction: column;
