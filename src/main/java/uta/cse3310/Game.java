@@ -1,65 +1,48 @@
 package uta.cse3310;
+
 import java.util.*;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+class WordDetail {
+    String word;
+    int startRow;
+    int startCol;
+    int direction; // This can be used to retrieve more details about how the word is placed.
+
+    public WordDetail(String word, int startRow, int startCol, int direction) {
+        this.word = word;
+        this.startRow = startRow;
+        this.startCol = startCol;
+        this.direction = direction;
+    }
+}
+
 class Game {
-    private  int MAX = 20;
-    private  static final Random random = new Random();
+    private int MAX;
+    private static final Random random = new Random();
     private int gameID;
     private char[][] wordMatrix;
     private List<String> wordsList;
     private ArrayList<String> wordsInMatrix;
-    
-     
+    private ArrayList<WordDetail> wordsInMatrixDetails;
 
-    public Game(String filePath, int numOfWords,int gridSize) {
+    public Game(String filePath, int numOfWords, int gridSize) {
+        this.MAX = gridSize;
         this.wordMatrix = new char[MAX][MAX];
         this.wordsList = new ArrayList<>();
         this.wordsInMatrix = new ArrayList<>();
-        this.MAX=gridSize;
+        this.wordsInMatrixDetails = new ArrayList<>();
         this.gameID = random.nextInt(1000);
         initializeMatrix();
         try {
             readWordsFromFile(filePath, numOfWords);
-            
-            
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
         }
         placeWords();
         fillRandom();
-    }
-    public Game(String filePath, int numOfWords,int gridSize,int x) {
-        this.MAX=gridSize;
-        this.gameID = random.nextInt(1000);
-        initializeMatrix();
-        try {
-            readWordsFromFile(filePath, numOfWords);
-            
-            
-        } catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
-        } 
-    }
-
-    public void initializwithdots(){
-        initializeMatrix();
-
-    }
-    public void fillWithwords (){
-        placeWords();
-    }
-    public void fillWithrandom(){
-        fillRandom();
-    }
-    public char[][] getMatrix(){
-        return wordMatrix;
     }
 
     public void initializeMatrix() {
@@ -67,7 +50,6 @@ class Game {
             Arrays.fill(wordMatrix[i], '.');
         }
     }
-    
 
     private void readWordsFromFile(String filePath, int numOfWords) throws IOException {
         List<String> allWords = new ArrayList<>();
@@ -76,36 +58,31 @@ class Game {
             while ((line = reader.readLine()) != null) {
                 Arrays.stream(line.split("\\s+"))
                       .filter(word -> word.length() >= 4 && word.length() <= 10)
-                      .map(String::toUpperCase) // Convert each word to uppercase
+                      .map(String::toUpperCase)
                       .forEach(allWords::add);
             }
         }
-    
         Collections.shuffle(allWords);
-    
         if (allWords.size() > numOfWords) {
             wordsList = allWords.subList(0, numOfWords);
         } else {
             wordsList = allWords;
         }
     }
-    
-    
 
     public void placeWords() {
         for (String word : wordsList) {
             boolean placed = false;
+            int row = 0, col = 0, direction = 0;
             for (int attempts = 0; attempts < 100 && !placed; attempts++) {
-                int row = random.nextInt(MAX);
-                int col = random.nextInt(MAX);
-                int direction = random.nextInt(8); // 0-7 for eight possible directions
+                row = random.nextInt(MAX);
+                col = random.nextInt(MAX);
+                direction = random.nextInt(8);
                 placed = tryPlaceWord(word, row, col, direction);
-            }
-            if (!placed) {
-                //System.out.println("Failed to place: " + word);
-            }
-            else{
-                wordsInMatrix.add(word);
+                if (placed) {
+                    wordsInMatrix.add(word);
+                    wordsInMatrixDetails.add(new WordDetail(word, row, col, direction));
+                }
             }
         }
     }
@@ -144,6 +121,14 @@ class Game {
         return row >= 0 && row < MAX && col >= 0 && col < MAX;
     }
 
+    public int[] getRandomWordCoordinates() {  //for hints
+        if (wordsInMatrixDetails.isEmpty()) {
+            return null; // Or you can decide to return a default value indicating no words are placed
+        }
+        int index = random.nextInt(wordsInMatrixDetails.size());
+        WordDetail selected = wordsInMatrixDetails.get(index);
+        return new int[]{selected.startRow, selected.startCol};
+    }
     private void printMatrix() {
         for (int i = 0; i < MAX; i++) {
             for (int j = 0; j < MAX; j++) {
@@ -261,6 +246,9 @@ class Game {
 
     public ArrayList<String> getWordsInMatrix(){
         return wordsInMatrix;
+    }
+    public char[][] getMatrix(){
+        return wordMatrix;
     }
     
     //d

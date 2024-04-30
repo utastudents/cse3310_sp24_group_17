@@ -147,8 +147,9 @@ public class App extends WebSocketServer {
             case "leaveSubLobby":
                 mainLobby.removeFromSubLobby(ActiveGames, conn);
                 break;
-        
-           
+            case "giveMehint":
+                sendHint(conn);
+                break;
         }
     }
     
@@ -248,7 +249,17 @@ public class App extends WebSocketServer {
     }
     
 
-    
+    public void sendHint(WebSocket conn) {
+        for (SubLobby subLobby : ActiveGames) {
+            for (Player player : subLobby.getPlayers()) {
+                if (player.getConn().equals(conn)) {  // Found the sub-lobby of the requesting player
+                    subLobby.sendHintJson();  // Call sendHintJson on the correct sub-lobby
+                    return;  // Stop searching after handling the hint
+                }
+            }
+        }
+        System.out.println("Request for hint from a connection not in any active sub-lobby.");
+    }
     
 
     public static void main(String[] args) {

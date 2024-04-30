@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,8 +8,6 @@
     <script src="main.js" defer></script>
 </head>
 <body>
-    
-
     <!-- Login Section -->
     <div id="loginPage">
         <h1>The WordSearch Game</h1>
@@ -18,99 +15,74 @@
         <div class="wrapper">
             <div id="login">
                 <h2>User Login</h2>
-                    <label for="username">Enter your name (can only be at least 2 char, letters/numbers, and no fowl language):</label>
-                    <input type="text" id="username" name="username" required minlength="2" maxlength="12" pattern="[A-Za-z0-9_]+">
-                    <button type="submit" id="submit" onclick="login()">Submit</button>
+                <label for="username">Enter your name (can only be at least 2 char, letters/numbers, and no fowl language):</label>
+                <input type="text" id="username" name="username" required minlength="2" maxlength="12" pattern="[A-Za-z0-9_]+">
+                <button type="submit" id="submit" onclick="login()">Submit</button>
             </div>
         </div>
     </div>
 
-<!-- Lobby Section -->
-<div id="lobbyPage" style="display:none;">
-    <h1>The WordSearch Game</h1>
-    <h2>Welcome to the Lobby</h2>
-    <p>List of players in your selected game lobby:</p>
-    <div id="playerList" class="player-list"></div>
-    <div id="twoPlayerList" class="player-list" style="display:none;">
-        <h3>2 Player Mode</h3>
-        <!-- Players will be moved here when '2 players' is clicked -->
-    </div>
-    <div id="threePlayerList" class="player-list" style="display:none;">
-        <h3>3 Player Mode</h3>
-        <!-- Players will be moved here when '3 players' is clicked -->
-    </div>
-    
-    <div id="fourPlayerList" class="player-list" style="display:none;">
-        <h3>4 Player Mode</h3>
-        <!-- Players will be moved here when '4 players' is clicked -->
-    </div>
-    
+    <!-- Lobby Section -->
+    <div id="lobbyPage" style="display:none;">
+        <h1>The WordSearch Game</h1>
+        <h2>Welcome to the Lobby</h2>
+        <p>List of players in your selected game lobby:</p>
+        <div id="playerList" class="player-list"></div>
+        <div id="twoPlayerList" class="player-list" style="display:none;">
+            <h3>2 Player Mode</h3>
+        </div>
+        <div id="threePlayerList" class="player-list" style="display:none;">
+            <h3>3 Player Mode</h3>
+        </div>
+        <div id="fourPlayerList" class="player-list" style="display:none;">
+            <h3>4 Player Mode</h3>
+        </div>
 
-    <!-- Game control buttons -->
-    <div class="button-group">
-        <button id="startGameButton" onclick="startGame()" >START GAME</button> 
-        <button id="toggleReady" onclick="toggleReady()">READY</button>
-        <button id="backButton" onclick="back()">BACK</button>
+        <!-- Game control buttons -->
+        <div class="button-group">
+            <button id="startGameButton" onclick="startGameAndTimer()">START GAME</button> 
+            <button id="toggleReady" onclick="toggleReady()">READY</button>
+            <button id="backButton" onclick="back()">BACK</button>
+        </div>
+
+        <!-- Player configuration buttons -->
+        <div class="button-group">
+            <button id="2playerButton" onclick="createSubLobby(2)">2 players</button>
+            <button id="3playerButton" onclick="createSubLobby(3)">3 players</button>
+            <button id="4playerButton" onclick="createSubLobby(4)">4 players</button>
+        </div>
     </div>
 
-    <!-- Player configuration buttons -->
-    <div class="button-group">
-        <button id="2playerButton" onclick="createSubLobby(2)">2 players</button>
-        <button id="3playerButton" onclick="createSubLobby(3)">3 players</button>
-        <button id="4playerButton" onclick="createSubLobby(4)">4 players</button>
-    </div>
-</div>
-
-
-
-<!-- Game Section (Hidden Initially) -->
+    <!-- Game Section (Hidden Initially) -->
     <div id="gamePage" style="display:none;">
-    <h1>The WordSearch Game</h1>
-
-    <div id="gameContainer">
-        <div id="sidebar">
-
-            <div id="timer">20:00</div>
-        <!-- Scoreboard Section -->
-        <div id="scoreBoardContainer">
-            <h2>Scoreboard</h2>
-            <ul id="scoreBoard">
-                <!-- Player scores will be populated with JavaScript -->
-            </ul>
+        <h1>The WordSearch Game</h1>
+        <div id="gameContainer">
+            <div id="sidebar">
+                <div id="timer">20:00</div>
+                <div id="scoreBoardContainer">
+                    <h2>Scoreboard</h2>
+                    <ul id="scoreBoard"></ul>
+                </div>
+                <div id="wordListContainer">
+                    <h2>Word List</h2>
+                    <ul id="wordList"></ul>
+                </div>
+            </div>
+            <table id="grid"></table>
+            <button id="backButton" onclick="back()">BACK</button>
         </div>
-
-        <!-- Word List Section -->
-        <div id="wordListContainer">
-            <h2>Word List</h2>
-            <ul id="wordList">
-                <!-- Word list will be populated with JavaScript -->
-            </ul>
-        </div>
-        </div>
-        
-        <!-- Grid Section -->
-        <table id="grid">
-            <!-- Grid will be populated with JavaScript -->
-        </table>
-
-        <button id="backButton" onclick="back()">BACK</button>
-
     </div>
-
-
 
     <!-- Chat Area (Hidden Initially) -->
     <div id="chatArea" style="display:none;">
         <h2>Chat</h2>
         <div id="chatDisplay" style="height: 300px; overflow-y: scroll;"></div>
-        <input type="text" id="chatInput" placeholder="Write your message here..." >
-        <button type="submit" id="chatButton" onclick="sendMessage()"> Send </button>
+        <input type="text" id="chatInput" placeholder="Write your message here...">
+        <button type="submit" id="chatButton" onclick="sendMessage()">Send</button>
     </div>
 
     <div id="errorDisplay" style="display:none;"></div> <!-- For displaying error messages -->
 
-         </div>
-    
     <script>
         function startTimer(duration, display) {
             var timer = duration, minutes, seconds;
@@ -131,17 +103,20 @@
             }, 1000);
         }
 
-        function startGameTimer() {
+        function startGameAndTimer() {
             var twentyMinutes = 60 * 20, // 20 minutes in seconds
                 display = document.querySelector('#timer');
             startTimer(twentyMinutes, display);
+
+            // Additional code to start the game on the server
+            // Assuming connection and data objects are defined elsewhere
+            var data = {
+                type: "startGame",
+                eventData: {}
+            };
+            connection.send(JSON.stringify(data));
+            console.log("Start game request sent to the server.");
         }
-
-        window.onload = function() {
-            startGameTimer(); // You can also trigger this based on game start conditions
-        };
     </script>
-        
-
 </body>
 </html>

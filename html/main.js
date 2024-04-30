@@ -59,6 +59,7 @@ connection.onmessage = function(event){
     case 'gameStateUpdate':
         console.log("nothing to print"); 
         displayGrid(data.grid);
+        
         break;
     case 'toggleReady':
         updateReadinessDisplay(data);
@@ -70,8 +71,11 @@ connection.onmessage = function(event){
     case "highlight":
         applyHighlightFromServer(data.startRow, data.startCol, data.endRow, data.endCol);
         break;
+    case "hint":
+        applyHighlightFromServer(data.Row, data.Col, data.Row, data.Col);
+        break;
     default:
-            console.log("Unknown message type:", data.type);
+        console.log("Unknown message type:", data.type);
    }
 };
 
