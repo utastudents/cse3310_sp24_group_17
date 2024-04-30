@@ -150,6 +150,11 @@ public class App extends WebSocketServer {
             case "highlight":
             handleHighlightMessage(conn , json);
             break;
+
+            case "giveMehint":
+            sendHint(conn);
+            break;
+                
                 
         
            
@@ -325,6 +330,19 @@ public class App extends WebSocketServer {
         return null;
     }
     
+    public void sendHint(WebSocket conn) {
+        
+        for (SubLobby subLobby : ActiveGames) {
+            
+            for (Player player : subLobby.getPlayers()) {
+                if (player.getConn().equals(conn)) {  
+                   subLobby.sendHintJson();
+                    return;  
+                }
+            }
+        }
+        System.out.println("Request for hint from a connection not in any active sub-lobby.");
+    }
     
     
     

@@ -72,6 +72,7 @@ connection.onmessage = function(event){
     case "updateScoreboard":
         updateScoreboard(data.scores);
         break;
+    
     default:
         console.log("Unknown message type:", data.type);
    }
