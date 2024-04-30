@@ -245,10 +245,15 @@ function handleSubLobbyError(){
 
 function generateGrid(json) {
     const gridData = JSON.parse(json.eventData);
+    const wordList = JSON.parse(json.eventData2);
+
     const rows = gridData.length;
     const cols = gridData[0].length;
     const gridElement = document.getElementById('grid');
-    gridElement.innerHTML = ''; // Clear previous grid if any
+    const wordListContainer = document.getElementById('wordListContainer');
+    
+    gridElement.innerHTML = '';
+    wordListContainer.innerHTML = '';
 
     for (let i = 0; i < rows; i++) {
         const rowElement = document.createElement('tr');
@@ -261,6 +266,19 @@ function generateGrid(json) {
         }
         gridElement.appendChild(rowElement);
     }
+
+    // Generate word list
+    const headingElement = document.createElement('h2');
+    headingElement.textContent = 'Words To Find';
+    wordListContainer.appendChild(headingElement);
+    
+    const wordListElement = document.createElement('ul');
+    wordList.forEach(word => {
+        const listItem = document.createElement('li');
+        listItem.textContent = word;
+        wordListElement.appendChild(listItem);
+    });
+    wordListContainer.appendChild(wordListElement);
 }
 
 let startPoint = null;
