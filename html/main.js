@@ -281,14 +281,45 @@ function highlightPath(start, end, color) {
     }
   }
 
-function highlightCell(row, col) {
-    
-    // Highlight the new cell for HINT
+  function highlightCell(row, col, color) {
     const cellId = `cell-${row}-${col}`;
     const cell = document.getElementById(cellId);
+    
     if (cell) {
-        cell.style.backgroundColor = "lightgreen";
-        cell.classList.add('highlighted'); 
+        // Check if the cell is already highlighted with the same player's color
+        const isHighlighted = cell.classList.contains('highlighted');
+        const isSameColor = cell.dataset.playerColor === color;
+        
+        if (isHighlighted && isSameColor) {
+            // If the cell is already highlighted with the same player's color, remove the highlight
+            removeHighlightCell(row, col);
+        } else {
+            // If the cell is not already highlighted with the same player's color,
+            // highlight it with light green
+            cell.style.backgroundColor = "lightgreen";
+            cell.classList.add('highlighted'); 
+            
+            // Store the player's color
+            cell.dataset.playerColor = color;
+        }
+    } else {
+        console.error('Cell not found:', cellId);
+    }
+}
+
+function removeHighlightCell(row, col) {
+    const cellId = `cell-${row}-${col}`;
+    const cell = document.getElementById(cellId);
+    
+    if (cell) {
+        // Remove the light green highlight
+        cell.classList.remove('highlighted');
+        
+        // Restore the player's color
+        if (cell.dataset.playerColor) {
+            cell.style.backgroundColor = cell.dataset.playerColor;
+            delete cell.dataset.playerColor;
+        }
     } else {
         console.error('Cell not found:', cellId);
     }
