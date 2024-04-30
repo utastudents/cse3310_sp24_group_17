@@ -67,6 +67,9 @@ connection.onmessage = function(event){
         generateGrid(data);
         showGame();
         break;
+        case "highlight":
+            applyHighlightFromServer(data.startRow, data.startCol, data.endRow, data.endCol);
+            break;
     default:
             console.log("Unknown message type:", data.type);
    }
@@ -240,27 +243,27 @@ function handleSubLobbyError(){
 }
 
 
-  function generateGrid(json) {
-
+function generateGrid(json) {
     const gridData = JSON.parse(json.eventData);
-
     const rows = gridData.length;
     const cols = gridData[0].length;
     const gridElement = document.getElementById('grid');
     gridElement.innerHTML = ''; // Clear previous grid if any
 
     for (let i = 0; i < rows; i++) {
-        const row = document.createElement('div');
+        const rowElement = document.createElement('tr');
         for (let j = 0; j < cols; j++) {
-            const cellButton = document.createElement('button');
-            cellButton.id = `cell-${i}-${j}`; // Assign unique ID
-            cellButton.innerHTML = gridData[i][j]; // Set letter from grid data
-            cellButton.onclick = function() { handleCellClick(i, j); };
-            row.appendChild(cellButton);
+            const cell = document.createElement('td');
+            cell.textContent = gridData[i][j]; // Set letter from grid data
+            cell.id = `cell-${i}-${j}`; // Assign unique ID
+            cell.onclick = function() { handleCellClick(i, j); };
+            rowElement.appendChild(cell);
         }
-        gridElement.appendChild(row);
+        gridElement.appendChild(rowElement);
     }
 }
+
+let startPoint = null;
 
 function handleCellClick(row, col) {
     const cellId = `cell-${row}-${col}`;
@@ -272,8 +275,60 @@ function handleCellClick(row, col) {
     } else {
         
         highlightPath(startPoint, { row, col });
+        sendHighlightToServer(startPoint, { row, col });
         startPoint = null; // Reset start point for next word
     }
+  }
+
+  function sendHighlightToServer(start, end) {
+    const highlightData = {
+        type: "highlight",
+        start: start,
+        end: end,
+    };
+    connection.send(JSON.stringify(highlightData));
+}
+
+function applyHighlightFromServer(startRow, startCol, endRow, endCol) {
+    highlightPath({ row: startRow, col: startCol }, { row: endRow, col: endCol });
+}
+
+  function highlightPath(start, end) {
+    if (start.row === end.row) {
+        // Horizontal path
+        for (let j = Math.min(start.col, end.col); j <= Math.max(start.col, end.col); j++) {
+            document.getElementById(`cell-${start.row}-${j}`).style.backgroundColor = "lightgreen";
+        }
+    } else if (start.col === end.col) {
+        // Vertical path
+        for (let i = Math.min(start.row, end.row); i <= Math.max(start.row, end.row); i++) {
+            document.getElementById(`cell-${i}-${start.col}`).style.backgroundColor = "lightgreen";
+        }
+    } else {
+        // Diagonal path
+        const rowIncrement = start.row < end.row ? 1 : -1;
+        const colIncrement = start.col < end.col ? 1 : -1;
+        let row = start.row;
+        let col = start.col;
+        while (row !== end.row + rowIncrement && col !== end.col + colIncrement) {
+            document.getElementById(`cell-${row}-${col}`).style.backgroundColor = "lightgreen";
+            row += rowIncrement;
+            col += colIncrement;
+        }
+    }
+  }
+
+  function updateScoreboard(players) {
+    const scoreboard = document.getElementById('scoreBoard');
+    scoreboard.innerHTML = ''; // Clear existing scoreboard
+  
+    players.forEach(player => {
+      const scoreItem = document.createElement('li');
+      scoreItem.classList.add('playerScore');
+      scoreItem.textContent = `${player.name}: ${player.score}`;
+      scoreItem.style.color = player.color; // Assign color dynamically
+      scoreboard.appendChild(scoreItem);
+    });
   }
 
   function updateStatus(isReady) {
