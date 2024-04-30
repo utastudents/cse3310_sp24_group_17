@@ -73,6 +73,8 @@ connection.onmessage = function(event){
     case "updateScoreboard":
         updateScoreboard(data.scores);
         break;
+    case 'hint':
+        highlightCell(data.row,data.col);
     default:
         console.log("Unknown message type:", data.type);
    }
@@ -281,7 +283,7 @@ function highlightPath(start, end, color) {
 
 function highlightCell(row, col) {
     
-    // Highlight the new cell
+    // Highlight the new cell for HINT
     const cellId = `cell-${row}-${col}`;
     const cell = document.getElementById(cellId);
     if (cell) {
