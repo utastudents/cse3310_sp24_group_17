@@ -111,46 +111,53 @@
          </div>
     
     <script>
-          function startTimer(duration, display) {
-        var timer = duration, minutes, seconds;
-        var timerInterval = setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
+function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    var hintSent = false; 
 
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
+    var timerInterval = setInterval(function() {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
 
-            display.textContent = minutes + ":" + seconds;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
 
-            if (timer > 0 && timer % 30 === 0) {
-                sendHintRequest();  // Send a hint request every 30 seconds
-            }
+        display.textContent = minutes + ":" + seconds;
 
-            if (--timer < 0) {
-                clearInterval(timerInterval);
-                alert("Time's up!");
-                display.textContent = "00:00"; // Reset timer display
-            }
-        }, 1000);
-    }
+       
+        if (timer > 0 && timer % 30 === 0 && !hintSent) {
+            sendHintRequest();  
+            hintSent = true;  
+        } else if (timer % 30 !== 0) {
+            hintSent = false;  
+        }
 
-    function sendHintRequest() {
-        var data = {
-            type: "giveMehint",
-            eventData: {}
-        };
-        connection.send(JSON.stringify(data)); 
-        console.log("Hint request sent.");
-    }
+        if (--timer < 0) {
+            clearInterval(timerInterval);
+            alert("Time's up!");
+            display.textContent = "00:00"; 
+        }
+    }, 1000);
+}
 
-    function startGameTimer() {
-        var twentyMinutes = 60 * 20; // 20 minutes in seconds
-        var display = document.querySelector('#timer');
-        startTimer(twentyMinutes, display);
-    }
-        window.onload = function() {
-            startGameTimer(); // You can also trigger this based on game start conditions
-        };
+function sendHintRequest() {
+    var data = {
+        type: "giveMehint",
+        eventData: {}
+    };
+    connection.send(JSON.stringify(data));
+    console.log("Hint request sent.");
+}
+
+function startGameTimer() {
+    var twentyMinutes = 60 * 20; // 20 minutes in seconds
+    var display = document.querySelector('#timer');
+    startTimer(twentyMinutes, display);
+}
+
+window.onload = function() {
+    startGameTimer(); 
+};
     </script>
         
 
