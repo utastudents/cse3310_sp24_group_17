@@ -27,6 +27,7 @@ class Game {
     private List<String> wordsList;
     private ArrayList<String> wordsInMatrix;
     private ArrayList<WordDetail> wordsInMatrixDetails;
+    private List<Integer> availableIndices; 
 
     public Game(String filePath, int numOfWords, int gridSize) {
         this.MAX = gridSize;
@@ -120,12 +121,23 @@ class Game {
     private boolean isWithinBounds(int row, int col) {
         return row >= 0 && row < MAX && col >= 0 && col < MAX;
     }
-
-    public int[] getRandomWordCoordinates() {  //for hints
-        if (wordsInMatrixDetails.isEmpty()) {
-            return null; // Or you can decide to return a default value indicating no words are placed
+    public void resetAvailableIndices() {
+        availableIndices.clear();
+        for (int i = 0; i < wordsInMatrixDetails.size(); i++) {
+            availableIndices.add(i);
         }
-        int index = random.nextInt(wordsInMatrixDetails.size());
+    }
+    public int[] getRandomWordCoordinates() {
+        if (wordsInMatrixDetails.isEmpty()) {
+            return null; 
+        }
+        if (availableIndices.isEmpty()) {
+            resetAvailableIndices();  
+        }
+        int randomIndex = random.nextInt(availableIndices.size()); 
+        int index = availableIndices.get(randomIndex);
+        availableIndices.remove(randomIndex); 
+
         WordDetail selected = wordsInMatrixDetails.get(index);
         return new int[]{selected.startRow, selected.startCol};
     }
