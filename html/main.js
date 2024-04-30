@@ -72,7 +72,7 @@ connection.onmessage = function(event){
         applyHighlightFromServer(data.startRow, data.startCol, data.endRow, data.endCol);
         break;
     case "hint":
-        applyHighlightFromServer(data.Row, data.Col, data.Row, data.Col);
+        highlightCell(data.row, data.col);
         break;
     default:
         console.log("Unknown message type:", data.type);
@@ -339,6 +339,18 @@ function applyHighlightFromServer(startRow, startCol, endRow, endCol) {
         }
     }
   }
+  function highlightCell(row, col) {
+    
+    // Highlight the new cell
+    const cellId = `cell-${row}-${col}`;
+    const cell = document.getElementById(cellId);
+    if (cell) {
+        cell.style.backgroundColor = "lightgreen";
+        cell.classList.add('highlighted'); // Optionally, add a class for styling
+    } else {
+        console.error('Cell not found:', cellId);
+    }
+}
 
   function updateScoreboard(players) {
     const scoreboard = document.getElementById('scoreBoard');
