@@ -256,22 +256,22 @@ function generateGrid(json) {
     wordListContainer.innerHTML = '';
 
     for (let i = 0; i < rows; i++) {
-        const rowElement = document.createElement('tr');
+        const row = document.createElement('tr');
         for (let j = 0; j < cols; j++) {
             const cell = document.createElement('td');
-            cell.textContent = gridData[i][j]; // Set letter from grid data
-            cell.id = `cell-${i}-${j}`; // Assign unique ID
+            cell.textContent = gridData[i][j]; 
+            cell.id = `cell-${i}-${j}`; 
             cell.onclick = function() { handleCellClick(i, j); };
-            rowElement.appendChild(cell);
+            row.appendChild(cell);
         }
-        gridElement.appendChild(rowElement);
+        gridElement.appendChild(row);
     }
 
     // Generate word list
     const headingElement = document.createElement('h2');
     headingElement.textContent = 'Words To Find';
     wordListContainer.appendChild(headingElement);
-    
+
     const wordListElement = document.createElement('ul');
     wordList.forEach(word => {
         const listItem = document.createElement('li');
