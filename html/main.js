@@ -67,9 +67,9 @@ connection.onmessage = function(event){
         generateGrid(data);
         showGame();
         break;
-        case "highlight":
-            applyHighlightFromServer(data.startRow, data.startCol, data.endRow, data.endCol);
-            break;
+    case "highlight":
+        applyHighlightFromServer(data.startRow, data.startCol, data.endRow, data.endCol);
+        break;
     default:
             console.log("Unknown message type:", data.type);
    }

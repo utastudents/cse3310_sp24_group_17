@@ -23,7 +23,7 @@ public class SubLobby{
         this.lobbyID = "lobby_"+(++lobbyCounter); //creates unique id for each game
         this.players = new ArrayList<>(); //array for sublobby players
         this.players.add(player1); //sets the creater of lobby as the first player
-        this.game = new Game("src\\main/java/uta/cse3310\\words.txt",15,20);
+        this.game = new Game("words.txt",15,20);
     }
 
     //adds player to sublobby
