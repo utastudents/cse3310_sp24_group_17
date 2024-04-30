@@ -3,7 +3,7 @@ package uta.cse3310;
 import org.java_websocket.WebSocket;
 
 public class Player {
-    private int color;
+    private String color;
     private String name;
     private int inGameScore;
     private int totalScore;
@@ -12,7 +12,7 @@ public class Player {
 
     // Constructor
     public Player(String name, WebSocket conn) {
-        this.color = 0;
+        this.color = null;
         this.name = name;
         this.inGameScore = 0;
         this.totalScore = 0;
@@ -20,7 +20,7 @@ public class Player {
     }
 
     // Getters and Setters
-    public int getColor() {
+    public String getColor() {
         return color;
     }
 
@@ -44,7 +44,7 @@ public class Player {
         return isReady;
     }
 
-    public void setColor(int color) {
+    public void setColor(String color) {
         this.color = color;
     }
 

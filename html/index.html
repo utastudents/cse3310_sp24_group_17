@@ -110,57 +110,6 @@
 
          </div>
     
-    <script>
-function startTimer(duration, display) {
-    var timer = duration, minutes, seconds;
-    var lastHintTime = 0; // Store the last time a hint was sent
-
-    var timerInterval = setInterval(function() {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
-
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-
-        display.textContent = minutes + ":" + seconds;
-
-        // Get current time in seconds since the timer started
-        var currentTime = duration - timer;
-
-        // Send a hint request every 30 seconds
-        if (currentTime >= lastHintTime + 30) {
-            sendHintRequest();
-            lastHintTime = currentTime; // Update the last hint time
-        }
-
-        if (--timer < 0) {
-            clearInterval(timerInterval);
-            alert("Time's up!");
-            display.textContent = "00:00"; // Reset timer display
-        }
-    }, 1000);
-}
-
-function sendHintRequest() {
-    var data = {
-        type: "giveMehint",
-        eventData: {}
-    };
-    connection.send(JSON.stringify(data));
-    console.log("Hint request sent.");
-}
-
-function startGameTimer() {
-    var twentyMinutes = 60 * 20; // 20 minutes in seconds
-    var display = document.querySelector('#timer');
-    startTimer(twentyMinutes, display);
-}
-
-window.onload = function() {
-    startGameTimer(); // Start the game timer when the window loads
-};
-    </script>
-        
 
 </body>
 </html>

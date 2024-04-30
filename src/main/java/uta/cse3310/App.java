@@ -7,6 +7,7 @@ import org.java_websocket.server.WebSocketServer;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Vector;
+import java.util.Iterator;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -147,9 +148,10 @@ public class App extends WebSocketServer {
             case "leaveSubLobby":
                 mainLobby.removeFromSubLobby(ActiveGames, conn);
                 break;
+
             case "highlight":
-            handleHighlightMessage(conn , json);
-            break;
+                handleHighlightMessage(conn , json);
+                break;
                 
         
            
@@ -229,12 +231,14 @@ public class App extends WebSocketServer {
         String json = gson.toJson(matrix);
         return json;
     }
+
     public String convertWordListToJson(ArrayList<String> wordList){
         Gson gson = new Gson();
         String json = gson.toJson(wordList);
         System.out.println("wordlist: " + wordList);
         return json;
     }
+
     public void startGameSilently(SubLobby subLobby) { 
         JsonObject json = new JsonObject();
         json.addProperty("type", "matrixCreated");
@@ -251,33 +255,47 @@ public class App extends WebSocketServer {
         System.out.println("WordGridJson: " + json);
     }
 
-    private void handleHighlightMessage(WebSocket conn, JsonObject json) {
-        JsonObject eventData = json.getAsJsonObject("eventData");
+    private void handleHighlightMessage(WebSocket conn, JsonObject rjson) {
+        JsonObject eventData = rjson.getAsJsonObject("eventData");
         if (eventData == null) {
             System.err.println("Error: eventData is missing.");
             return; // Exit if there is no eventData
         }
     
         try {
-            int startRow = eventData.get("start").getAsJsonObject().get("row").getAsInt();
-            int startCol = eventData.get("start").getAsJsonObject().get("col").getAsInt();
-            int endRow = eventData.get("end").getAsJsonObject().get("row").getAsInt();
-            int endCol = eventData.get("end").getAsJsonObject().get("col").getAsInt();
             String playerName = eventData.get("playerName").getAsString();
+            String word = eventData.get("word").getAsString();
         
             Player player = findPlayerByName(playerName);
             if (player != null) {
                 SubLobby subLobby = findSubLobbyContainingPlayer(player);
                 if (subLobby != null) {
+
+                    //Remove found word from list
+                    Iterator<String> iterator = subLobby.getGameMatrixWordList().iterator();
+                    while (iterator.hasNext()) {
+                        String words = iterator.next();
+                        if (words.equals(word)) {
+                            iterator.remove();
+                            break;
+                        }
+                    }
+
                     player.setInGameScore(player.getInGameScore() + 1); // Update score
     
                     // Create and broadcast the highlight message to all clients in the sub-lobby
-                    JsonObject broadcastJson = new JsonObject();
-                    broadcastJson.addProperty("type", "highlight");
-                    broadcastJson.add("start", eventData.get("start"));
-                    broadcastJson.add("end", eventData.get("end"));
-                    broadcastJson.addProperty("playerName", playerName);
-                    subLobby.broadcastToSubLobby(broadcastJson.toString());
+                    JsonObject json = new JsonObject();
+                    json.addProperty("type", "highlightSuccess");
+                    json.add("start", eventData.get("start"));
+                    json.add("end", eventData.get("end"));
+                    json.addProperty("playerName", playerName);
+                    json.addProperty("color", player.getColor());
+
+                    ArrayList<String> wordStrings = subLobby.getGameMatrixWordList();
+                    String wordListJson = convertWordListToJson(wordStrings);
+                    json.addProperty("updatedWords", wordListJson);
+                    subLobby.broadcastToSubLobby(json.toString());
+                    System.out.println(json);
     
                     // Send updated scores to all clients in the sub-lobby
                     sendUpdatedScores(subLobby);

@@ -25,6 +25,7 @@ public class SubLobby{
         this.players = new ArrayList<>(); //array for sublobby players
         this.players.add(player1); //sets the creater of lobby as the first player
         this.game = new Game("words.txt",10,20);
+        player1.setColor("blue");
     }
 
     //adds player to sublobby
@@ -49,6 +50,7 @@ public class SubLobby{
             for (Player player : subLobby.getPlayers()){ 
                 if (player.equals(newPlayer)){ 
                     subLobby.removePlayer(player); 
+                    subLobby.reassignColors(subLobby);
                     break outerloop;
                 }
             }
@@ -57,6 +59,19 @@ public class SubLobby{
         //goes through all sublobbies to check if one is open of the same type
         for(SubLobby subLobby : ActiveGames){
             if(subLobby.getSubLobbySize() == subLobbySize && !subLobby.isSubLobbyFull()){
+                if (subLobby.getPlayers().size() == 0) {
+                    newPlayer.setColor("blue");
+                }
+                else if (subLobby.getPlayers().size() == 1) {
+                    newPlayer.setColor("pink");
+                }
+                else if (subLobby.getPlayers().size() == 2) {
+                    newPlayer.setColor("green");
+                }
+                else{
+                    newPlayer.setColor("orange");
+                }
+
                 subLobby.addPlayer(newPlayer);
                 return subLobby;
             }
@@ -129,6 +144,24 @@ public class SubLobby{
         System.out.println("Hint Sent");
     }
     broadcastToSubLobby(hintMessage.toString());
-}
+    }
+
+    public void reassignColors(SubLobby subLobby){
+        for (int i = 0; i < subLobby.getPlayers().size(); i++) {
+            Player player = subLobby.getPlayers().get(i);
+            if (i == 0) {
+                player.setColor("blue");
+            } 
+            else if (i == 1) {
+                player.setColor("pink");
+            }
+            else if(i == 2){
+                player.setColor("green");
+            }
+            else{
+                player.setColor("orange");
+            }
+        }
+    }
 
 }
