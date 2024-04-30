@@ -1,6 +1,7 @@
 var serverUrl = "ws://" + window.location.hostname + ":" + (parseInt(location.port) + 100);
 var connection = new WebSocket(serverUrl);
 var currentPlayerName = null;
+var wordList = [];
 
 //format for json
 function UserEvent(type, eventData){
@@ -66,10 +67,16 @@ connection.onmessage = function(event){
     case 'matrixCreated':
         generateGrid(data);
         showGame();
+        wordList = JSON.parse(data.eventData2); // Store the word list
         break;
     case "highlight":
-        applyHighlightFromServer(data.startRow, data.startCol, data.endRow, data.endCol);
-        break;
+        highlightPath(data.start, data.end)
+    break;
+
+    case "updateScoreboard":
+        updateScoreboard(data.scores);
+    break;
+
     default:
             console.log("Unknown message type:", data.type);
    }
@@ -195,6 +202,7 @@ function resetGameState() {
 
 function startGame() {
     console.log('Game started.');
+    console.log('current player', currentPlayerName);
     var data = {
         type: "startGame",
         eventData: {
@@ -282,34 +290,69 @@ function generateGrid(json) {
 }
 
 let startPoint = null;
-
+//need correction currentPlayerName
 function handleCellClick(row, col) {
     const cellId = `cell-${row}-${col}`;
     const cell = document.getElementById(cellId);
     if (!startPoint) {
         // Mark the start point
         startPoint = { row, col };
-        cell.style.backgroundColor = "yellow"; 
+        cell.style.backgroundColor = "yellow"; // Temporary highlight for start point
     } else {
-        
-        highlightPath(startPoint, { row, col });
-        sendHighlightToServer(startPoint, { row, col });
+        // Call a function to check if the selected word is valid
+        const selectedWord = getWordFromSelection(startPoint, { row, col });
+        if (wordList.includes(selectedWord)) {
+            highlightPath(startPoint, { row, col });
+            sendHighlightToServer(startPoint, { row, col }, currentPlayerName);
+        } else {
+            // Clear the temporary start point highlight if word is not valid
+            const startCell = document.getElementById(`cell-${startPoint.row}-${startPoint.col}`);
+            startCell.style.backgroundColor = ""; // Reset the background color
+        }
         startPoint = null; // Reset start point for next word
     }
-  }
+}
 
-  function sendHighlightToServer(start, end) {
+
+// This function needs to be implemented to retrieve the word from the grid
+function getWordFromSelection(start, end) {
+     let word = "";
+    const xDirection = Math.sign(end.col - start.col);
+    const yDirection = Math.sign(end.row - start.row);
+    let currentRow = start.row;
+    let currentCol = start.col;
+
+    while (currentRow !== end.row + yDirection || currentCol !== end.col + xDirection) {
+        const cell = document.getElementById(`cell-${currentRow}-${currentCol}`);
+        word += cell.textContent;
+        currentRow += yDirection;
+        currentCol += xDirection;
+    }
+
+    return word;
+}
+
+
+function sendHighlightToServer(start, end, playerName) {
+    console.log('current player', currentPlayerName);
     const highlightData = {
         type: "highlight",
+        "eventData":{
         start: start,
         end: end,
+        playerName: playerName
+        }
     };
     connection.send(JSON.stringify(highlightData));
 }
 
-function applyHighlightFromServer(startRow, startCol, endRow, endCol) {
-    highlightPath({ row: startRow, col: startCol }, { row: endRow, col: endCol });
+
+function applyHighlightFromServer(data) {
+    // Assuming data contains the start and end points, the player name, and color
+    highlightPath(data.start, data.end, getPlayerColor(data.playerName));
 }
+
+
 
   function highlightPath(start, end) {
     if (start.row === end.row) {
@@ -336,16 +379,22 @@ function applyHighlightFromServer(startRow, startCol, endRow, endCol) {
     }
   }
 
-  function updateScoreboard(players) {
+  function updateScoreboard(scores) {
     const scoreboard = document.getElementById('scoreBoard');
+    if (!scoreboard) {
+        console.error("Scoreboard element not found!");
+        return;
+    }
+    
     scoreboard.innerHTML = ''; // Clear existing scoreboard
-  
-    players.forEach(player => {
-      const scoreItem = document.createElement('li');
-      scoreItem.classList.add('playerScore');
-      scoreItem.textContent = `${player.name}: ${player.score}`;
-      scoreItem.style.color = player.color; // Assign color dynamically
-      scoreboard.appendChild(scoreItem);
+
+    scores.forEach(player => {
+        const scoreItem = document.createElement('li');
+        scoreItem.classList.add('playerScore');
+        scoreItem.textContent = `${player.name}: ${player.score}`;
+        // If color setting is needed, ensure color property exists in player data or set a default
+        scoreItem.style.color = player.color || 'black'; // Default to black if no color specified
+        scoreboard.appendChild(scoreItem);
     });
   }
 
@@ -399,7 +448,7 @@ function showGame() {
     document.getElementById('chatArea').style.display = 'block'
 }
 function toggleReady() {
-    
+    //currentPlayerName = data.username;
         var data = {
             type: "toggleReady",
             username: currentPlayerName

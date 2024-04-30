@@ -147,6 +147,10 @@ public class App extends WebSocketServer {
             case "leaveSubLobby":
                 mainLobby.removeFromSubLobby(ActiveGames, conn);
                 break;
+            case "highlight":
+            handleHighlightMessage(conn , json);
+            break;
+                
         
            
         }
@@ -246,6 +250,83 @@ public class App extends WebSocketServer {
         subLobby.broadcastToSubLobby(json.toString());  // Send the game matrix to all players in sublobby
         System.out.println("WordGridJson: " + json);
     }
+
+    private void handleHighlightMessage(WebSocket conn, JsonObject json) {
+        JsonObject eventData = json.getAsJsonObject("eventData");
+        if (eventData == null) {
+            System.err.println("Error: eventData is missing.");
+            return; // Exit if there is no eventData
+        }
+    
+        try {
+            int startRow = eventData.get("start").getAsJsonObject().get("row").getAsInt();
+            int startCol = eventData.get("start").getAsJsonObject().get("col").getAsInt();
+            int endRow = eventData.get("end").getAsJsonObject().get("row").getAsInt();
+            int endCol = eventData.get("end").getAsJsonObject().get("col").getAsInt();
+            String playerName = eventData.get("playerName").getAsString();
+        
+            Player player = findPlayerByName(playerName);
+            if (player != null) {
+                SubLobby subLobby = findSubLobbyContainingPlayer(player);
+                if (subLobby != null) {
+                    player.setInGameScore(player.getInGameScore() + 1); // Update score
+    
+                    // Create and broadcast the highlight message to all clients in the sub-lobby
+                    JsonObject broadcastJson = new JsonObject();
+                    broadcastJson.addProperty("type", "highlight");
+                    broadcastJson.add("start", eventData.get("start"));
+                    broadcastJson.add("end", eventData.get("end"));
+                    broadcastJson.addProperty("playerName", playerName);
+                    subLobby.broadcastToSubLobby(broadcastJson.toString());
+    
+                    // Send updated scores to all clients in the sub-lobby
+                    sendUpdatedScores(subLobby);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error processing highlight message: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+
+    private Player findPlayerByName(String playerName) {
+        for (SubLobby subLobby : ActiveGames) {
+            for (Player player : subLobby.getPlayers()) {
+                if (player.getName().equals(playerName)) {
+                    return player;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void sendUpdatedScores(SubLobby subLobby) {
+        JsonArray scoresArray = new JsonArray();
+        for (Player p : subLobby.getPlayers()) {
+            JsonObject scoreDetail = new JsonObject();
+            scoreDetail.addProperty("name", p.getName());
+            scoreDetail.addProperty("score", p.getInGameScore());
+            scoresArray.add(scoreDetail);
+        }
+        JsonObject scoreUpdate = new JsonObject();
+        scoreUpdate.addProperty("type", "updateScoreboard");
+        scoreUpdate.add("scores", scoresArray);
+        subLobby.broadcastToSubLobby(scoreUpdate.toString());
+    }
+    
+
+    private SubLobby findSubLobbyContainingPlayer(Player player) {
+        for (SubLobby subLobby : ActiveGames) {
+            if (subLobby.getPlayers().contains(player)) {
+                return subLobby;
+            }
+        }
+        return null;
+    }
+    
+    
+    
     
 
     
