@@ -50,17 +50,13 @@ connection.onmessage = function(event){
         console.log("sublobby error");
         handleSubLobbyError();
         break;
-    //case 'resetLobbyState':
-    //        console.log("Lobby state reset.");
-    //        break;
     case 'chatMessage':
         console.log("Displaying chat message from:", data.playerName);
-            displayChatMessage(data.playerName, data.message);
-            break;
+        displayChatMessage(data.playerName, data.message);
+        break;
     case 'gameStateUpdate':
         console.log("nothing to print"); 
         displayGrid(data.grid);
-        
         break;
     case 'toggleReady':
         updateReadinessDisplay(data);
@@ -72,148 +68,18 @@ connection.onmessage = function(event){
         break;
     case "highlight":
         highlightPath(data.start, data.end)
-    break;
-
+        break;
     case "updateScoreboard":
         updateScoreboard(data.scores);
-    break;
-
+        break;
     default:
         console.log("Unknown message type:", data.type);
    }
 };
 
-function displayChatMessage(playerName, message) {
-    console.log("display message");
-    const chatDisplay = document.getElementById('chatDisplay');
-    if (chatDisplay) {
-        const messageElement = document.createElement('p');
-        messageElement.textContent = `${playerName}: ${message}`;
-        chatDisplay.appendChild(messageElement);
-        chatDisplay.scrollTop = chatDisplay.scrollHeight; // Scroll to the bottom
-    } else {
-        console.log('Chat display element not found');
-    }
-}
+// SEND JSONS TO JAVA --------------------------------------------------------------------
 
-
-
-function displayErrorMessage(message) {
-    const errorDisplay = document.getElementById('errorDisplay'); 
-    errorDisplay.textContent = message; // Display or handle error messages
-}
-
-//Chat function
-function sendMessage() {
-    if (connection.readyState !== WebSocket.OPEN) {
-        console.log('WebSocket is not open. Current state:', connection.readyState);
-        return;
-    }
-    console.log("Attempting to send message", currentPlayerName);
-    var message = document.getElementById('chatInput').value.trim();
-    if (!message) {
-        console.log('Message is empty');
-        return;
-    }
-    if (!currentPlayerName) {
-        console.log('Player name is not set');
-        return;
-    }
-
-    var data = {
-        type: "chatMessage",
-        playerName: currentPlayerName,
-        message: message
-    };
-    connection.send(JSON.stringify(data));
-    document.getElementById('chatInput').value = '';
-}
-
-
-
-
-function displayWordList(words) {
-    var wordListElement = document.getElementById("wordList");
-    wordListElement.innerHTML = ''; // Clear previous entries if any
-    words.forEach(function(word) {
-        var wordItem = document.createElement("li");
-        wordItem.textContent = word;
-        wordListElement.appendChild(wordItem);
-        
-    });
-}
-
-function back() {
-    console.log('Back button clicked'); // Debugging statement
-
-    if (document.getElementById('gamePage').style.display === 'block') {
-        console.log('Currently on game page, switching to lobby page');
-        document.getElementById('gamePage').style.display = 'none';
-        document.getElementById('lobbyPage').style.display = 'block';
-        resetGameState();
-    } else {
-        console.log('No page change needed');
-    }
-}
-
-function resetGameState() {
-    console.log('Resetting game state');
-
-    // Clear the grid
-    const gridContainer = document.getElementById("gridContainer"); // Adjust this ID to match your HTML
-    if (gridContainer) {
-        gridContainer.innerHTML = ''; // This will remove all children elements, effectively clearing the grid
-    } else {
-        console.log('Grid container element not found');
-    }
-
-    // Clear the word list
-    const wordListContainer = document.getElementById("wordListContainer"); // Adjust this ID to match your HTML
-    if (wordListContainer) {
-        wordListContainer.innerHTML = ''; // This will remove all word list elements
-    } else {
-        console.log('Word list container element not found');
-    }
-
-    console.log('Game state has been reset');
-}
-
-
-/*function resetLobbyState() {
-    const username = document.getElementById('username').value;
-    console.log('Resetting lobby state for', username); // Debugging
-    document.getElementById('username').value = "";
-
-    const playerListDiv = document.getElementById('playerList');
-    playerListDiv.innerHTML = '';
-
-    if (connection && connection.readyState === WebSocket.OPEN) {
-        const data = {
-            type: "resetLobbyState",
-            username: username
-        };
-        connection.send(JSON.stringify(data));
-        console.log('Reset lobby state message sent to server');
-    } else {
-        console.log('WebSocket is not open');
-    }
-}*/
-
-
-
-function startGame() {
-    console.log('Game started.');
-    console.log('current player', currentPlayerName);
-    var data = {
-        type: "startGame",
-        eventData: {
-        } 
-    };
-    
-    connection.send(JSON.stringify(data)); // Send the start game request to the server
-    console.log("Start game request sent to the server., Display--");
-}
-
+// Send login request on login submit button press
 function login(){
     var username = document.getElementById("username").value;
     console.log("username: " + username);
@@ -228,7 +94,7 @@ function login(){
     connection.send(JSON.stringify(data));
 };
 
-//send json of which sublobby player wants to join
+//send json of which sublobby player wants to join on lobby option buttons
 function createSubLobby(subLobbySize){
 
     var data = {
@@ -241,17 +107,59 @@ function createSubLobby(subLobbySize){
     console.log("sublobby size :" + subLobbySize);
     connection.send(JSON.stringify(data));
 };
-// handle invalid username
-function handleLoginError(){
-    alert('Username Invalid');
+
+// Send JSON of start game button
+function startGame() {
+    console.log('Game started.');
+    console.log('current player', currentPlayerName);
+    var data = {
+        type: "startGame",
+        eventData: {
+        } 
+    };
+    
+    connection.send(JSON.stringify(data)); // Send the start game request to the server
+    console.log("Start game request sent to the server., Display--");
 }
 
-//handle if max games reached
-function handleSubLobbyError(){
-    alert('Lobbies are all full - Try again later');
+// Send players' input for word guess to server
+function sendHighlightToServer(start, end, playerName) {
+    console.log('current player', currentPlayerName);
+    const highlightData = {
+        type: "highlight",
+        "eventData":{
+        start: start,
+        end: end,
+        playerName: playerName
+        }
+    };
+    connection.send(JSON.stringify(highlightData));
 }
 
+// Send JSON of Ready Up button
+function toggleReady() {
+        var data = {
+            type: "toggleReady",
+            username: currentPlayerName
+        };
+        connection.send(JSON.stringify(data));
+};
 
+// Send JSON of back to main lobby button (REMOVED?)
+function backToMainLobby() {
+    var data = {
+        type: "leaveSubLobby"
+    };
+    connection.send(JSON.stringify(data));
+};
+
+
+
+
+
+// RECEIVE INCOMING JSON AND HANDLE-----------------------------------------------------------------
+
+// Creates Word Grid and Word List on array inputs from java
 function generateGrid(json) {
     const gridData = JSON.parse(json.eventData);
     const wordList = JSON.parse(json.eventData2);
@@ -290,6 +198,205 @@ function generateGrid(json) {
     wordListContainer.appendChild(wordListElement);
 }
 
+// Updates the sublobby playerlist upon player joining/leaving
+function updatePlayerList(json){
+    console.log("function call 3 js");
+    var lobby = json.lobby;
+    var players = json.players;
+
+    var playersListElement = document.getElementById("playerList");
+    playersListElement.innerHTML = "";
+
+    players.forEach(function(player) {
+        var playerListItem = document.createElement("li");
+        playerListItem.textContent = player;
+        playerListItem.style.color = 'red';
+        playersListElement.appendChild(playerListItem);
+        console.log(player);
+    });
+    
+}
+
+// Highlight based upon correct guess
+function applyHighlightFromServer(data) {
+    highlightPath(data.start, data.end, getPlayerColor(data.playerName));
+}
+
+function highlightPath(start, end) {
+    if (start.row === end.row) {
+        // Horizontal path
+        for (let j = Math.min(start.col, end.col); j <= Math.max(start.col, end.col); j++) {
+            document.getElementById(`cell-${start.row}-${j}`).style.backgroundColor = "lightgreen";
+        }
+    } else if (start.col === end.col) {
+        // Vertical path
+        for (let i = Math.min(start.row, end.row); i <= Math.max(start.row, end.row); i++) {
+            document.getElementById(`cell-${i}-${start.col}`).style.backgroundColor = "lightgreen";
+        }
+    } else {
+        // Diagonal path
+        const rowIncrement = start.row < end.row ? 1 : -1;
+        const colIncrement = start.col < end.col ? 1 : -1;
+        let row = start.row;
+        let col = start.col;
+        while (row !== end.row + rowIncrement && col !== end.col + colIncrement) {
+            document.getElementById(`cell-${row}-${col}`).style.backgroundColor = "lightgreen";
+            row += rowIncrement;
+            col += colIncrement;
+        }
+    }
+  }
+
+function highlightCell(row, col) {
+    
+    // Highlight the new cell
+    const cellId = `cell-${row}-${col}`;
+    const cell = document.getElementById(cellId);
+    if (cell) {
+        cell.style.backgroundColor = "lightgreen";
+        cell.classList.add('highlighted'); 
+    } else {
+        console.error('Cell not found:', cellId);
+    }
+}
+
+function updateScoreboard(scores) {
+    const scoreboard = document.getElementById('scoreBoard');
+    if (!scoreboard) {
+        console.error("Scoreboard element not found!");
+        return;
+    }
+    
+    scoreboard.innerHTML = ''; // Clear existing scoreboard
+
+    scores.forEach(player => {
+        const scoreItem = document.createElement('li');
+        scoreItem.classList.add('playerScore');
+        scoreItem.textContent = `${player.name}: ${player.score}`;
+        // If color setting is needed, ensure color property exists in player data or set a default
+        scoreItem.style.color = player.color || 'black'; // Default to black if no color specified
+        scoreboard.appendChild(scoreItem);
+    });
+}
+
+function updateStatus(isReady) {
+    const message = { type: 'updateStatus', username: username, isReady: isReady };
+    connection.send(JSON.stringify(message));
+}
+
+// Updates the ready display 
+function updateReadinessDisplay(json) {
+    console.log("Function call to toggle readiness status");
+        
+    const playersList = document.getElementById('playerList');
+    playersList.innerHTML = '';
+
+    const players = json.eventData;
+
+    players.forEach(player => {
+        const playerElement = document.createElement('div');
+        playerElement.textContent = player.name + ' - ';
+
+        const statusSpan = document.createElement('span');
+        statusSpan.textContent = player.ready ? 'Ready' : 'Not Ready';
+        statusSpan.className = player.ready ? 'ready' : 'not-ready';
+        statusSpan.className += ' ' + (player.ready ? 'green-text' : '');
+        statusSpan.onclick = function() { toggleReady(player.name); };
+
+        playerElement.appendChild(statusSpan);
+        playersList.appendChild(playerElement);
+    });
+
+}
+
+
+
+
+
+// CHAT METHODS ----------------------------------------------------------------------------------------------
+
+// Send JSON of chat message to server
+function sendMessage() {
+    if (connection.readyState !== WebSocket.OPEN) {
+        console.log('WebSocket is not open. Current state:', connection.readyState);
+        return;
+    }
+    console.log("Attempting to send message", currentPlayerName);
+    var message = document.getElementById('chatInput').value.trim();
+    if (!message) {
+        console.log('Message is empty');
+        return;
+    }
+    if (!currentPlayerName) {
+        console.log('Player name is not set');
+        return;
+    }
+
+    var data = {
+        type: "chatMessage",
+        playerName: currentPlayerName,
+        message: message
+    };
+    connection.send(JSON.stringify(data));
+    document.getElementById('chatInput').value = '';
+}
+
+// Update chat UI
+function displayChatMessage(playerName, message) {
+    console.log("display message");
+    const chatDisplay = document.getElementById('chatDisplay');
+    if (chatDisplay) {
+        const messageElement = document.createElement('p');
+        messageElement.textContent = `${playerName}: ${message}`;
+        chatDisplay.appendChild(messageElement);
+        chatDisplay.scrollTop = chatDisplay.scrollHeight; // Scroll to the bottom
+    } else {
+        console.log('Chat display element not found');
+    }
+}
+
+
+
+
+// MISC METHODS -----------------------------------------------------------------------------------------
+
+// Responds to Back button press
+function back() {
+    console.log('Back button clicked'); 
+
+    if (document.getElementById('gamePage').style.display === 'block') {
+        console.log('Currently on game page, switching to lobby page');
+        document.getElementById('gamePage').style.display = 'none';
+        document.getElementById('lobbyPage').style.display = 'block';
+        resetGameState();
+    } else {
+        console.log('No page change needed');
+    }
+}
+
+/*
+function resetGameState() {
+    console.log('Resetting game state');
+
+    // Clear the grid
+    const gridContainer = document.getElementById("gridContainer"); // Adjust this ID to match your HTML
+    if (gridContainer) {
+        gridContainer.innerHTML = ''; // This will remove all children elements, effectively clearing the grid
+    } else {
+        console.log('Grid container element not found');
+    }
+
+    // Clear the word list
+    const wordListContainer = document.getElementById("wordListContainer"); // Adjust this ID to match your HTML
+    if (wordListContainer) {
+        wordListContainer.innerHTML = ''; // This will remove all word list elements
+    } else {
+        console.log('Word list container element not found');
+    }
+
+    console.log('Game state has been reset');
+} */
+
 let startPoint = null;
 //need correction currentPlayerName
 function handleCellClick(row, col) {
@@ -317,7 +424,7 @@ function handleCellClick(row, col) {
 
 // This function needs to be implemented to retrieve the word from the grid
 function getWordFromSelection(start, end) {
-     let word = "";
+    let word = "";
     const xDirection = Math.sign(end.col - start.col);
     const yDirection = Math.sign(end.row - start.row);
     let currentRow = start.row;
@@ -334,113 +441,30 @@ function getWordFromSelection(start, end) {
 }
 
 
-function sendHighlightToServer(start, end, playerName) {
-    console.log('current player', currentPlayerName);
-    const highlightData = {
-        type: "highlight",
-        "eventData":{
-        start: start,
-        end: end,
-        playerName: playerName
-        }
-    };
-    connection.send(JSON.stringify(highlightData));
+
+// ERROR HANDLING ---------------------------------------------------------------------------------------
+
+function displayErrorMessage(message) {
+    const errorDisplay = document.getElementById('errorDisplay'); 
+    errorDisplay.textContent = message; // Display or handle error messages
 }
 
-
-function applyHighlightFromServer(data) {
-    // Assuming data contains the start and end points, the player name, and color
-    highlightPath(data.start, data.end, getPlayerColor(data.playerName));
+// handle invalid username
+function handleLoginError(){
+    alert('Username Invalid');
 }
 
-
-
-  function highlightPath(start, end) {
-    if (start.row === end.row) {
-        // Horizontal path
-        for (let j = Math.min(start.col, end.col); j <= Math.max(start.col, end.col); j++) {
-            document.getElementById(`cell-${start.row}-${j}`).style.backgroundColor = "lightgreen";
-        }
-    } else if (start.col === end.col) {
-        // Vertical path
-        for (let i = Math.min(start.row, end.row); i <= Math.max(start.row, end.row); i++) {
-            document.getElementById(`cell-${i}-${start.col}`).style.backgroundColor = "lightgreen";
-        }
-    } else {
-        // Diagonal path
-        const rowIncrement = start.row < end.row ? 1 : -1;
-        const colIncrement = start.col < end.col ? 1 : -1;
-        let row = start.row;
-        let col = start.col;
-        while (row !== end.row + rowIncrement && col !== end.col + colIncrement) {
-            document.getElementById(`cell-${row}-${col}`).style.backgroundColor = "lightgreen";
-            row += rowIncrement;
-            col += colIncrement;
-        }
-    }
-  }
-  function highlightCell(row, col) {
-    
-    // Highlight the new cell
-    const cellId = `cell-${row}-${col}`;
-    const cell = document.getElementById(cellId);
-    if (cell) {
-        cell.style.backgroundColor = "lightgreen";
-        cell.classList.add('highlighted'); // Optionally, add a class for styling
-    } else {
-        console.error('Cell not found:', cellId);
-    }
-}
-
-  function updateScoreboard(scores) {
-    const scoreboard = document.getElementById('scoreBoard');
-    if (!scoreboard) {
-        console.error("Scoreboard element not found!");
-        return;
-    }
-    
-    scoreboard.innerHTML = ''; // Clear existing scoreboard
-
-    scores.forEach(player => {
-        const scoreItem = document.createElement('li');
-        scoreItem.classList.add('playerScore');
-        scoreItem.textContent = `${player.name}: ${player.score}`;
-        // If color setting is needed, ensure color property exists in player data or set a default
-        scoreItem.style.color = player.color || 'black'; // Default to black if no color specified
-        scoreboard.appendChild(scoreItem);
-    });
-  }
-
-  function updateStatus(isReady) {
-    
-    const message = { type: 'updateStatus', username: username, isReady: isReady };
-    connection.send(JSON.stringify(message));
+//handle if max games reached
+function handleSubLobbyError(){
+    alert('Lobbies are all full - Try again later');
 }
 
 
 
-// Updates the sublobby playerlist
-function updatePlayerList(json){
-    console.log("function call 3 js");
-    var lobby = json.lobby;
-    var players = json.players;
 
-    var playersListElement = document.getElementById("playerList");
-    playersListElement.innerHTML = "";
 
-    players.forEach(function(player) {
-        var playerListItem = document.createElement("li");
-        playerListItem.textContent = player;
-        playerListItem.style.color = 'red';
-        playersListElement.appendChild(playerListItem);
-        console.log(player);
-    });
+// DISPLAY METHODS ----------------------------------------------------------------------------------------------
 
-    function Mainlobby(){
-
-    }
-    
-}
 function showLogin(){
     document.getElementById('lobbyPage').style.display = 'none';
     document.getElementById('gamePage').style.display = 'none';
@@ -453,51 +477,10 @@ function showLobby(){
     document.getElementById('chatArea').style.display = 'block';
 }
 function showGame() {
-    // Logic to display the game grid and word list
-    //console.log('showGame called with grid:', grid, 'and words:', words);
     document.getElementById('lobbyPage').style.display = 'none';
     document.getElementById('gamePage').style.display = 'block';
     document.getElementById("loginPage").style.display = "none";
     document.getElementById('chatArea').style.display = 'block'
-}
-function toggleReady() {
-    //currentPlayerName = data.username;
-        var data = {
-            type: "toggleReady",
-            username: currentPlayerName
-        };
-        connection.send(JSON.stringify(data));
-};
-
-function backToMainLobby() {
-    var data = {
-        type: "leaveSubLobby"
-    };
-    connection.send(JSON.stringify(data));
-};
-
-function updateReadinessDisplay(json) {
-    console.log("Function call to toggle readiness status");
-        
-    const playersList = document.getElementById('playerList');
-    playersList.innerHTML = '';
-
-    const players = json.eventData;
-
-    players.forEach(player => {
-        const playerElement = document.createElement('div');
-        playerElement.textContent = player.name + ' - ';
-
-        const statusSpan = document.createElement('span');
-        statusSpan.textContent = player.ready ? 'Ready' : 'Not Ready';
-        statusSpan.className = player.ready ? 'ready' : 'not-ready';
-        statusSpan.className += ' ' + (player.ready ? 'green-text' : '');
-        statusSpan.onclick = function() { toggleReady(player.name); };
-
-        playerElement.appendChild(statusSpan);
-        playersList.appendChild(playerElement);
-    });
-
 }
     
     
