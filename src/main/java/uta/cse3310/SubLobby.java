@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import org.java_websocket.WebSocket;
 
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,6 +117,18 @@ public class SubLobby{
         }
     }
 
-
+    public void sendHintJson() {
+    int[] arr = game.getRandomWordCoordinates();
+    JsonObject hintMessage = new JsonObject();
+    if (arr != null) {
+        int row = arr[0];
+        int col = arr[1];
+        hintMessage.addProperty("type", "hint");
+        hintMessage.addProperty("row", row);
+        hintMessage.addProperty("col", col);
+        System.out.println("Hint Sent");
+    }
+    broadcastToSubLobby(hintMessage.toString());
+}
 
 }

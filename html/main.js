@@ -60,6 +60,7 @@ connection.onmessage = function(event){
     case 'gameStateUpdate':
         console.log("nothing to print"); 
         displayGrid(data.grid);
+        
         break;
     case 'toggleReady':
         updateReadinessDisplay(data);
@@ -78,7 +79,7 @@ connection.onmessage = function(event){
     break;
 
     default:
-            console.log("Unknown message type:", data.type);
+        console.log("Unknown message type:", data.type);
    }
 };
 
@@ -378,6 +379,18 @@ function applyHighlightFromServer(data) {
         }
     }
   }
+  function highlightCell(row, col) {
+    
+    // Highlight the new cell
+    const cellId = `cell-${row}-${col}`;
+    const cell = document.getElementById(cellId);
+    if (cell) {
+        cell.style.backgroundColor = "lightgreen";
+        cell.classList.add('highlighted'); // Optionally, add a class for styling
+    } else {
+        console.error('Cell not found:', cellId);
+    }
+}
 
   function updateScoreboard(scores) {
     const scoreboard = document.getElementById('scoreBoard');
