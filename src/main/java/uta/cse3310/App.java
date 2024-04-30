@@ -144,6 +144,9 @@ public class App extends WebSocketServer {
                 toggleReady(conn);
                 break;
 
+            case "leaveSubLobby":
+                mainLobby.removeFromSubLobby(ActiveGames, conn);
+                break;
         
            
         }
@@ -218,8 +221,14 @@ public class App extends WebSocketServer {
     }
    
     public String convertMatrixToJson(char[][] matrix){
-        Gson gson =new Gson();
-        String json=gson.toJson(matrix);
+        Gson gson = new Gson();
+        String json = gson.toJson(matrix);
+        return json;
+    }
+    public String convertWordListToJson(ArrayList<String> wordList){
+        Gson gson = new Gson();
+        String json = gson.toJson(wordList);
+        System.out.println("wordlist: " + wordList);
         return json;
     }
     public void startGameSilently(SubLobby subLobby) { 
@@ -229,6 +238,11 @@ public class App extends WebSocketServer {
         char[][] gameMatrix = subLobby.getGameMatrix(); 
         String matrixJson = convertMatrixToJson(gameMatrix);   // Convert matrix to JSON string
         json.addProperty("eventData", matrixJson);
+
+        ArrayList<String> wordStrings = subLobby.getGameMatrixWordList();
+        String wordListJson = convertWordListToJson(wordStrings);
+        json.addProperty("eventData2", wordListJson);
+
         subLobby.broadcastToSubLobby(json.toString());  // Send the game matrix to all players in sublobby
         System.out.println("WordGridJson: " + json);
     }

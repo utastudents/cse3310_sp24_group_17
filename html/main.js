@@ -332,7 +332,14 @@ function toggleReady() {
             username: currentPlayerName
         };
         connection.send(JSON.stringify(data));
-    }
+};
+
+function backToMainLobby() {
+    var data = {
+        type: "leaveSubLobby"
+    };
+    connection.send(JSON.stringify(data));
+};
 
 function updateReadinessDisplay(json) {
     console.log("Function call to toggle readiness status");

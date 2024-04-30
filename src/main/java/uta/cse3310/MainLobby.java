@@ -15,6 +15,7 @@ public class MainLobby {
     
     private static final int MAX_PLAYERS = 20;
     private ArrayList<Player> players = new ArrayList<>();
+    private Event eventmaker = new Event();
 
 
     // add new players to main lobby
@@ -112,12 +113,12 @@ public WebSocket findPlayerWebSocket(String username) {
             for(Player player : subLobby.getPlayers()){
                 if(player.getConn().equals(conn)){
                     subLobby.getPlayers().remove(player);
+                    eventmaker.joinedSubLobbySuccess(conn, subLobby.getPlayers());
                     return;
                 }
                 System.out.println("SubLobby after remove: " + player);
             }
         }
-
     }
 }
 

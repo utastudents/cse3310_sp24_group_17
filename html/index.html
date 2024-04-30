@@ -44,14 +44,13 @@
         <h3>4 Player Mode</h3>
         <!-- Players will be moved here when '4 players' is clicked -->
     </div>
-      <div id="timer">20:00</div>
     
 
     <!-- Game control buttons -->
     <div class="button-group">
         <button id="startGameButton" onclick="startGame()" >START GAME</button> 
         <button id="toggleReady" onclick="toggleReady()">READY</button>
-        <button onclick="Mainlobby()">BACK TO MAIN LOBBY</button>
+        <button id="backToMainLobby" onclick="backToMainlobby()">BACK TO MAIN LOBBY</button>
         <button id="backButton" onclick="back()">BACK</button>
     </div>
 
@@ -72,8 +71,9 @@
     <div id="gameContainer">
         <div id="sidebar">
 
+            <div id="timer">20:00</div>
         <!-- Scoreboard Section -->
-        <div id="scoreBoardContainer">
+            <div id="scoreBoardContainer">
             <h2>Scoreboard</h2>
             <ul id="scoreBoard">
                 <!-- Player scores will be populated with JavaScript -->
@@ -90,9 +90,9 @@
         </div>
         
         <!-- Grid Section -->
-        <table id="grid">
+        <div id="grid" class="grid-container">
             <!-- Grid will be populated with JavaScript -->
-        </table>
+        </div>
 
         <button id="backButton" onclick="back()">BACK</button>
 
