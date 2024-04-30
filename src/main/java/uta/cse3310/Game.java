@@ -27,7 +27,7 @@ class Game {
     private List<String> wordsList;
     private ArrayList<String> wordsInMatrix;
     private ArrayList<WordDetail> wordsInMatrixDetails;
-    private List<Integer> availableIndices; 
+    private int currentIndex = 0;
 
     public Game(String filePath, int numOfWords, int gridSize) {
         this.MAX = gridSize;
@@ -121,33 +121,21 @@ class Game {
     private boolean isWithinBounds(int row, int col) {
         return row >= 0 && row < MAX && col >= 0 && col < MAX;
     }
-    public void resetAvailableIndices() {
-        availableIndices.clear();
-        for (int i = 0; i < wordsInMatrixDetails.size(); i++) {
-            availableIndices.add(i);
-        }
-    }
+
     public int[] getRandomWordCoordinates() {
         if (wordsInMatrixDetails.isEmpty()) {
             return null; 
         }
-        if (availableIndices.isEmpty()) {
-            resetAvailableIndices();  
-        }
-        int randomIndex = random.nextInt(availableIndices.size()); 
-        int index = availableIndices.get(randomIndex);
-        availableIndices.remove(randomIndex); 
+        
+        WordDetail selected = wordsInMatrixDetails.get(currentIndex);
+        int[] coordinates = new int[]{selected.startRow, selected.startCol};
 
-        WordDetail selected = wordsInMatrixDetails.get(index);
-        return new int[]{selected.startRow, selected.startCol};
-    }
-    private void printMatrix() {
-        for (int i = 0; i < MAX; i++) {
-            for (int j = 0; j < MAX; j++) {
-                System.out.print(wordMatrix[i][j] + " ");
-            }
-            System.out.println();
+        currentIndex++;  // Move to the next index
+        if (currentIndex >= wordsInMatrixDetails.size()) {
+            currentIndex = 0;  // Reset to start if reached the end of the list
         }
+
+        return coordinates;
     }
     private int[] getCoordinates(int startR, int startC, int endR,int endC) {
         int[] ans = {0, 0, 0, 0}; 
