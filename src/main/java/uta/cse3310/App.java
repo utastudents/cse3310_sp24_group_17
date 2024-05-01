@@ -24,11 +24,6 @@ public class App extends WebSocketServer {
     private int connectionId = 0;
     private MainLobby mainLobby = new MainLobby();
     private Event eventMaker = new Event();
-    //setup file
-    
-        
-
-
 
     public App(int port) {
         super(new InetSocketAddress(port));
@@ -149,13 +144,13 @@ public class App extends WebSocketServer {
                 mainLobby.removeFromSubLobby(ActiveGames, conn);
                 break;
 
-            case "highlight":
-            handleHighlightMessage(conn , json);
-            break;
+            case "guess":
+                handleGuess(conn, json);
+                break;
 
             case "giveMehint":
-            sendHint(conn);
-            break;
+                sendHint(conn);
+                break;
                 
                 
         
@@ -178,7 +173,8 @@ public class App extends WebSocketServer {
         for(Player player : mainLobby.getPlayers()){
             player.getConn().send(message);
         }
-    }    
+    }
+
     public void toggleReady(WebSocket conn) {
         // Loop through all sublobbies
         JsonObject json = new JsonObject();
@@ -191,11 +187,6 @@ public class App extends WebSocketServer {
                     player.setReady(!player.isReady()); // Toggle the readiness state
     
                     System.out.println("ready: " + player.isReady());
-                    // Check if all players are ready and start the game if they are
-                    /*if (subLobby.allPlayersReady() && subLobby.getPlayers().size() == subLobby.getSubLobbySize()) {
-                        startGameSilently(subLobby); // Start the game silently if all players are ready
-                    } */
-                    // else update ready in playerlist - change name to green
                     json.addProperty("type", "toggleReady");
                         // Loop through all players in the current sublobby to construct the player array
                     for (Player playersinSub : subLobby.getPlayers()) {
@@ -260,68 +251,55 @@ public class App extends WebSocketServer {
         System.out.println("WordGridJson: " + json);
     }
 
-    private void handleHighlightMessage(WebSocket conn, JsonObject rjson) {
-        JsonObject eventData = rjson.getAsJsonObject("eventData");
-        if (eventData == null) {
-            System.err.println("Error: eventData is missing.");
-            return; // Exit if there is no eventData
+    public void handleGuess(WebSocket conn, JsonObject json){
+        JsonObject startPointObject = json.getAsJsonObject("startPoint");
+        JsonObject endPointObject = json.getAsJsonObject("endPoint");
+
+        int startRow = startPointObject.get("row").getAsInt();
+        int startCol = startPointObject.get("col").getAsInt();
+        int endRow = endPointObject.get("row").getAsInt();
+        int endCol = endPointObject.get("col").getAsInt();
+
+        System.out.println("start row: " + startRow);
+        System.out.println("start col: " + startCol);
+        System.out.println("end row: " + endRow);
+        System.out.println("end col: " + endCol);
+
+        SubLobby SL = findSubLobbyContainingPlayer(conn);
+
+        System.out.println("SL: ");
+        for(Player player : SL.getPlayers()) {
+            System.out.println("Player in SL: " + player);
         }
-    
-        try {
-            String playerName = eventData.get("playerName").getAsString();
-            String word = eventData.get("word").getAsString();
         
-            Player player = findPlayerByName(playerName);
-            if (player != null) {
-                SubLobby subLobby = findSubLobbyContainingPlayer(player);
-                if (subLobby != null) {
 
-                    //Remove found word from list
-                    Iterator<String> iterator = subLobby.getGameMatrixWordList().iterator();
-                    while (iterator.hasNext()) {
-                        String words = iterator.next();
-                        if (words.equals(word)) {
-                            iterator.remove();
-                            break;
-                        }
-                    }
-
-                    player.setInGameScore(player.getInGameScore() + 1); // Update score
-    
-                    // Create and broadcast the highlight message to all clients in the sub-lobby
-                    JsonObject json = new JsonObject();
-                    json.addProperty("type", "highlightSuccess");
-                    json.add("start", eventData.get("start"));
-                    json.add("end", eventData.get("end"));
-                    json.addProperty("playerName", playerName);
-                    json.addProperty("color", player.getColor());
-
-                    ArrayList<String> wordStrings = subLobby.getGameMatrixWordList();
-                    String wordListJson = convertWordListToJson(wordStrings);
-                    json.addProperty("updatedWords", wordListJson);
-                    subLobby.broadcastToSubLobby(json.toString());
-                    System.out.println(json);
-    
-                    // Send updated scores to all clients in the sub-lobby
-                    sendUpdatedScores(subLobby);
-                }
+        boolean checkGuess = SL.getGame().check_ans(startRow, startCol, endRow, endCol, SL.getFoundWords());
+        
+        if(checkGuess){
+            String foundWord = SL.getGame().getWord(startRow, startCol, endRow, endCol);
+            System.out.println("Found Words: ");
+            for(String word : SL.getFoundWords()) {
+                System.out.println("word: " + word);
             }
-        } catch (Exception e) {
-            System.err.println("Error processing highlight message: " + e.getMessage());
-            e.printStackTrace();
+            eventMaker.sendCheckAnsMessage(SL, startPointObject, endPointObject, SL.findPlayerColor(conn, SL.getPlayers()) , foundWord, SL.getFoundWords(), SL.getGameMatrixWordList());
+            findPlayerUpdateScore(conn);
+            sendUpdatedScores(SL);
+        }
+        else{
+            System.out.println("INVALID WORD GUESS");
         }
     }
     
 
-    private Player findPlayerByName(String playerName) {
+    private void findPlayerUpdateScore(WebSocket conn) {
         for (SubLobby subLobby : ActiveGames) {
             for (Player player : subLobby.getPlayers()) {
-                if (player.getName().equals(playerName)) {
-                    return player;
+                if (player.getConn().equals(conn)) {
+                    player.setInGameScore(player.getInGameScore() + 1);
+                    return;
                 }
             }
         }
-        return null;
     }
 
     private void sendUpdatedScores(SubLobby subLobby) {
@@ -347,6 +325,17 @@ public class App extends WebSocketServer {
         }
         return null;
     }
+
+    private SubLobby findSubLobbyContainingPlayer(WebSocket conn) {
+        for (SubLobby subLobby : ActiveGames) {
+            for(Player player : subLobby.getPlayers()) {
+                if(player.getConn().equals(conn)){
+                    return subLobby;
+                }
+            }
+        }
+        return null;
+    }
     
     public void sendHint(WebSocket conn) {
         
@@ -362,6 +351,24 @@ public class App extends WebSocketServer {
         System.out.println("Request for hint from a connection not in any active sub-lobby.");
     }
     
+    public void checkGameOver(SubLobby subLobby){
+        if(subLobby.getGameMatrixWordList().size() == 0){
+            Player Winner = subLobby.findMaxScorePlayer(subLobby);
+
+            JsonObject json = new JsonObject();
+            JsonArray jsonArray = new JsonArray();
+            Gson gson = new Gson();
+
+            json.addProperty("type", "gameOver");
+            json.addProperty("winner", Winner.getName());
+            //json.addProperty("w", null);
+            subLobby.updateTotalScores(subLobby.getPlayers());
+        }
+        return;
+    }
+
+    
+
     
     
 

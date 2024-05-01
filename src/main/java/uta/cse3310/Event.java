@@ -61,6 +61,26 @@ public class Event {
         json.addProperty("message", playerName + ": " + message);
         conn.send(json.toString());
     }
+
+    public void sendCheckAnsMessage(SubLobby subLobby, JsonObject start, JsonObject end, String color, String wordFound, List<String> foundWords, List<String> allWords){
+        JsonObject json = new JsonObject();
+        json.addProperty("type", "guessSuccess");
+        json.add("start", start);
+        json.add("end", end);
+        json.addProperty("color", color);
+
+        JsonArray wordsArray = new JsonArray();
+        for(String word : allWords){
+            JsonObject wordObj = new JsonObject();
+            wordObj.addProperty("word", word);
+            wordObj.addProperty("found", foundWords.contains(word));
+            wordsArray.add(wordObj);
+        }
+        json.add("words", wordsArray);
+
+        subLobby.broadcastToSubLobby(json.toString());
+        System.out.println("guess json: " + json);
+    }
     
     
 

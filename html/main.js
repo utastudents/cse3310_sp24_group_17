@@ -38,43 +38,54 @@ connection.onmessage = function(event){
             console.log("Username not provided in loginSuccess message");
         }
         break;
+
     case 'loginError':
         console.log("login error");
         handleLoginError();
         break;
+
     case 'subLobbySuccess':
         console.log("sublobby success");
         updatePlayerList(data);
         break;
+
     case 'subLobbyError':
         console.log("sublobby error");
         handleSubLobbyError();
         break;
+
     case 'chatMessage':
         console.log("Displaying chat message from:", data.playerName);
         displayChatMessage(data.playerName, data.message);
         break;
+
     case 'gameStateUpdate':
         console.log("nothing to print"); 
         displayGrid(data.grid);
         break;
+
     case 'toggleReady':
         updateReadinessDisplay(data);
         break;
+
     case 'matrixCreated':
         generateGrid(data);
         showGame();
-        wordList = JSON.parse(data.eventData2); // Store the word list
         break;
-    case "highlightSuccess":
+
+    case "guessSuccess":
         applyHighlightFromServer(data);
         updateWordList(data);
         break;
+
     case "updateScoreboard":
         updateScoreboard(data.scores);
         break;
+
     case 'hint':
         highlightCell(data.row,data.col);
+        break;
+
     default:
         console.log("Unknown message type:", data.type);
    }
@@ -126,7 +137,7 @@ function startGame() {
 }
 
 // Send players' input for word guess to server
-function sendHighlightToServer(start, end, playerName, word) {
+/*function sendHighlightToServer(start, end, playerName, word) {
     const highlightData = {
         type: "highlight",
         "eventData":{
@@ -137,7 +148,7 @@ function sendHighlightToServer(start, end, playerName, word) {
         }
     };
     connection.send(JSON.stringify(highlightData));
-}
+} */
 
 // Send JSON of Ready Up button
 function toggleReady() {
@@ -156,6 +167,7 @@ function backToMainLobby() {
     connection.send(JSON.stringify(data));
 };
 
+// Send 30 sec pings to words
 function sendHintRequest() {
     var data = {
         type: "giveMehint",
@@ -163,6 +175,33 @@ function sendHintRequest() {
     };
     connection.send(JSON.stringify(data));
     console.log("Hint request sent.");
+}
+
+// Identify word grid click
+let startPoint = null;
+function handleCellClick(row, col){
+    const cellID = `cell-${row}-${col}`;
+    const cell = document.getElementById(cellID);
+    console.log("cell id: " + cellID);
+
+    if(!startPoint){
+        startPoint = {row, col};
+        cell.style.backgroundColor = "yellow";
+    }
+    else{
+        wordGuess(startPoint, {row, col});
+        startPoint = null;
+    }
+}
+
+// Send JSON for cell in grid
+function wordGuess(startPoint, endPoint){
+    var data = {
+        type: "guess",
+        startPoint: startPoint,
+        endPoint: endPoint
+    };
+    connection.send(JSON.stringify(data));
 }
 
 
@@ -211,22 +250,30 @@ function generateGrid(json) {
 }
 
 function updateWordList(json){
-    const wordList = JSON.parse(json.updatedWords);
+    const words = json.words;
+    //const color = json.color;
     const wordListContainer = document.getElementById('wordListContainer');
     wordListContainer.innerHTML = '';
 
     const headingElement = document.createElement('h2');
-    headingElement.textContent = 'Words To Find';
+    headingElement.textContent = "Words To Find";
     wordListContainer.appendChild(headingElement);
 
     const wordListElement = document.createElement('ul');
-    wordList.forEach(word => {
+    words.forEach(wordObj => {
         const listItem = document.createElement('li');
-        listItem.textContent = word;
+        const wordElement = document.createElement('span');
+        wordElement.textContent = wordObj.word;
+        if(wordObj.found){
+            //wordElement.style.color = color;
+            wordElement.style.textDecoration = 'line-through';
+        }
+        listItem.appendChild(wordElement);
         wordListElement.appendChild(listItem);
     });
     wordListContainer.appendChild(wordListElement);
 }
+
 
 // Updates the sublobby playerlist upon player joining/leaving
 function updatePlayerList(json){
@@ -249,7 +296,6 @@ function updatePlayerList(json){
 
 // Highlight based upon correct guess
 function applyHighlightFromServer(data) {
-    
     highlightPath(data.start, data.end, data.color);
 }
 
@@ -422,6 +468,8 @@ function displayChatMessage(playerName, message) {
 
 
 
+
+
 // MISC METHODS -----------------------------------------------------------------------------------------
 
 // Responds to Back button press
@@ -436,6 +484,12 @@ function back() {
     } else {
         console.log('No page change needed');
     }
+
+    var data = {
+        type: "leaveGame"
+    };
+
+    connection.send(JSON.stringify(data));
 }
 
 
@@ -461,7 +515,7 @@ function resetGameState() {
     console.log('Game state has been reset');
 }
 
-let startPoint = null;
+/*let startPoint = null;
 //need correction currentPlayerName
 function handleCellClick(row, col) {
     const cellId = `cell-${row}-${col}`;
@@ -475,7 +529,6 @@ function handleCellClick(row, col) {
         // Call a function to check if the selected word is valid
         const selectedWord = getWordFromSelection(startPoint, { row, col });
         if (wordList.includes(selectedWord)) {
-            highlightPath(startPoint, {row,col});
             sendHighlightToServer(startPoint, { row, col }, currentPlayerName, selectedWord);
         } else {
             // Clear the temporary start point highlight if word is not valid
@@ -484,7 +537,7 @@ function handleCellClick(row, col) {
         }
         startPoint = null; // Reset start point for next word
     }
-}
+}*/
 
 
 // This function needs to be implemented to retrieve the word from the grid
@@ -522,10 +575,10 @@ function startTimer(duration, display) {
         var currentTime = duration - timer;
 
         // Send a hint request every 30 seconds
-        /*if (currentTime >= lastHintTime + 30) {
+        if (currentTime >= lastHintTime + 30) {
             sendHintRequest();
             lastHintTime = currentTime; // Update the last hint time
-        }*/
+        }
 
         if (--timer < 0) {
             clearInterval(timerInterval);

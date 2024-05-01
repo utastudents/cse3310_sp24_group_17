@@ -190,16 +190,25 @@ class Game {
                 }
                 break;
         }
+        System.out.println("capture: " + capture.toString());
         return wordsInMatrix.contains(capture.toString());
     }
     
-    public boolean check_ans(int startR, int startC, int endR,int endC) {
+    public boolean check_ans(int startR, int startC, int endR,int endC, List<String> foundWords) {
         int[] coordinates = getCoordinates(startR, startC, endR, endC);
     
         int startRow = coordinates[0];
         int startCol = coordinates[1];
         int endRow = coordinates[2];
         int endCol = coordinates[3];
+
+        String word = getWord(startRow, startCol, endRow, endCol);
+        if(foundWords.contains(word)){
+            return false;
+        }
+        else{
+            foundWords.add(word);
+        }
     
         if (endRow == startRow && endCol > startCol) {  
             return mapword(0, startRow, startCol, endRow, endCol);
@@ -251,7 +260,40 @@ class Game {
         return wordMatrix;
     }
     
-    //d
+    public String getWord(int startRow, int startCol, int endRow, int endCol) {
+        StringBuilder word = new StringBuilder();
+    
+        // Determine direction of word (horizontal, vertical, diagonal)
+        int Row = endRow - startRow;
+        int Col = endCol - startCol;
+    
+        if (Row == 0 && Col != 0) {
+            // Horizontal word
+            for (int col = startCol; col <= endCol; col++) {
+                word.append(wordMatrix[startRow][col]);
+            }
+        } else if (Col == 0 && Row != 0) {
+            // Vertical word
+            for (int row = startRow; row <= endRow; row++) {
+                word.append(wordMatrix[row][startCol]);
+            }
+        } else if (Math.abs(Row) == Math.abs(Col)) {
+            // Diagonal word
+            int row = startRow;
+            int col = startCol;
+            while (row != endRow && col != endCol) {
+                word.append(wordMatrix[row][col]);
+                row += (Row > 0) ? 1 : -1;
+                col += (Col > 0) ? 1 : -1;
+            }
+            word.append(wordMatrix[endRow][endCol]); // Include the last character
+        } else {
+            // Invalid selection (not horizontal, vertical, or diagonal)
+            return null; // Or handle it appropriately
+        }
+    
+        return word.toString();
+    }
 
 }
 

@@ -16,7 +16,8 @@ public class SubLobby{
     private List<Player> players;
 
     public static final int MAX_ACTIVE_GAMES = 5;
-    public Game game;
+    private Game game;
+    private List<String> foundWords;
 
 
     public SubLobby(int subLobbySize, Player player1){
@@ -26,6 +27,7 @@ public class SubLobby{
         this.players.add(player1); //sets the creater of lobby as the first player
         this.game = new Game("words.txt",10,20);
         player1.setColor("blue");
+        this.foundWords = new ArrayList<>();
     }
 
     //adds player to sublobby
@@ -107,6 +109,14 @@ public class SubLobby{
     public ArrayList<String> getGameMatrixWordList(){
         return game.getWordsInMatrix();
     }
+
+    public Game getGame(){
+        return game;
+    }
+
+    public List<String> getFoundWords(){
+        return foundWords;
+    }
     
     public List<String> getPlayerNames() {
         List<String> names = new ArrayList<>();
@@ -162,6 +172,34 @@ public class SubLobby{
                 player.setColor("orange");
             }
         }
+    }
+
+    public Player findMaxScorePlayer(SubLobby subLobby){
+        Player playerMax = null;
+        int max = 0;
+            for(Player player : players){
+                if(player.getInGameScore() > max){
+                    max = player.getInGameScore();
+                    playerMax = player;
+                }
+            }
+            return playerMax;
+    }
+
+    public void updateTotalScores(List<Player> players){
+        for(Player player : players){
+            player.setTotalScore(player.getTotalScore() + player.getInGameScore());
+            player.setInGameScore(0); // Reset inGameScore
+        }
+    }
+
+    public String findPlayerColor(WebSocket conn, List<Player> players){
+        for(Player player : players){
+            if(player.getConn().equals(conn)){
+                return player.getColor();
+            }
+        }
+        return null;
     }
 
 }
