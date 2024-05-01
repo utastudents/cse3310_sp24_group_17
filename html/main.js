@@ -86,6 +86,19 @@ connection.onmessage = function(event){
         highlightCell(data.row,data.col);
         break;
 
+    case 'guessInvalid':
+        const startRow = data.start.row;
+        const startCol = data.start.col;
+        const endRow = data.end.row;
+        const endCol = data.end.col;
+        console.log(startRow + "" + startCol);
+        deleteHighlightIfWrong(startRow, startCol);
+        deleteHighlightIfWrong(endRow, endCol);
+        break;
+
+    case 'endGame':
+        alert("Game Over - winner: " + data.winner);
+
     default:
         console.log("Unknown message type:", data.type);
    }
@@ -186,7 +199,7 @@ function handleCellClick(row, col){
 
     if(!startPoint){
         startPoint = {row, col};
-        cell.style.backgroundColor = "yellow";
+        cell.style.color = "yellow";
     }
     else{
         wordGuess(startPoint, {row, col});
@@ -463,6 +476,33 @@ function displayChatMessage(playerName, message) {
     } else {
         console.log('Chat display element not found');
     }
+}
+
+function deleteHighlightIfWrong(row, col){
+    const cellId = `cell-${row}-${col}`;
+    const cell = document.getElementById(cellId);
+    const playerColors = ['blue', 'pink', 'orange', 'green'];
+    const color = null;
+
+    let cellHasColor = false;
+    for(let i = 0; i < playerColors.length; i++){
+        const Pcolor = playerColors[i];
+        if(cell.style.backgroundColor === Pcolor){
+            cellHasColor = true;
+            color = Pcolor;
+            break;
+        }
+    }
+
+    if(cellHasColor){
+        cell.style.backgroundColor = "";
+        cell.style.backgroundColor = color;
+    }
+    else{
+        cell.style.backgroundColor = "";
+        cell.style.backgroundColor = '#faf3e0';
+    }
+     cell.style.color = "black"
 }
 
 

@@ -18,6 +18,7 @@ public class SubLobby{
     public static final int MAX_ACTIVE_GAMES = 5;
     private Game game;
     private List<String> foundWords;
+    private int length;
 
 
     public SubLobby(int subLobbySize, Player player1){
@@ -25,9 +26,10 @@ public class SubLobby{
         this.lobbyID = "lobby_"+(++lobbyCounter); //creates unique id for each game
         this.players = new ArrayList<>(); //array for sublobby players
         this.players.add(player1); //sets the creater of lobby as the first player
-        this.game = new Game("words.txt",10,20);
+        this.game = new Game("words.txt",3,20);
         player1.setColor("blue");
         this.foundWords = new ArrayList<>();
+        this.length = getGameMatrixWordList().size(); 
     }
 
     //adds player to sublobby
@@ -202,16 +204,17 @@ public class SubLobby{
             player.setReady(false);
             player.setTotalScore(player.getTotalScore() + player.getInGameScore());
             player.setInGameScore(0); // Reset inGameScore
+            subLobby.removePlayer(player);
         }
 
         System.out.println("End Game: ");
 
         for(Player player : subLobby.getPlayers()){
+            System.out.print("player: " + player.getName());
             System.out.println("player delete color: " + player.getColor());
             System.out.println("player delete ready: " + player.isReady());
-            player.setReady(false);
-            player.setTotalScore(player.getTotalScore() + player.getInGameScore());
-            player.setInGameScore(0); // Reset inGameScore
+            System.out.println("player delete total: " + player.getInGameScore());
+            System.out.println("player delete ingame: " + player.getTotalScore());
         }
 
         for(SubLobby sublobby : ActiveGames){
@@ -219,6 +222,19 @@ public class SubLobby{
                 ActiveGames.remove(sublobby);
             }
         }
+
+        for(SubLobby sublobby : ActiveGames){
+            System.out.println("SubLobby delete: " + sublobby.getLobbyID());
+        }
+        
+    }
+
+    public int getLength(){
+        return length;
+    }
+
+    public void setLength(int length){
+        this.length = length;
     }
 
 }

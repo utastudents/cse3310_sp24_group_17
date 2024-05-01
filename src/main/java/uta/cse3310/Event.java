@@ -81,7 +81,23 @@ public class Event {
         subLobby.broadcastToSubLobby(json.toString());
         System.out.println("guess json: " + json);
     }
+
+    public void sendCheckAnsInvalid(SubLobby subLobby, JsonObject start, JsonObject end){
+        JsonObject json = new JsonObject();
+        json.addProperty("type", "guessInvalid");
+        json.add("start", start);
+        json.add("end", end);
+        
+        subLobby.broadcastToSubLobby(json.toString());
+
+        System.out.println("guess invalid: " + json);
+    }
     
+    public void sendEndGame(SubLobby subLobby, Player winner){
+        JsonObject json = new JsonObject();
+        json.addProperty("type", "endGame");
+        json.addProperty("winner", winner.getName());
+    }
     
 
 }

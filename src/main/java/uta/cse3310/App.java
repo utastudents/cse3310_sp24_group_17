@@ -153,7 +153,7 @@ public class App extends WebSocketServer {
                 sendHint(conn);
                 break;
                 
-                
+            
         
            
         }
@@ -285,12 +285,18 @@ public class App extends WebSocketServer {
             eventMaker.sendCheckAnsMessage(SL, startPointObject, endPointObject, SL.findPlayerColor(conn, SL.getPlayers()) , foundWord, SL.getFoundWords(), SL.getGameMatrixWordList());
             findPlayerUpdateScore(conn);
             sendUpdatedScores(SL);
+            SL.setLength(SL.getLength()-1);
         }
         else{
             System.out.println("INVALID WORD GUESS");
+            eventMaker.sendCheckAnsInvalid(SL, startPointObject, endPointObject);
+        }
+
+        if(checkGameOver(SL)){
+            handleGameOver(SL);
         }
     }
-    
+
 
     private void findPlayerUpdateScore(WebSocket conn) {
         for (SubLobby subLobby : ActiveGames) {
@@ -353,7 +359,7 @@ public class App extends WebSocketServer {
     }
     
     public boolean checkGameOver(SubLobby subLobby){
-        if(subLobby.getGameMatrixWordList().size() == subLobby.getFoundWords().size()){
+        if(subLobby.getLength() == 0){
             return true;
         }
         return false;
@@ -361,9 +367,9 @@ public class App extends WebSocketServer {
 
     public void handleGameOver(SubLobby subLobby){
         Player winner = subLobby.findMaxScorePlayer(subLobby);
-        //event
-        //subLobby.updateTotalScores(subLobby.getPlayers());
-
+        eventMaker.sendEndGame(subLobby, winner);
+        subLobby.deleteSubLobby(subLobby, ActiveGames);
+        System.out.println("winner: " + winner.getName());
     }
     
 
