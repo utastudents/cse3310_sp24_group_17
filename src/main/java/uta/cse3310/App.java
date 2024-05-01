@@ -24,6 +24,7 @@ public class App extends WebSocketServer {
     private int connectionId = 0;
     private MainLobby mainLobby = new MainLobby();
     private Event eventMaker = new Event();
+    private Timer timer = new Timer();
 
     public App(int port) {
         super(new InetSocketAddress(port));
@@ -351,22 +352,19 @@ public class App extends WebSocketServer {
         System.out.println("Request for hint from a connection not in any active sub-lobby.");
     }
     
-    public void checkGameOver(SubLobby subLobby){
-        if(subLobby.getGameMatrixWordList().size() == 0){
-            Player Winner = subLobby.findMaxScorePlayer(subLobby);
-
-            JsonObject json = new JsonObject();
-            JsonArray jsonArray = new JsonArray();
-            Gson gson = new Gson();
-
-            json.addProperty("type", "gameOver");
-            json.addProperty("winner", Winner.getName());
-            //json.addProperty("w", null);
-            subLobby.updateTotalScores(subLobby.getPlayers());
+    public boolean checkGameOver(SubLobby subLobby){
+        if(subLobby.getGameMatrixWordList().size() == subLobby.getFoundWords().size()){
+            return true;
         }
-        return;
+        return false;
     }
 
+    public void handleGameOver(SubLobby subLobby){
+        Player winner = subLobby.findMaxScorePlayer(subLobby);
+        //event
+        //subLobby.updateTotalScores(subLobby.getPlayers());
+
+    }
     
 
     

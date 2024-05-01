@@ -177,20 +177,13 @@ public class SubLobby{
     public Player findMaxScorePlayer(SubLobby subLobby){
         Player playerMax = null;
         int max = 0;
-            for(Player player : players){
-                if(player.getInGameScore() > max){
-                    max = player.getInGameScore();
-                    playerMax = player;
-                }
-            }
-            return playerMax;
-    }
-
-    public void updateTotalScores(List<Player> players){
         for(Player player : players){
-            player.setTotalScore(player.getTotalScore() + player.getInGameScore());
-            player.setInGameScore(0); // Reset inGameScore
+            if(player.getInGameScore() > max){
+                max = player.getInGameScore();
+                playerMax = player;
+            }
         }
+        return playerMax;
     }
 
     public String findPlayerColor(WebSocket conn, List<Player> players){
@@ -200,6 +193,32 @@ public class SubLobby{
             }
         }
         return null;
+    }
+
+    public void deleteSubLobby(SubLobby subLobby, Vector<SubLobby> ActiveGames){
+        //reset players to default while updating score
+        for(Player player : subLobby.getPlayers()){
+            player.setColor(null);
+            player.setReady(false);
+            player.setTotalScore(player.getTotalScore() + player.getInGameScore());
+            player.setInGameScore(0); // Reset inGameScore
+        }
+
+        System.out.println("End Game: ");
+
+        for(Player player : subLobby.getPlayers()){
+            System.out.println("player delete color: " + player.getColor());
+            System.out.println("player delete ready: " + player.isReady());
+            player.setReady(false);
+            player.setTotalScore(player.getTotalScore() + player.getInGameScore());
+            player.setInGameScore(0); // Reset inGameScore
+        }
+
+        for(SubLobby sublobby : ActiveGames){
+            if(sublobby.getLobbyID().equals(subLobby.getLobbyID())){
+                ActiveGames.remove(sublobby);
+            }
+        }
     }
 
 }
