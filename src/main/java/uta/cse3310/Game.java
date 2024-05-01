@@ -26,7 +26,7 @@ class Game {
     private char[][] wordMatrix;
     private List<String> wordsList;
     private ArrayList<String> wordsInMatrix;
-    private ArrayList<WordDetail> wordsInMatrixDetails;
+    public ArrayList<WordDetail> wordsInMatrixDetails;
     private int currentIndex = 0;
 
     public Game(String filePath, int numOfWords, int gridSize) {
