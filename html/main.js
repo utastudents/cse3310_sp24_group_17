@@ -2,7 +2,7 @@ var serverUrl = "ws://" + window.location.hostname + ":" + (parseInt(location.po
 var connection = new WebSocket(serverUrl);
 var currentPlayerName = null;
 var wordList = [];
-
+var timer_shown = false;
 //format for json
 function UserEvent(type, eventData){
     this.type = type;
@@ -63,6 +63,12 @@ connection.onmessage = function(event){
         break;
     case 'matrixCreated':
         generateGrid(data);
+        if (timer_shown === false)
+        {
+        	startGameTimer(); 
+        	timer_shown = true;
+        }
+        
         showGame();
         wordList = JSON.parse(data.eventData2); // Store the word list
         break;
@@ -541,9 +547,9 @@ function startGameTimer() {
     startTimer(twentyMinutes, display);
 }
 
-window.onload = function() {
+/*window.onload = function() {
     startGameTimer(); // Start the game timer when the window loads
-};
+};*/
 
 
 
