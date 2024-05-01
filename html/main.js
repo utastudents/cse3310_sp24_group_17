@@ -80,7 +80,7 @@ connection.onmessage = function(event){
         updateScoreboard(data.scores);
         break;
     case 'hint':
-        highlightCell(data.row,data.col);
+        highlightCellhighlightCell(data.row,data.col);
     default:
         console.log("Unknown message type:", data.type);
    }
@@ -513,7 +513,7 @@ function getWordFromSelection(start, end) {
 
 function startTimer(duration, display) {
     var timer = duration, minutes, seconds;
-    var lastHintTime = 0; // Store the last time a hint was sent
+    var lastHintTime = 0;
 
     var timerInterval = setInterval(function() {
         minutes = parseInt(timer / 60, 10);
@@ -524,19 +524,19 @@ function startTimer(duration, display) {
 
         display.textContent = minutes + ":" + seconds;
 
-        // Get current time in seconds since the timer started
+        
         var currentTime = duration - timer;
 
-        // Send a hint request every 30 seconds
-        /*if (currentTime >= lastHintTime + 30) {
+        
+        if (currentTime >= lastHintTime + 30) {
             sendHintRequest();
-            lastHintTime = currentTime; // Update the last hint time
-        }*/
+            lastHintTime = currentTime;
+        }
 
         if (--timer < 0) {
             clearInterval(timerInterval);
             alert("Time's up!");
-            display.textContent = "00:00"; // Reset timer display
+            display.textContent = "00:00";
         }
     }, 1000);
 }
