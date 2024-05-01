@@ -80,7 +80,7 @@ connection.onmessage = function(event){
         updateScoreboard(data.scores);
         break;
     case 'hint':
-        highlightCellhighlightCell(data.row,data.col);
+        highlightCell(data.row,data.col);
     default:
         console.log("Unknown message type:", data.type);
    }
