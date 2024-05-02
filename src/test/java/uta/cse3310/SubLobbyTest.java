@@ -2,9 +2,12 @@ package uta.cse3310;
 
 import junit.framework.TestCase;
 
+import org.mockito.Mockito;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import org.java_websocket.WebSocket;
 
 
 public class SubLobbyTest extends TestCase {
@@ -12,12 +15,24 @@ public class SubLobbyTest extends TestCase {
     private SubLobby subLobby;
     private Player player1;
     private Player player2;
+    private Player player3;
+    private Player player4;
 
     // Setting up Test variables
     public void setUp() {
-        player1 = new Player("Alice", null);
-        player2 = new Player("Bob", null);
-        subLobby = new SubLobby(2, player1);
+        
+        // Mock WebSocket connections
+        WebSocket Conn1 = Mockito.mock(WebSocket.class);
+        WebSocket Conn2 = Mockito.mock(WebSocket.class);
+        WebSocket Conn3 = Mockito.mock(WebSocket.class);
+        WebSocket Conn4 = Mockito.mock(WebSocket.class);
+        
+        // Create test players
+        player1 = new Player("Alice", Conn1);
+        player2 = new Player("Bob", Conn2);
+        player3 = new Player("Sarah", Conn3);
+        player4 = new Player("Steve", Conn4);
+        subLobby = new SubLobby(4, player1);
     }
 
     // Testing if a player is added
@@ -39,6 +54,8 @@ public class SubLobbyTest extends TestCase {
     public void testIsSubLobbyFull() {
         assertFalse(subLobby.isSubLobbyFull());
         subLobby.addPlayer(player2);
+        subLobby.addPlayer(player3);
+        subLobby.addPlayer(player4);
         assertTrue(subLobby.isSubLobbyFull());
     }
 
@@ -81,7 +98,7 @@ public class SubLobbyTest extends TestCase {
         player1.setReady(true);
         assertTrue(subLobby.allPlayersReady());
     }
-/*
+
     // Test if players in a lobby are assigned a color
     public void testReassignColors() {
 
@@ -97,5 +114,5 @@ public class SubLobbyTest extends TestCase {
         assertEquals("green", player3.getColor());
         assertEquals("orange", player4.getColor());
     }
-*/
+
 }
