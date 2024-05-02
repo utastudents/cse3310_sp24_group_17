@@ -81,4 +81,20 @@ public class SubLobbyTest extends TestCase {
         player1.setReady(true);
         assertTrue(subLobby.allPlayersReady());
     }
+
+    // Test if players in a lobby are assigned a color
+    public void testReassignColors() {
+
+        subLobby.addPlayer(player2);
+        subLobby.addPlayer(player3);
+        subLobby.addPlayer(player4);
+
+        subLobby.reassignColors(subLobby);
+
+        // Verify that each player has been assigned a color
+        assertEquals("blue", player1.getColor());
+        assertEquals("pink", player2.getColor());
+        assertEquals("green", player3.getColor());
+        assertEquals("orange", player4.getColor());
+    }
 }
