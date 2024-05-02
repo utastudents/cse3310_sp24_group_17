@@ -3,6 +3,7 @@ var connection = new WebSocket(serverUrl);
 var currentPlayerName = null;
 var wordList = [];
 var timer_shown = false;
+var temp = 1;
 //format for json
 function UserEvent(type, eventData){
     this.type = type;
@@ -26,6 +27,13 @@ connection.onmessage = function(event){
 
     //parse message for object
     var data = JSON.parse(message);
+    if (temp === 1){
+    					var commit = JSON.parse(event.data);
+    					document.getElementById("commit").innerHTML = "Commit hash:  "+commit;
+    					document.title = commit;
+    					temp+=1;
+    
+    }
     
     //Handle incoming json messages
    switch(data.type){

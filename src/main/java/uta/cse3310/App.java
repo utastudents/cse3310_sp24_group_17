@@ -26,7 +26,7 @@ public class App extends WebSocketServer {
     private Event eventMaker = new Event();
     //setup file
     
-        
+      public static String VERSION;  
 
 
 
@@ -37,6 +37,8 @@ public class App extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
        System.out.println("New connection: " + conn.getRemoteSocketAddress());
+       Gson gson = new Gson();
+       conn.send(gson.toJson(VERSION));
     }
 
     @Override
@@ -384,6 +386,8 @@ public class App extends WebSocketServer {
      // Set the port for the WebSocket server - 9117
         int Websocket_port = 9117;
         portString = System.getenv("WEBSOCKET_PORT");
+        String version = System.getenv("VERSION");
+        VERSION = version;
         if(portString != null){
             Integer.parseInt(portString);
         }
