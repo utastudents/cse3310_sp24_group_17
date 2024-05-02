@@ -2,6 +2,8 @@ package uta.cse3310;
 
 import junit.framework.TestCase;
 
+import java.util.Vector;
+
 import org.java_websocket.WebSocket;
 import org.mockito.Mockito;
 
@@ -16,6 +18,7 @@ public class MainLobbyTest extends TestCase {
     // Testing LogIn()
     public void testLogIn() {
         MainLobby mainLobby = new MainLobby();
+        // Mock WebSocket connection
         WebSocket mockWebSocket = Mockito.mock(WebSocket.class);
 
         // Logging in with a valid username
@@ -68,6 +71,7 @@ public class MainLobbyTest extends TestCase {
 
         // Finding a player with a non-existing WebSocket
         assertNull(mainLobby.findPlayerInMainLobby(Mockito.mock(WebSocket.class)));
+
     }
 
     // Testing FindPlayerWebSocket()
@@ -82,4 +86,34 @@ public class MainLobbyTest extends TestCase {
         // Finding a WebSocket with a non-existing username
         assertNull(mainLobby.findPlayerWebSocket(usernameNE));
     }
+
+    // Testing removefromSubLobby()
+    public void testremovefromSubLobby() {
+        MainLobby mainLobby = new MainLobby();
+        Vector<SubLobby> activeGames = new Vector<>();
+        
+        WebSocket mockWebSocket1 = Mockito.mock(WebSocket.class);
+        WebSocket mockWebSocket2 = Mockito.mock(WebSocket.class);
+        WebSocket mockWebSocket3 = Mockito.mock(WebSocket.class);
+
+        Player player1 = new Player("Player1",mockWebSocket1);
+        Player player2 = new Player("Player2",mockWebSocket2);
+        Player player3 = new Player("Player3",mockWebSocket3);
+
+        SubLobby subLobby1 = new SubLobby(2, player1);
+        SubLobby subLobby2 = new SubLobby(3, player3);
+
+        // Add the player to the SubLobby
+        subLobby1.addPlayer(player2);
+ 
+        // Add sample Sublobbies to activeGames
+        activeGames.add(subLobby1);
+        activeGames.add(subLobby2);
+ 
+        // Call the removeFromSubLobby method with the sample ActiveGames and WebSocket connection
+        mainLobby.removeFromSubLobby(activeGames, mockWebSocket2);
+ 
+        // Assert that the player has been removed from the SubLobby
+        assertFalse(subLobby1.getPlayers().contains(player2));
+     }
 }
